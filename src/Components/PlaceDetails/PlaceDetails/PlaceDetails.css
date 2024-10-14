@@ -1,0 +1,46 @@
+.place-details-container {
+  text-align: center;
+  padding: 20px;
+}
+
+.search-input {
+  padding: 10px;
+  font-size: 16px;
+}
+
+.search-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.details-container {
+  margin-top: 20px;
+}
+
+.map-photo-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.map-container {
+  width: 60%; /* Adjust as needed */
+  height: 400px; /* Adjust height */
+}
+
+.photo-container {
+  margin-left: 20px; /* Space between map and photo */
+}
+
+.place-photo {
+  width: 400px; /* Make the photo larger */
+  height: auto; /* Maintain aspect ratio */
+}
+
+.error-message {
+  color: red;
+}
