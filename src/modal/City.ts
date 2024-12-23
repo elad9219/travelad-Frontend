@@ -1,7 +1,10 @@
-
 export class City {
-    Name?: string;
-    Address?: string;
-    Lat?: number;
-    Lng?: number;
-}
+    id?: number;
+    placeId?: string;
+    name?: string;
+    address?: string;
+    latitude?: number;
+    longitude?: number;
+    icon?: string;
+    }
+    

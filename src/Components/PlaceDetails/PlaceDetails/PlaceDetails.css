@@ -6,6 +6,7 @@
 .search-input {
   padding: 10px;
   font-size: 16px;
+  width: 80px;
 }
 
 .search-button {
@@ -17,30 +18,31 @@
   cursor: pointer;
 }
 
-.details-container {
-  margin-top: 20px;
-}
-
-.map-photo-container {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.map-container {
-  width: 60%; /* Adjust as needed */
-  height: 400px; /* Adjust height */
-}
-
-.photo-container {
-  margin-left: 20px; /* Space between map and photo */
-}
-
-.place-photo {
-  width: 400px; /* Make the photo larger */
-  height: auto; /* Maintain aspect ratio */
-}
-
 .error-message {
   color: red;
+}
+
+.places-list {
+  margin-top: 20px;
+}
+
+.place-card {
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  max-width: 400px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.place-address {
+  text-align: center;
+  font-weight: bold;
+  padding: 20px;
+  border-radius: 10px;
+  color: white;
+  line-height: 1.2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

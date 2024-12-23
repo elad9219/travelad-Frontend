@@ -1,31 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './PlaceDetails.css'; // Import a CSS file for custom styles
+import './PlaceDetails.css';
+import MapComponent from '../../Components/MapComponent/MapComponent';
+import { City } from '../../../modal/City';
 
 const PlaceDetails: React.FC = () => {
-  const [placeName, setPlaceName] = useState(''); // For input value
-  const [placeDetails, setPlaceDetails] = useState<any>(null); // For API response
+  const [placeName, setPlaceName] = useState(''); // For user input
+  const [places, setPlaces] = useState<City[]>([]); // For API results
   const [loading, setLoading] = useState(false); // For loading state
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); // For error messages
 
-  // Function to handle the search action
   const handleSearch = async () => {
     setLoading(true);
     setError('');
     try {
-      const response = await axios.get(`http://localhost:8080/api/places/search`, {
-        params: { query: placeName }, // Send placeName as query parameter
+      const response = await axios.get('http://localhost:8080/api/places/search', {
+        params: { city: placeName },
       });
-      console.log(response.data.results[0]); // Log the first result
-      setPlaceDetails(response.data.results[0]); // Store the first result
-    } catch (error) {
-      console.error('Error fetching place details:', error);
-      setError('Error fetching place details. Please try again.');
+  
+      if (response.data) {
+        const place = response.data; // Assuming API now returns a single place
+        setPlaces([place]); // Wrap in an array for consistent UI rendering
+        console.log('Place:', place);
+      } else {
+        setError('No place found for this city.');
+      }
+    } catch (err) {
+      console.error('Error fetching place details:', err);
+      setError('Failed to fetch place details. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  const calculateFontSize = (text: string): number => {
+    const baseSize = 24; // Default size
+    const maxLength = 50; // Adjust this based on expected length
+    return text.length > maxLength ? baseSize - (text.length - maxLength) / 2 : baseSize;
+  };
+  
   return (
     <div className="place-details-container">
       <h1>Search for a Place</h1>
@@ -33,41 +46,45 @@ const PlaceDetails: React.FC = () => {
         type="text"
         value={placeName}
         onChange={(e) => setPlaceName(e.target.value)}
-        placeholder="Enter a place name"
+        placeholder="Enter a city name"
         className="search-input"
       />
-      <button onClick={handleSearch} className="search-button">Search</button>
+      <button onClick={handleSearch} className="search-button">
+        Search
+      </button>
 
       {loading && <p>Loading...</p>}
       {error && <p className="error-message">{error}</p>}
-      {placeDetails && (
-        <div className="details-container">
-          <h2>{placeDetails.formatted_address}</h2> {/* Use formatted_address here */}
-          <div className="map-photo-container">
-            <div className="map-container">
-              <iframe
-                title="Google Map"
-                src={`https://www.google.com/maps/embed/v1/view?key=AIzaSyAGgVzFnyAu6Na2G2-wu5yAmLDpoptgCJw&center=${placeDetails.geometry.location.lat},${placeDetails.geometry.location.lng}&zoom=11`}
-                width="600" // Adjust width
-                height="400" // Adjust height
-                style={{ border: 0 }}
-                allowFullScreen
-              />
-            </div>
-            <div className="photo-container">
-              {placeDetails.photos && placeDetails.photos.length > 0 ? (
-                <img
-                  src={`https://maps.googleapis.com/maps/api/place/photo?maxwidth=800&photoreference=${placeDetails.photos[0].photo_reference}&key=AIzaSyAGgVzFnyAu6Na2G2-wu5yAmLDpoptgCJw`}
-                  alt={placeDetails.name}
-                  className="place-photo"
-                />
-              ) : (
-                <p>No photos available for this place.</p>
-              )}
-            </div>
+      
+      <div className="places-list">
+        {places.map((place, index) => (
+          <div key={place.id} className="place-card">
+            <h3
+              className="place-address"
+              style={{
+                backgroundImage: place.icon 
+                  ? `url('${place.icon}')`
+                  : undefined,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat',
+                aspectRatio: '16 / 9', // Force wide aspect ratio
+                fontSize: `${calculateFontSize(place.address || '')}px`, // Dynamic font size
+                padding: '20px',
+                borderRadius: '10px',
+                textShadow: '1px 1px 5px black', 
+                color: 'white',
+              }}
+            >
+              {place.address}
+            </h3>
+
+            {index === 0 && (
+              <MapComponent lat={place.latitude!} lng={place.longitude!} />
+            )}
           </div>
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 };
