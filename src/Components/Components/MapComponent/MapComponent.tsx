@@ -15,7 +15,7 @@ interface MapProps {
             title="Google Map"
             src={mapUrl}
             width="100%"
-            height="300"
+            height="250"
             style={{ border: 0 }}
             allowFullScreen
             loading="lazy"

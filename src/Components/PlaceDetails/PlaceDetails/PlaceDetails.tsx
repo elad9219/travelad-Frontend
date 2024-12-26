@@ -1,27 +1,58 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import './PlaceDetails.css';
 import MapComponent from '../../Components/MapComponent/MapComponent';
-import { City } from '../../../modal/City';
 
 const PlaceDetails: React.FC = () => {
-  const [placeName, setPlaceName] = useState(''); // For user input
-  const [places, setPlaces] = useState<City[]>([]); // For API results
-  const [loading, setLoading] = useState(false); // For loading state
-  const [error, setError] = useState(''); // For error messages
+  const [placeName, setPlaceName] = useState('');
+  const [places, setPlaces] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [recentCities, setRecentCities] = useState<string[]>([]);
+  const [showRecentCities, setShowRecentCities] = useState(false);
 
-  const handleSearch = async () => {
+  // Fetch recent cities
+  const fetchRecentCities = async () => {
+    try {
+      const response = await axios.get('http://localhost:8080/cache/cities/autocomplete');
+      if (Array.isArray(response.data)) {
+        setRecentCities(Array.from(new Set(response.data)).slice(0, 8)); // Remove duplicates and limit to 8
+      } else {
+        setRecentCities([]);
+      }
+    } catch (err) {
+      console.error('Error fetching recent cities:', err);
+    }
+  };
+
+  const handleSearchBarFocus = async () => {
+    await fetchRecentCities();
+    setShowRecentCities(true);
+  };
+
+  const handleSearchBarBlur = () => {
+    setTimeout(() => setShowRecentCities(false), 200); // Delay hiding to allow clicks
+  };
+
+  const handleSearch = async (e: React.FormEvent | null, city?: string) => {
+    if (e) e.preventDefault(); // Prevent default form submission
+    const searchCity = city || placeName; // Use the provided city or current input value
+    if (!searchCity) return;
+
     setLoading(true);
     setError('');
+    setShowRecentCities(false); // Hide the recent cities list when searching
     try {
       const response = await axios.get('http://localhost:8080/api/places/search', {
-        params: { city: placeName },
+        params: { city: searchCity },
       });
-  
+
       if (response.data) {
-        const place = response.data; // Assuming API now returns a single place
-        setPlaces([place]); // Wrap in an array for consistent UI rendering
-        console.log('Place:', place);
+        const place = response.data;
+        setPlaces([place]);
+        setRecentCities((prevCities) =>
+          Array.from(new Set([searchCity, ...prevCities])).slice(0, 8)
+        );
       } else {
         setError('No place found for this city.');
       }
@@ -33,55 +64,101 @@ const PlaceDetails: React.FC = () => {
     }
   };
 
-  const calculateFontSize = (text: string): number => {
-    const baseSize = 24; // Default size
-    const maxLength = 50; // Adjust this based on expected length
-    return text.length > maxLength ? baseSize - (text.length - maxLength) / 2 : baseSize;
+  const handleCityClick = (city: string) => {
+    setPlaceName(city); // Update the search bar with the selected city
+    setShowRecentCities(false); // Hide suggestions
+    handleSearch(null, city); // Trigger the search with the selected city
   };
-  
+
+  const handleRemoveCity = async (city: string) => {
+    try {
+      await axios.delete('http://localhost:8080/cache/cities', {
+        params: { city },
+      });
+      setRecentCities((prevCities) => prevCities.filter((item) => item !== city));
+    } catch (err) {
+      console.error('Error removing city:', err);
+    }
+  };
+
+  const handleClearHistory = async () => {
+    try {
+      await axios.delete('http://localhost:8080/cache/cities/clear');
+      setRecentCities([]);
+    } catch (err) {
+      console.error('Error clearing city history:', err);
+    }
+  };
+
+  const handlePlaceClick = (place: any) => {
+    setPlaceName(place.name || place.address); // Assuming place has name or address to search
+    handleSearch(new Event('submit') as unknown as React.FormEvent); // Cast to match handleSearch signature
+  };
+
   return (
     <div className="place-details-container">
-      <h1>Search for a Place</h1>
-      <input
-        type="text"
-        value={placeName}
-        onChange={(e) => setPlaceName(e.target.value)}
-        placeholder="Enter a city name"
-        className="search-input"
-      />
-      <button onClick={handleSearch} className="search-button">
-        Search
-      </button>
+      <div className="search-section">
+        <h1>Search for a Place</h1>
+        <form onSubmit={handleSearch} className="search-bar">
+          <input
+            type="text"
+            value={placeName}
+            onChange={(e) => setPlaceName(e.target.value)}
+            onFocus={handleSearchBarFocus}
+            onBlur={handleSearchBarBlur}
+            placeholder="Enter a city name"
+            className="search-input"
+          />
+          <button type="submit" className="search-button">
+            Search
+          </button>
+        </form>
+        {showRecentCities && recentCities.length > 0 && (
+          <div className="recent-cities expanded">
+            <ul>
+              {recentCities.map((city, index) => (
+                <li key={index} onClick={() => handleCityClick(city)} style={{ cursor: 'pointer' }}>
+                  <span>{city}</span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent the click from bubbling up to the <li> when removing
+                      handleRemoveCity(city);
+                    }}
+                    className="remove-btn"
+                  >
+                    X
+                  </button>
+                </li>
+              ))}
+            </ul>
+            <button onClick={handleClearHistory} className="clear-history-btn">
+              Clear History
+            </button>
+          </div>
+        )}
+      </div>
 
       {loading && <p>Loading...</p>}
       {error && <p className="error-message">{error}</p>}
-      
+
       <div className="places-list">
-        {places.map((place, index) => (
-          <div key={place.id} className="place-card">
-            <h3
-              className="place-address"
+        {places.map((place) => (
+          <div
+            key={place.id}
+            className="place-details"
+            onClick={() => handlePlaceClick(place)}
+          >
+            <div
+              className="place-image"
               style={{
-                backgroundImage: place.icon 
-                  ? `url('${place.icon}')`
-                  : undefined,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                aspectRatio: '16 / 9', // Force wide aspect ratio
-                fontSize: `${calculateFontSize(place.address || '')}px`, // Dynamic font size
-                padding: '20px',
-                borderRadius: '10px',
-                textShadow: '1px 1px 5px black', 
-                color: 'white',
+                backgroundImage: `url('${place.icon}')`,
               }}
             >
-              {place.address}
-            </h3>
-
-            {index === 0 && (
+              <div className="place-address">{place.address}</div>
+            </div>
+            <div className="place-map">
               <MapComponent lat={place.latitude!} lng={place.longitude!} />
-            )}
+            </div>
           </div>
         ))}
       </div>
