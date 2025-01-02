@@ -38,7 +38,7 @@
 
 /* Search bar input */
 .search-input {
-  width: 13%;
+  width: 12%;
   padding: 15px;
   font-size: 1rem;
   border-radius: 25px;
@@ -160,8 +160,6 @@
   height: 250px;
   background-size: cover;
   background-position: center;
-  background-image-rendering: -webkit-optimize-contrast;
-  background-image-rendering: optimize-contrast;
   image-rendering: -webkit-optimize-contrast;
   position: relative;
   z-index: 0;
@@ -192,4 +190,35 @@
   border-radius: 10px;
   overflow: hidden;
   position: relative;
+}
+
+/* ... your existing CSS ... */
+.weather-info {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+.weather-icon img {
+  width: 80px;
+  height: 80px;
+  margin-right: 20px;
+}
+
+.weather-details {
+  text-align: left;
+}
+
+.weather-details h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2em;
+}
+
+.weather-details p {
+  margin: 5px 0;
+  font-size: 0.9em;
 }
