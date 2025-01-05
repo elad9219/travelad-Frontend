@@ -1,26 +1,43 @@
 .weather-container {
     text-align: left;
-    padding: 20px;
+    padding: 30px;
     background-color: #f4f4f4;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    
-    .weather-info {
-        font-size: 1rem;
-    }
-    
-    .weather-info h2 {
-        font-size: 1.5rem;
-        margin-bottom: 10px;
-    }
-    
-    .weather-info p {
-        margin: 5px 0;
-    }
-    
-    .error-message {
-        color: red;
-        font-weight: bold;
-    }
-    
+    position: absolute; /* Position it absolutely */
+    left: 0px; /* Adjust this to move from left */
+    top: 280px; /* Adjust this to move from top */
+    z-index: 2; 
+    width: 485px;
+}
+
+/* Style the weather info directly */
+.weather-info {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+}
+
+.weather-icon img {
+    width: 64px; /* Adjust size as per your needs */
+    height: 64px; /* Adjust size as per your needs */
+    margin-right: 10px;
+}
+
+.weather-details {
+    flex-grow: 1;
+}
+
+.weather-info h3 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+
+.weather-info p {
+    margin: 5px 0;
+}
+
+.error-message {
+    color: red;
+    font-weight: bold;
+}

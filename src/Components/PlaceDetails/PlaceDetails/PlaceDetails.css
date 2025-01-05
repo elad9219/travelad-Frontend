@@ -78,7 +78,7 @@
 /* Recent cities list */
 .recent-cities {
   position: absolute;
-  top: 100%;
+  top: 90%;
   left: 50%;
   transform: translateX(-50%);
   width: 300px;
