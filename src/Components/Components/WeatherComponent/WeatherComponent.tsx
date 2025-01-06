@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Weather } from '../../../modal/Weather';
-import './WeatherComponent.css'
+import './WeatherComponent.css';
 
 interface WeatherProps {
     city: string;
@@ -42,16 +42,19 @@ const WeatherComponent: React.FC<WeatherProps> = ({ city }) => {
     if (!weather) return <p>No weather data available</p>;
 
     const weatherIcon = weather.conditionIcon ? `http:${weather.conditionIcon}` : '';
+    const conditionClass = weather.condition
+        ? weather.condition.toLowerCase().replace(/\s+/g, '-') // Convert to lowercase and replace spaces with hyphens
+        : 'default';
 
     return (
-        <div className="weather-container">  {/* Add this wrapper */}
+        <div className={`weather-container ${conditionClass}`}>
             <div className="weather-info">
                 <div className="weather-icon">
-                    <img src={weatherIcon} alt={weather.condition} />
+                    <img src={weatherIcon} alt={weather.condition || 'Weather condition'} />
                 </div>
                 <div className="weather-details">
                     <h3>{weather.city}, {weather.country}</h3>
-                    <p>Current: {weather.temperatureC}°C / {weather.temperatureF}°F</p>
+                    <p><span>{weather.temperatureC}°C</span></p>
                     <p>Condition: {weather.condition}</p>
                     <p>Wind Speed: {weather.windSpeedKph} km/h</p>
                     <p>Humidity: {weather.humidity}%</p>

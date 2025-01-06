@@ -1,26 +1,136 @@
 .weather-container {
     text-align: left;
-    padding: 30px;
-    background-color: #f4f4f4;
+    padding: 20px;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    position: absolute; /* Position it absolutely */
-    left: 0px; /* Adjust this to move from left */
-    top: 280px; /* Adjust this to move from top */
-    z-index: 2; 
-    width: 485px;
+    position: absolute;
+    left: 0px;
+    top: 280px;
+    z-index: 2;
+    width: 505px;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    transition: background 0.5s ease;
+    color: #ffffff;
+    overflow: hidden;
+
+    /* Semi-transparent overlay for better text readability */
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 10px;
+        z-index: -1;
+    }
 }
 
-/* Style the weather info directly */
+/* Default background */
+.weather-container.default {
+    background-color: #f4f4f4;
+}
+
+/* Weather conditions */
+.weather-container.sunny {
+    background-image: url('https://images.pexels.com/photos/3768/sky-sunny-clouds-cloudy.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.cloudy {
+    background-image: url('https://images.pexels.com/photos/414634/pexels-photo-414634.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.rain {
+    background-image: url('https://images.pexels.com/photos/1028600/pexels-photo-1028600.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.snow {
+    background-image: url('https://images.pexels.com/photos/773953/pexels-photo-773953.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.night {
+    background-image: url('https://images.pexels.com/photos/813269/pexels-photo-813269.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.patchy-light-rain {
+    background-image: url('https://images.pexels.com/photos/1202840/pexels-photo-1202840.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.partly-cloudy {
+    background-image: url('https://images.pexels.com/photos/19670/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.clear {
+    background-image: url('https://images.pexels.com/photos/281260/pexels-photo-281260.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.overcast {
+    background-image: url('https://images.pexels.com/photos/3742711/pexels-photo-3742711.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.light-drizzle {
+    background-image: url('https://images.pexels.com/photos/1249735/pexels-photo-1249735.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.moderate-or-heavy-rain-in-area-with-thunder {
+    background-image: url('https://images.pexels.com/photos/4871395/pexels-photo-4871395.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.light-rain {
+    background-image: url('https://images.pexels.com/photos/311039/pexels-photo-311039.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.light-snow-showers {
+    background-image: url('https://images.pexels.com/photos/753426/pexels-photo-753426.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.light-snow {
+    background-image: url('https://images.pexels.com/photos/30015444/pexels-photo-30015444/free-photo-of-frost-covered-evergreen-branch-in-winter.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.light-freezing-rain {
+    background-image: url('https://i.postimg.cc/xCbrYtLB/image.jpg');
+}
+
+.weather-container.moderate-rain {
+    background-image: url('https://i.postimg.cc/ry31KgxQ/image.jpg');
+}
+
+.weather-container.mist {
+    background-image: url('https://images.pexels.com/photos/2529973/pexels-photo-2529973.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.fog {
+    background-image: url('https://images.pexels.com/photos/978844/pexels-photo-978844.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.patchy-rain-nearby {
+    background-image: url('https://images.pexels.com/photos/459451/pexels-photo-459451.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.patchy-snow-possible {
+    background-image: url('https://images.pexels.com/photos/30015442/pexels-photo-30015442/free-photo-of-frosty-leaf-on-winter-branch-with-blurred-background.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
+.weather-container.light-rain-shower {
+    background-image: url('https://images.pexels.com/photos/7815649/pexels-photo-7815649.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+}
+
 .weather-info {
     display: flex;
     align-items: center;
-    font-size: 1rem;
+    font-size: 0.9rem;
+    z-index: 1;
+    width: 70%;
+    transform: translateX(50px) translateY(-15px);
 }
 
 .weather-icon img {
-    width: 64px; /* Adjust size as per your needs */
-    height: 64px; /* Adjust size as per your needs */
+    width: 50px;
+    height: 50px;
     margin-right: 10px;
 }
 
@@ -28,16 +138,20 @@
     flex-grow: 1;
 }
 
+.weather-info h3, .weather-info p {
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .weather-info h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
+    font-size: 1.2rem;
+    margin-bottom: 5px;
 }
 
 .weather-info p {
-    margin: 5px 0;
+    margin: 3px 0;
 }
 
-.error-message {
-    color: red;
-    font-weight: bold;
+/* Highlight temperature */
+.weather-info p span {
+    font-size: 2rem;
 }
