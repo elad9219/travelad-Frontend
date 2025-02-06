@@ -1,0 +1,82 @@
+.flights-container {
+    position: absolute;
+    top: 78.8%; /* Keep flights in a fixed area */
+    left: 50.5%; /* Matches design alignment */
+    width: 48%;
+    height: 240px;
+    margin-top: 20px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow-y: auto;
+    box-sizing: border-box;
+    z-index: 1;
+    }
+    
+    /* Flights title */
+    .flights-title {
+        text-align: center;
+        left: 30%;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    
+    .flight-item {
+        padding: 10px 15px;
+        margin: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #fff;
+        cursor: pointer;
+        transition: box-shadow 0.3s ease;
+    }
+    
+    .flight-item:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Flight details */
+    .flight-summary {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #555;
+    }
+    
+    .stop-indicator {
+        color: #555;
+        margin-left: 10px; /* Space between destination and stops */
+    }
+    
+    /* Green text for direct flights */
+    .direct-flight {
+        color: green;
+        font-weight: bold;
+    }
+    
+    /* Highlight stops in red */
+    .stop-indicator.with-stops {
+        color: red;
+        font-weight: bold;
+    }
+    
+    .no-flights-message {
+        text-align: center;
+        font-size: 1.2rem;
+        color: #666;
+        margin: 20px 0;
+    }
+    
+    .return-flight-summary {
+        margin-top: 5px;
+        font-size: 0.9rem;
+        color: #555;
+    }
+    
+    .flight-item.return-flight {
+        height: auto;
+        min-height: calc(2 * 60px); /* Ensure minimum height is double for return flights */
+    }
