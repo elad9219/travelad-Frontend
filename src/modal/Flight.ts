@@ -6,6 +6,8 @@ export class FlightSegmentDto {
 }
 
 export class FlightOfferDto {
-    segments?: FlightSegmentDto[];
+    outboundSegments?: FlightSegmentDto[];
+    returnSegments?: FlightSegmentDto[];
     price?: number;
 }  
+
