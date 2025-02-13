@@ -1,113 +1,185 @@
 .flights-container {
-    position: absolute;
-    top: 78.8%;
-    left: 50.5%;
-    width: 48%;
-    height: 240px;
-    margin-top: 20px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    overflow-y: auto;
-    box-sizing: border-box;
-    z-index: 1;
-    padding: 8px;
-  }
-  
-  .flights-title {
-    text-align: center;
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 4px;
-  }
-  
-  .flight-item {
-    padding: 6px 8px;
-    margin: 4px 0;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #fff;
-    cursor: pointer;
-    transition: box-shadow 0.3s ease;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .flight-item:hover {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .flight-summary {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: #555;
-  }
-  
-  .flight-summary-details {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-  }
-  
-  .summary-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 2px 0;
-  }
-  
-  .summary-left {
-    flex: 1;
-    text-align: left;
-    font-weight: bold;
-  }
-  
-  .summary-center {
-    flex: 1;
-    text-align: center;
-    font-size: 0.9rem;
-    color: #666;
-  }
-  
-  .flight-price {
-    flex: 0 0 80px;
-    text-align: right;
-    font-size: 1.1rem;
-    font-weight: bold;
-  }
-  
-  .direct-flight {
-    color: green;
-    font-weight: bold;
-  }
-  
-  .with-stops {
-    color: red;
-    font-weight: bold;
-  }
-  
-  .flight-details {
-    margin-top: 4px;
-    font-size: 0.85rem;
-    color: #555;
-    border-top: 1px solid #eee;
-    padding-top: 4px;
-  }
-  
-  .leg-details {
-    margin-top: 4px;
-  }
-  
-  .leg-details h4 {
-    margin: 4px 0;
-    font-size: 1rem;
-    color: #333;
-  }
-  
-  .segment-detail {
-    margin-top: 4px;
-  }
-  
+  position: absolute;
+  top: 78.8%;
+  left: 50.5%;
+  width: 48%;
+  height: 240px;
+  margin-top: 20px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  z-index: 1;
+  padding: 8px;
+}
+
+.flights-header {
+  position: relative;
+  width: 100%;
+  padding: 8px 0;
+  text-align: center;
+}
+
+.flights-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.advanced-search-toggle {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(20px);
+  font-size: 0.9rem;
+  background: none;
+  border: none;
+  color: #0077cc;
+  cursor: pointer;
+}
+
+.advanced-search-form {
+  width: 90%;
+  max-width: 400px;
+  background-color: #eef7ff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin: 10px auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  box-sizing: border-box;
+}
+
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1 1 120px;
+}
+
+.search-field label {
+  font-size: 0.9rem;
+  color: #333;
+  min-width: 80px;
+}
+
+.search-field input {
+  flex: 1;
+  padding: 4px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.radio-field {
+  flex: 1 1 100%;
+}
+
+.advanced-search-btn {
+  padding: 4px 8px;
+  font-size: 0.9rem;
+  background-color: #0077cc;
+  border: none;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  align-self: flex-end;
+  width: 100%;
+}
+
+.advanced-search-btn:hover {
+  background-color: #005fa3;
+}
+
+.flight-item {
+  padding: 6px 8px;
+  margin: 4px 0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.flight-item:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.flight-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.flight-summary-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 2px 0;
+}
+
+.summary-left {
+  flex: 1;
+  text-align: left;
+  font-weight: bold;
+}
+
+.summary-center {
+  flex: 1;
+  text-align: left;
+  font-size: 0.9rem;
+  color: #666;
+  padding-left: 20px;
+}
+
+.flight-price {
+  flex: 0 0 80px;
+  text-align: right;
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+
+.direct-flight {
+  color: green;
+  font-weight: bold;
+}
+
+.with-stops {
+  color: red;
+  font-weight: bold;
+}
+
+.flight-details {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  color: #555;
+  border-top: 1px solid #eee;
+  padding-top: 4px;
+}
+
+.leg-details {
+  margin-top: 4px;
+}
+
+.leg-details h4 {
+  margin: 4px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.segment-detail {
+  margin-top: 4px;
+}
