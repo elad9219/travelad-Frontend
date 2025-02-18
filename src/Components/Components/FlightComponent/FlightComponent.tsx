@@ -58,6 +58,8 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     flightType: 'roundTrip'
   });
   const [advancedMode, setAdvancedMode] = useState(false);
+  // Save adult count from advanced search (for price calculation)
+  const [adultCount, setAdultCount] = useState<number>(1);
   const [iataMapping, setIataMapping] = useState<IataMapping>({});
 
   // Load IATA mapping from backend on mount.
@@ -120,16 +122,14 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  // Generic handler for text/select inputs.
   const handleAdvancedParamsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setAdvancedParams(prev => ({ ...prev, [name]: value }));
   };
 
-  // New handler for "adults" that allows only a single digit between 1 and 9.
+  // Handler for adults input that allows only a single digit between 1 and 9.
   const handleAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
-    // Allow empty value (to let the user delete) or a single digit between 1 and 9.
     if (value === '' || /^[1-9]$/.test(value)) {
       setAdvancedParams(prev => ({ ...prev, adults: value }));
     }
@@ -138,6 +138,8 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
   const handleAdvancedSearch = async () => {
     setShowAdvancedSearch(false);
     setAdvancedMode(true);
+    const count = parseInt(advancedParams.adults, 10) || 1;
+    setAdultCount(count);
     const params = {
       origin: advancedParams.origin,
       destination: advancedParams.destination,
@@ -214,6 +216,25 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     );
   };
 
+  // Render price: if advancedMode is active and adultCount > 1, show per-person price in a smaller font and total price below.
+  const renderPrice = (flight: Flight): JSX.Element => {
+    if (advancedMode && adultCount > 1 && flight.price !== undefined) {
+      const perPerson = flight.price / adultCount;
+      return (
+        <div className="flight-price">
+          <div className="price-per-person"><span className='per-person'>per person: </span>${perPerson.toFixed(2)}</div>
+          <div className="total-price">Total: ${flight.price.toFixed(2)}</div>
+        </div>
+      );
+    } else {
+      return (
+        <div className="flight-price">
+          {flight.price ? `$${flight.price.toFixed(2)}` : 'N/A'}
+        </div>
+      );
+    }
+  };
+
   const renderFlightItem = (flight: Flight, index: number): JSX.Element => {
     const isRoundTrip = flight.returnSegments && flight.returnSegments.length > 0;
     return (
@@ -233,7 +254,7 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
               flight.segments && renderSummaryRow(flight.segments)
             )}
           </div>
-          <div className="flight-price">{flight.price ? `$${flight.price.toFixed(2)}` : 'N/A'}</div>
+          {renderPrice(flight)}
         </div>
         {expandedIndex === index && (
           <div className="flight-details">

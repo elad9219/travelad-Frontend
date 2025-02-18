@@ -148,11 +148,28 @@
   padding-left: 20px;
 }
 
+/* Price rendering styles */
 .flight-price {
-  flex: 0 0 80px;
   text-align: right;
-  font-size: 1.1rem;
+  font-size: 1.1rem;  
   font-weight: bold;
+  color: #333;
+}
+
+.price-per-person {
+  font-size: 1.1rem;  /* smaller font for per person price */
+  font-weight: bold;
+  color: #333;
+}
+.per-person{
+  font-size: 0.8rem;
+  font-weight: normal;
+}
+
+.total-price {
+  font-size: 0.8rem;  /* total price in regular size */
+  color: #333;
+  font-weight: lighter;
 }
 
 .stops {
