@@ -3,13 +3,12 @@ import axios from 'axios';
 import Loader from '../Loader/Loader';
 import './FlightComponent.css';
 
-const formatDateTime = (dateTime: string): string => {
-  const date = new Date(dateTime);
-  const formattedDate = `${date.getDate().toString().padStart(2, '0')}-${(date.getMonth() + 1)
-    .toString().padStart(2, '0')}-${date.getFullYear()}`;
-  const formattedTime = date.toTimeString().slice(0, 5);
-  // Return time first then date.
-  return `${formattedTime} ${formattedDate}`;
+const formatDateTime = (dateTime: string): { date: string; time: string } => {
+  const dateObj = new Date(dateTime);
+  const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1)
+    .toString().padStart(2, '0')}-${dateObj.getFullYear()}`;
+  const formattedTime = dateObj.toTimeString().slice(0, 5);
+  return { date: formattedDate, time: formattedTime };
 };
 
 interface FlightSegment {
@@ -20,9 +19,7 @@ interface FlightSegment {
 }
 
 interface Flight {
-  // For one-way flights, backend returns only "segments"
   segments?: FlightSegment[];
-  // For round-trip flights, backend returns these
   outboundSegments?: FlightSegment[];
   returnSegments?: FlightSegment[];
   price?: number;
@@ -41,6 +38,11 @@ interface AdvancedSearchParams {
   flightType: 'roundTrip' | 'oneWay';
 }
 
+// Mapping: key = AIRPORT CODE, value = FULL NAME
+interface IataMapping {
+  [iataCode: string]: string;
+}
+
 const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
@@ -55,15 +57,35 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     adults: '1',
     flightType: 'roundTrip'
   });
-  // advancedMode: when true, we use advanced search results.
   const [advancedMode, setAdvancedMode] = useState(false);
+  const [iataMapping, setIataMapping] = useState<IataMapping>({});
 
-  // When main search city changes, clear advanced mode.
+  // Load IATA mapping from backend on mount.
+  useEffect(() => {
+    const fetchIataMapping = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/iata-codes');
+        const mapping: IataMapping = {};
+        // Build mapping: key = AIRPORT CODE, value = FULL NAME
+        response.data.forEach((entry: any) => {
+          if (entry["AIRPORT CODE"] && entry["FULL NAME"]) {
+            mapping[entry["AIRPORT CODE"].toUpperCase()] = entry["FULL NAME"];
+          }
+        });
+        setIataMapping(mapping);
+        console.log("IATA Mapping:", mapping);
+      } catch (err) {
+        console.error('Error fetching IATA mapping:', err);
+      }
+    };
+    fetchIataMapping();
+  }, []);
+
   useEffect(() => {
     setAdvancedMode(false);
   }, [city]);
 
-  // Default search (only if not in advanced mode)
+  // Default search.
   useEffect(() => {
     if (!city) return;
     if (advancedMode) return;
@@ -81,13 +103,7 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
         const departDate = departDateObj.toISOString().split('T')[0];
         const returnDate = returnDateObj.toISOString().split('T')[0];
         const response = await axios.get('http://localhost:8080/flights', {
-          params: {
-            city,
-            origin,
-            departureDate: departDate,
-            returnDate: returnDate,
-            adults,
-          },
+          params: { city, origin, departureDate: departDate, returnDate, adults },
         });
         setFlights(response.data || []);
       } catch (err) {
@@ -110,77 +126,84 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
   };
 
   const handleAdvancedSearch = async () => {
-    // Hide advanced search panel immediately.
     setShowAdvancedSearch(false);
-    // Set advanced mode so default search doesn't override.
     setAdvancedMode(true);
     const params = {
       origin: advancedParams.origin,
       destination: advancedParams.destination,
       departDate: advancedParams.departDate,
       returnDate: advancedParams.flightType === 'roundTrip' ? advancedParams.returnDate : '',
-      adults: advancedParams.adults
+      adults: advancedParams.adults,
     };
     setLoading(true);
     setError('');
     setFlights([]);
     try {
-      const response = await axios.get('http://localhost:8080/flights/advancedFlightSearch', {
-        params,
-      });
+      const response = await axios.get('http://localhost:8080/flights/advancedFlightSearch', { params });
       setFlights(response.data || []);
     } catch (err) {
       console.error('Error fetching advanced flights:', err);
       setError('An error occurred while fetching flights.');
     } finally {
       setLoading(false);
-      // Reset advanced search parameters for future searches.
       setAdvancedParams({
         origin: 'Tel Aviv',
         destination: '',
         departDate: '',
         returnDate: '',
         adults: '1',
-        flightType: 'roundTrip'
+        flightType: 'roundTrip',
       });
     }
   };
 
-  // Render a summary row for a leg.
+  // Helper: Render IATA code with tooltip.
+  const renderIataCode = (code: string): JSX.Element => {
+    const key = code.trim().toUpperCase();
+    const fullName = iataMapping[key] || code;
+    console.log("Rendering IATA Code:", key, "->", fullName);
+    return <span className="iata-tooltip" title={fullName}>{code}</span>;
+  };
+
   const renderSummaryRow = (leg: FlightSegment[]): JSX.Element => {
-    const origin = leg[0].origin;
-    const destination = leg[leg.length - 1].destination;
+    const origin = renderIataCode(leg[0].origin);
+    const destination = renderIataCode(leg[leg.length - 1].destination);
     const stopsCount = leg.length - 1;
     const stopsText = stopsCount === 0 ? 'Direct Flight' : `${stopsCount} Stop${stopsCount > 1 ? 's' : ''}`;
     const stopsClass = stopsCount === 0 ? 'direct-flight' : 'with-stops';
+    const { date, time } = formatDateTime(leg[0].departureDate);
     return (
       <div className="summary-row">
         <div className="summary-left">
           <span className="route">{origin} → {destination}</span>
           <span className={`stops ${stopsClass}`}> {stopsText}</span>
         </div>
-        <div className="summary-center">{formatDateTime(leg[0].departureDate)}</div>
+        <div className="summary-center">
+          <span className="flight-time">{time}</span> {date}
+        </div>
       </div>
     );
   };
 
-  // Render detailed information for a leg.
   const renderLegDetails = (leg: FlightSegment[], label: string): JSX.Element => {
     return (
       <div className="leg-details">
         <h4>{label}</h4>
-        {leg.map((seg, idx) => (
-          <div key={idx} className="segment-detail">
-            <p>{seg.origin} → {seg.destination}</p>
-            <p>Departure: {formatDateTime(seg.departureDate)}</p>
-            <p>Arrival: {formatDateTime(seg.arrivalDate)}</p>
-          </div>
-        ))}
+        {leg.map((seg, idx) => {
+          const departure = formatDateTime(seg.departureDate);
+          const arrival = formatDateTime(seg.arrivalDate);
+          return (
+            <div key={idx} className="segment-detail">
+              <p>{renderIataCode(seg.origin)} → {renderIataCode(seg.destination)}</p>
+              <p>Departure: {departure.time} {departure.date}</p>
+              <p>Arrival: {arrival.time} {arrival.date}</p>
+            </div>
+          );
+        })}
       </div>
     );
   };
 
-  // Render a flight item.
   const renderFlightItem = (flight: Flight, index: number): JSX.Element => {
     const isRoundTrip = flight.returnSegments && flight.returnSegments.length > 0;
     return (
@@ -210,13 +233,17 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
                 {renderLegDetails(flight.returnSegments!, 'Return')}
               </>
             ) : (
-              flight.segments && flight.segments.map((seg, idx) => (
-                <div key={idx} className="segment-detail">
-                  <p>{seg.origin} → {seg.destination}</p>
-                  <p>Departure: {formatDateTime(seg.departureDate)}</p>
-                  <p>Arrival: {formatDateTime(seg.arrivalDate)}</p>
-                </div>
-              ))
+              flight.segments && flight.segments.map((seg, idx) => {
+                const departure = formatDateTime(seg.departureDate);
+                const arrival = formatDateTime(seg.arrivalDate);
+                return (
+                  <div key={idx} className="segment-detail">
+                    <p>{renderIataCode(seg.origin)} → {renderIataCode(seg.destination)}</p>
+                    <p>Departure: {departure.time} {departure.date}</p>
+                    <p>Arrival: {arrival.time} {arrival.date}</p>
+                  </div>
+                );
+              })
             )}
           </div>
         )}
