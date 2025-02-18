@@ -33,7 +33,7 @@
 
 .advanced-search-toggle {
   position: absolute;
-  right: 16px;
+  left: 400px;
   top: 50%;
   transform: translateY(20px);
   font-size: 0.9rem;
@@ -200,4 +200,5 @@
 .iata-tooltip {
   border-bottom: 1px dotted #000;
   cursor: help;
+  font-weight: bold;
 }

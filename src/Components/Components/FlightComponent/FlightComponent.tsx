@@ -66,7 +66,7 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
       try {
         const response = await axios.get('http://localhost:8080/iata-codes');
         const mapping: IataMapping = {};
-        // Build mapping: key = AIRPORT CODE, value = FULL NAME
+        // Build mapping: key = AIRPORT CODE, value = FULL NAME.
         response.data.forEach((entry: any) => {
           if (entry["AIRPORT CODE"] && entry["FULL NAME"]) {
             mapping[entry["AIRPORT CODE"].toUpperCase()] = entry["FULL NAME"];
@@ -120,9 +120,19 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
+  // Generic handler for text/select inputs.
   const handleAdvancedParamsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setAdvancedParams(prev => ({ ...prev, [name]: value }));
+  };
+
+  // New handler for "adults" that allows only a single digit between 1 and 9.
+  const handleAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = e.target;
+    // Allow empty value (to let the user delete) or a single digit between 1 and 9.
+    if (value === '' || /^[1-9]$/.test(value)) {
+      setAdvancedParams(prev => ({ ...prev, adults: value }));
+    }
   };
 
   const handleAdvancedSearch = async () => {
@@ -312,8 +322,10 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
               type="number"
               name="adults"
               value={advancedParams.adults}
-              onChange={handleAdvancedParamsChange}
+              onChange={handleAdultsChange}
               style={{ maxWidth: '80px' }}
+              min="1"
+              max="9"
             />
           </div>
           <div className="search-field radio-field">
