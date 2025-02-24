@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Loader from '../Loader/Loader';
 import './FlightComponent.css';
+import { AdvancedSearchParams, Flight, FlightSegment, IataMapping } from '../../../modal/Flight';
 
+// Format a date-time string.
 const formatDateTime = (dateTime: string): { date: string; time: string } => {
   const dateObj = new Date(dateTime);
   const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}-${(dateObj.getMonth() + 1)
@@ -11,39 +13,41 @@ const formatDateTime = (dateTime: string): { date: string; time: string } => {
   return { date: formattedDate, time: formattedTime };
 };
 
-interface FlightSegment {
-  origin: string;
-  destination: string;
-  departureDate: string;
-  arrivalDate: string;
-}
+// Convert ISO-8601 duration to "H:MMh" format.
+const formatDuration = (duration?: string): string => {
+  if (!duration) return 'N/A';
+  const match = duration.match(/PT(\d+H)?(\d+M)?/);
+  if (!match) return '0:00h';
+  const hours = match[1] ? parseInt(match[1].replace('H', '')) : 0;
+  const minutes = match[2] ? parseInt(match[2].replace('M', '')) : 0;
+  return `${hours}:${minutes.toString().padStart(2, '0')}h`;
+};
 
-interface Flight {
-  segments?: FlightSegment[];
-  outboundSegments?: FlightSegment[];
-  returnSegments?: FlightSegment[];
-  price?: number;
-}
+// Calculate total duration from segments (fallback if itinerary duration is not provided).
+const calculateTotalDuration = (segments: FlightSegment[]): string => {
+  let totalMinutes = 0;
+  segments.forEach(segment => {
+    const match = segment.duration.match(/PT(\d+H)?(\d+M)?/);
+    if (match) {
+      const hours = match[1] ? parseInt(match[1].replace('H', '')) : 0;
+      const minutes = match[2] ? parseInt(match[2].replace('M', '')) : 0;
+      totalMinutes += hours * 60 + minutes;
+    }
+  });
+  const totalHours = Math.floor(totalMinutes / 60);
+  const remainingMinutes = totalMinutes % 60;
+  return `${totalHours}:${remainingMinutes.toString().padStart(2, '0')}h`;
+};
 
-interface FlightsComponentProps {
-  city: string;
-}
+// Helper: Render carrier logo.
+const renderCarrierLogo = (carrierCode: string, logoUrl?: string): JSX.Element => {
+  if (logoUrl) {
+    return <img src={logoUrl} alt={carrierCode} className="carrier-logo" />;
+  }
+  return <span className="carrier-code">{carrierCode.toUpperCase()}</span>;
+};
 
-interface AdvancedSearchParams {
-  origin: string;
-  destination: string;
-  departDate: string;
-  returnDate: string;
-  adults: string;
-  flightType: 'roundTrip' | 'oneWay';
-}
-
-// Mapping: key = AIRPORT CODE, value = FULL NAME
-interface IataMapping {
-  [iataCode: string]: string;
-}
-
-const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
+const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   const [flights, setFlights] = useState<Flight[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -58,17 +62,14 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     flightType: 'roundTrip'
   });
   const [advancedMode, setAdvancedMode] = useState(false);
-  // Save adult count from advanced search (for price calculation)
   const [adultCount, setAdultCount] = useState<number>(1);
   const [iataMapping, setIataMapping] = useState<IataMapping>({});
 
-  // Load IATA mapping from backend on mount.
   useEffect(() => {
     const fetchIataMapping = async () => {
       try {
         const response = await axios.get('http://localhost:8080/iata-codes');
         const mapping: IataMapping = {};
-        // Build mapping: key = AIRPORT CODE, value = FULL NAME.
         response.data.forEach((entry: any) => {
           if (entry["AIRPORT CODE"] && entry["FULL NAME"]) {
             mapping[entry["AIRPORT CODE"].toUpperCase()] = entry["FULL NAME"];
@@ -87,7 +88,6 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     setAdvancedMode(false);
   }, [city]);
 
-  // Default search.
   useEffect(() => {
     if (!city) return;
     if (advancedMode) return;
@@ -127,7 +127,6 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     setAdvancedParams(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handler for adults input that allows only a single digit between 1 and 9.
   const handleAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     if (value === '' || /^[1-9]$/.test(value)) {
@@ -169,26 +168,35 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     }
   };
 
-  // Helper: Render IATA code with tooltip.
   const renderIataCode = (code: string): JSX.Element => {
     const key = code.trim().toUpperCase();
     const fullName = iataMapping[key] || code;
-    console.log("Rendering IATA Code:", key, "->", fullName);
     return <span className="iata-tooltip" title={fullName}>{code}</span>;
   };
 
-  const renderSummaryRow = (leg: FlightSegment[]): JSX.Element => {
+  // Render summary row with carrier logo, route, total duration, and departure time.
+  const renderSummaryRow = (leg: FlightSegment[], itineraryDuration?: string): JSX.Element => {
     const origin = renderIataCode(leg[0].origin);
     const destination = renderIataCode(leg[leg.length - 1].destination);
     const stopsCount = leg.length - 1;
     const stopsText = stopsCount === 0 ? 'Direct Flight' : `${stopsCount} Stop${stopsCount > 1 ? 's' : ''}`;
-    const stopsClass = stopsCount === 0 ? 'direct-flight' : 'with-stops';
+    const totalDuration = itineraryDuration ? formatDuration(itineraryDuration) : calculateTotalDuration(leg);
     const { date, time } = formatDateTime(leg[0].departureDate);
     return (
       <div className="summary-row">
         <div className="summary-left">
-          <span className="route">{origin} → {destination}</span>
-          <span className={`stops ${stopsClass}`}> {stopsText}</span>
+          <div className="carrier-logo-container">
+            {leg[0].carrierCode && renderCarrierLogo(leg[0].carrierCode, leg[0].airlineLogoUrl)}
+          </div>
+          <div className="route-container">
+            <div className="route">
+              {origin} <span className="arrow">→</span> {destination}
+            </div>
+            <div className="details-container">
+              <div className="duration">{totalDuration}</div>
+              <div className={`stops ${stopsCount === 0 ? 'direct-flight' : 'with-stops'}`}>{stopsText}</div>
+            </div>
+          </div>
         </div>
         <div className="summary-center">
           <span className="flight-time">{time}</span> {date}
@@ -206,9 +214,14 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
           const arrival = formatDateTime(seg.arrivalDate);
           return (
             <div key={idx} className="segment-detail">
-              <p>{renderIataCode(seg.origin)} → {renderIataCode(seg.destination)}</p>
-              <p>Departure: {departure.time} {departure.date}</p>
-              <p>Arrival: {arrival.time} {arrival.date}</p>
+              <div className="segment-route">
+                <p><strong>{renderIataCode(seg.origin)} → {renderIataCode(seg.destination)}</strong></p>
+                <p className="segment-duration">{formatDuration(seg.duration)}</p>
+              </div>
+              <p><strong>Departure:</strong> {departure.time} {departure.date} {seg.departureTerminal && `(Terminal ${seg.departureTerminal})`}</p>
+              <p><strong>Arrival:</strong> {arrival.time} {arrival.date} {seg.arrivalTerminal && `(Terminal ${seg.arrivalTerminal})`}</p>
+              <p><strong>Flight:</strong> {seg.carrierCode} {seg.flightNumber}</p>
+              <p><strong>Aircraft:</strong> {seg.aircraft}</p>
             </div>
           );
         })}
@@ -216,13 +229,12 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     );
   };
 
-  // Render price: if advancedMode is active and adultCount > 1, show per-person price in a smaller font and total price below.
   const renderPrice = (flight: Flight): JSX.Element => {
     if (advancedMode && adultCount > 1 && flight.price !== undefined) {
       const perPerson = flight.price / adultCount;
       return (
         <div className="flight-price">
-          <div className="price-per-person"><span className='per-person'>per person: </span>${perPerson.toFixed(2)}</div>
+          <div className="price-per-person"><span className="per-person">per person: </span>${perPerson.toFixed(2)}</div>
           <div className="total-price">Total: ${flight.price.toFixed(2)}</div>
         </div>
       );
@@ -238,20 +250,16 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
   const renderFlightItem = (flight: Flight, index: number): JSX.Element => {
     const isRoundTrip = flight.returnSegments && flight.returnSegments.length > 0;
     return (
-      <div
-        key={index}
-        className={`flight-item ${isRoundTrip ? 'return-flight' : ''}`}
-        onClick={() => toggleDetails(index)}
-      >
+      <div key={index} className={`flight-item ${isRoundTrip ? 'return-flight' : ''}`} onClick={() => toggleDetails(index)}>
         <div className="flight-summary">
           <div className="flight-summary-details">
             {isRoundTrip ? (
               <>
-                {renderSummaryRow(flight.outboundSegments!)}
-                {renderSummaryRow(flight.returnSegments!)}
+                {renderSummaryRow(flight.outboundSegments!, flight.outboundDuration)}
+                {renderSummaryRow(flight.returnSegments!, flight.returnDuration)}
               </>
             ) : (
-              flight.segments && renderSummaryRow(flight.segments)
+              flight.segments && renderSummaryRow(flight.segments, flight.outboundDuration)
             )}
           </div>
           {renderPrice(flight)}
@@ -264,17 +272,7 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
                 {renderLegDetails(flight.returnSegments!, 'Return')}
               </>
             ) : (
-              flight.segments && flight.segments.map((seg, idx) => {
-                const departure = formatDateTime(seg.departureDate);
-                const arrival = formatDateTime(seg.arrivalDate);
-                return (
-                  <div key={idx} className="segment-detail">
-                    <p>{renderIataCode(seg.origin)} → {renderIataCode(seg.destination)}</p>
-                    <p>Departure: {departure.time} {departure.date}</p>
-                    <p>Arrival: {arrival.time} {arrival.date}</p>
-                  </div>
-                );
-              })
+              flight.segments && renderLegDetails(flight.segments, 'Flight')
             )}
           </div>
         )}
@@ -286,10 +284,7 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
     <div className="flights-container">
       <div className="flights-header">
         <h2 className="flights-title">✈ Flights</h2>
-        <button
-          className="advanced-search-toggle"
-          onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
-        >
+        <button className="advanced-search-toggle" onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}>
           Advanced Search
         </button>
       </div>
@@ -297,93 +292,45 @@ const FlightsComponent: React.FC<FlightsComponentProps> = ({ city }) => {
         <div className="advanced-search-form">
           <div className="search-field">
             <label>Origin:</label>
-            <input
-              type="text"
-              name="origin"
-              value={advancedParams.origin}
-              onChange={handleAdvancedParamsChange}
-              placeholder="Origin (default Tel Aviv)"
-            />
+            <input type="text" name="origin" value={advancedParams.origin} onChange={handleAdvancedParamsChange} placeholder="Origin (default Tel Aviv)" />
           </div>
           <div className="search-field">
             <label>Destination:</label>
-            <input
-              type="text"
-              name="destination"
-              value={advancedParams.destination}
-              onChange={handleAdvancedParamsChange}
-              placeholder="Destination"
-            />
+            <input type="text" name="destination" value={advancedParams.destination} onChange={handleAdvancedParamsChange} placeholder="Destination" />
           </div>
           <div className="search-field">
             <label>Depart Date:</label>
-            <input
-              type="date"
-              name="departDate"
-              value={advancedParams.departDate}
-              onChange={handleAdvancedParamsChange}
-              min={new Date().toISOString().split('T')[0]}
-            />
+            <input type="date" name="departDate" value={advancedParams.departDate} onChange={handleAdvancedParamsChange} min={new Date().toISOString().split('T')[0]} />
           </div>
           {advancedParams.flightType === 'roundTrip' && (
             <div className="search-field">
               <label>Return Date:</label>
-              <input
-                type="date"
-                name="returnDate"
-                value={advancedParams.returnDate}
-                onChange={handleAdvancedParamsChange}
-                min={advancedParams.departDate || new Date().toISOString().split('T')[0]}
-              />
+              <input type="date" name="returnDate" value={advancedParams.returnDate} onChange={handleAdvancedParamsChange} min={advancedParams.departDate || new Date().toISOString().split('T')[0]} />
             </div>
           )}
           <div className="search-field">
             <label>Adults:</label>
-            <input
-              type="number"
-              name="adults"
-              value={advancedParams.adults}
-              onChange={handleAdultsChange}
-              style={{ maxWidth: '80px' }}
-              min="1"
-              max="9"
-            />
+            <input type="number" name="adults" value={advancedParams.adults} onChange={handleAdultsChange} style={{ maxWidth: '80px' }} min="1" max="9" />
           </div>
           <div className="search-field radio-field">
             <label>Flight Type:</label>
             <div>
               <label>
-                <input
-                  type="radio"
-                  name="flightType"
-                  value="roundTrip"
-                  checked={advancedParams.flightType === 'roundTrip'}
-                  onChange={handleAdvancedParamsChange}
-                />
+                <input type="radio" name="flightType" value="roundTrip" checked={advancedParams.flightType === 'roundTrip'} onChange={handleAdvancedParamsChange} />
                 Round Trip
               </label>
               <label style={{ marginLeft: '10px' }}>
-                <input
-                  type="radio"
-                  name="flightType"
-                  value="oneWay"
-                  checked={advancedParams.flightType === 'oneWay'}
-                  onChange={handleAdvancedParamsChange}
-                />
+                <input type="radio" name="flightType" value="oneWay" checked={advancedParams.flightType === 'oneWay'} onChange={handleAdvancedParamsChange} />
                 One-Way
               </label>
             </div>
           </div>
-          <button className="advanced-search-btn" onClick={handleAdvancedSearch}>
-            Search
-          </button>
+          <button className="advanced-search-btn" onClick={handleAdvancedSearch}>Search</button>
         </div>
       )}
       {loading && <Loader />}
       {error && <p className="error-message">{error}</p>}
-      {!loading && !error && flights.length === 0 && (
-        <p className="no-flights-message">No flights found.</p>
-      )}
+      {!loading && !error && flights.length === 0 && (<p className="no-flights-message">No flights found.</p>)}
       {!loading && !error && flights.map((flight, index) => renderFlightItem(flight, index))}
     </div>
   );
