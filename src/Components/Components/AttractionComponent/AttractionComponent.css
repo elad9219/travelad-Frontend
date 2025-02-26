@@ -1,0 +1,77 @@
+.attractions-container {
+    position: absolute;
+    right: 20px;
+    top: 780px;
+    width: 545px;
+    height: 240px;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+.attractions-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin: 0;
+    padding: 10px;
+}
+  
+  .attractions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .attraction-item {
+    padding: 18px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+  }
+  
+  .attraction-item:hover {
+    background-color: #eef;
+  }
+  
+  .attraction-name {
+    font-size: 1.0rem;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .attraction-details {
+    margin-top: 4px;
+    padding: 6px 8px;
+    background-color: #fff;
+    border-left: 2px solid #0077cc;
+  }
+  
+  .attraction-address,
+  .attraction-phone,
+  .attraction-website,
+  .attraction-hours,
+  .attraction-description {
+    margin: 18px 0;
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  .error-message {
+    text-align: center;
+    color: red;
+    font-size: 1rem;
+  }
+  
+  .no-attractions-message {
+    text-align: center;
+    font-size: 1rem;
+    color: #666;
+  }
+  

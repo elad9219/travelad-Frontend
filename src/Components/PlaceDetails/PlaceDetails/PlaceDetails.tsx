@@ -7,6 +7,7 @@ import Loader from '../../Components/Loader/Loader';
 import axios from 'axios';
 import './PlaceDetails.css';
 import FlightsComponent from '../../Components/FlightComponent/FlightComponent';
+import AttractionComponent from '../../Components/AttractionComponent/AttractionComponent';
 
 const PlaceDetails: React.FC = () => {
     const [places, setPlaces] = useState<any[]>([]);
@@ -57,6 +58,9 @@ const PlaceDetails: React.FC = () => {
                     <FlightsComponent city={places[0]?.name || ''} />
                     <div className="hotels">
                         <HotelComponent cityName={places[0]?.name || ''} />
+                    </div>
+                    <div>
+                        <AttractionComponent city={places[0]?.name || ''}/>
                     </div>
                 </>
             )}
