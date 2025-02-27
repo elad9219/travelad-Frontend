@@ -4,7 +4,12 @@ import Loader from '../Loader/Loader';
 import './AttractionComponent.css';
 import { Attraction } from '../../../modal/Attraction';
 
-const AttractionComponent: React.FC<{ city: string }> = ({ city }) => {
+interface AttractionComponentProps {
+  city: string;
+  onShowAttractionOnMap: (query: string) => void;
+}
+
+const AttractionComponent: React.FC<AttractionComponentProps> = ({ city, onShowAttractionOnMap }) => {
   const [attractions, setAttractions] = useState<Attraction[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -31,7 +36,22 @@ const AttractionComponent: React.FC<{ city: string }> = ({ city }) => {
   }, [city]);
 
   const toggleAttraction = (id: number) => {
+    // Toggle details when clicking anywhere on the attraction item.
     setExpandedAttractionId(expandedAttractionId === id ? null : id);
+  };
+
+  const handleShowOnMap = (attraction: Attraction, e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    // Prevent toggling the details when clicking the button.
+    e.stopPropagation();
+    const query = `${attraction.name}, ${attraction.city}`;
+    onShowAttractionOnMap(query);
+    // Scroll to the map container (assumes it has an id="map-container")
+    const mapContainer = document.getElementById('map-container');
+    if (mapContainer) {
+      mapContainer.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -49,9 +69,20 @@ const AttractionComponent: React.FC<{ city: string }> = ({ city }) => {
             className="attraction-item"
             onClick={() => toggleAttraction(attraction.id!)}
           >
-            <div className="attraction-name">{attraction.name}</div>
+            <div className="attraction-header">
+              <span className="attraction-name">{attraction.name}</span>
+              <button
+                className="show-on-map-btn"
+                onClick={(e) => handleShowOnMap(attraction, e)}
+              >
+                Show on Map
+              </button>
+            </div>
             {expandedAttractionId === attraction.id && (
               <div className="attraction-details">
+                {attraction.description && (
+                  <p className="attraction-description"><strong>Description:</strong> {attraction.description}</p>
+                )}
                 {attraction.address && (
                   <p className="attraction-address"><strong>Address:</strong> {attraction.address}</p>
                 )}
@@ -68,9 +99,6 @@ const AttractionComponent: React.FC<{ city: string }> = ({ city }) => {
                 )}
                 {attraction.openingHours && (
                   <p className="attraction-hours"><strong>Hours:</strong> {attraction.openingHours}</p>
-                )}
-                {attraction.description && (
-                  <p className="attraction-description"><strong>Description:</strong> {attraction.description}</p>
                 )}
               </div>
             )}
