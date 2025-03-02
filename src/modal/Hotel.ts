@@ -1,20 +1,28 @@
+// modal/Hotel.ts
 export interface VendorDto {
     name: string;
     price: number;
-}
-
-export interface HotelDto {
+  }
+  
+  export interface HotelDto {
     hotelId: string;
     name: string;
     iataCode?: string;
     countryCode?: string;
+    latitude?: number;      // add latitude
+    longitude?: number;     // add longitude
     rating?: number; 
     price?: number; 
     vendors?: VendorDto[]; 
-}
-
-
-export class HotelOffersDto {
+  }
+  
+  export interface RoomDto {
+    bedType?: string;
+    beds?: number;
+    description?: string;
+  }
+  
+  export interface HotelOffersDto {
     name?: string;
     city?: string;
     priceCurrency?: string;
@@ -23,10 +31,8 @@ export class HotelOffersDto {
     checkInDate?: string;
     checkOutDate?: string;
     room?: RoomDto;
-}
-
-export class RoomDto {
-    bedType?: string;
-    beds?: number;
-    description?: string;
-}
+    // Optionally, offers may include geoCode info:
+    latitude?: number;
+    longitude?: number;
+  }
+  

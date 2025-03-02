@@ -1,17 +1,17 @@
+// src/Components/Components/HotelComponent/HotelComponent.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './HotelComponent.css';
 import { HotelDto, HotelOffersDto } from '../../../modal/Hotel';
 
-const toTitleCase = (str: string) => {
-  return str
+const toTitleCase = (str: string) =>
+  str
     .toLowerCase()
     .split(' ')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
-};
 
-const formatDate = (dateStr: string) => {
+const formatDate = (dateStr: string): string => {
   const date = new Date(dateStr);
   return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
     .toString().padStart(2, '0')}/${date.getFullYear()}`;
@@ -19,21 +19,22 @@ const formatDate = (dateStr: string) => {
 
 const BATCH_SIZE = 50;
 
-const HotelComponent: React.FC<{ cityName: string }> = ({ cityName }) => {
+interface HotelComponentProps {
+  cityName: string;
+  onShowHotelOnMap: (hotel: HotelDto | HotelOffersDto) => void;
+}
+
+const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, onShowHotelOnMap }) => {
   const [hotels, setHotels] = useState<HotelDto[]>([]);
   const [hotelOffers, setHotelOffers] = useState<HotelOffersDto[]>([]);
   const [hotelsLoading, setHotelsLoading] = useState(false);
   const [hotelsError, setHotelsError] = useState<string | null>(null);
   const [expandedHotelIndex, setExpandedHotelIndex] = useState<number | null>(null);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
-  const [searchParams, setSearchParams] = useState({
-    checkInDate: '',
-    checkOutDate: '',
-    adults: ''
-  });
+  const [searchParams, setSearchParams] = useState({ checkInDate: '', checkOutDate: '', adults: '' });
   const [isFetchingOffers, setIsFetchingOffers] = useState(false);
 
-  // When cityName changes, fetch basic hotel data and clear any previous advanced offers.
+  // Fetch basic hotel data when cityName changes.
   useEffect(() => {
     const fetchHotels = async () => {
       setHotelsLoading(true);
@@ -50,36 +51,26 @@ const HotelComponent: React.FC<{ cityName: string }> = ({ cityName }) => {
         setHotelsLoading(false);
       }
     };
-
     if (cityName) fetchHotels();
   }, [cityName]);
 
-  // Reset advanced search parameters every time the advanced search window is opened.
+  // Reset advanced search parameters when advanced search is opened.
   useEffect(() => {
     if (showAdvancedSearch) {
-      setSearchParams({
-        checkInDate: '',
-        checkOutDate: '',
-        adults: ''
-      });
+      setSearchParams({ checkInDate: '', checkOutDate: '', adults: '' });
     }
   }, [showAdvancedSearch]);
 
   const handleSearchParamsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSearchParams(prev => ({
-      ...prev,
-      [name]: value
-    }));
+    setSearchParams(prev => ({ ...prev, [name]: value }));
   };
 
   const fetchHotelOffersInBatches = async () => {
     setIsFetchingOffers(true);
-    setHotelOffers([]); // Clear existing offers
+    setHotelOffers([]);
     setHotelsError(null);
-    // Hide advanced search window immediately after clicking search.
     setShowAdvancedSearch(false);
-
     try {
       const hotelIds = hotels.map(hotel => hotel.hotelId);
       for (let i = 0; i < hotelIds.length; i += BATCH_SIZE) {
@@ -95,7 +86,6 @@ const HotelComponent: React.FC<{ cityName: string }> = ({ cityName }) => {
       }
     } catch (error) {
       console.error('Error performing advanced search:', error);
-      // Do not set an error message in UI as per your requirements.
     } finally {
       setIsFetchingOffers(false);
     }
@@ -103,6 +93,28 @@ const HotelComponent: React.FC<{ cityName: string }> = ({ cityName }) => {
 
   const toggleHotelDetails = (index: number) => {
     setExpandedHotelIndex(expandedHotelIndex === index ? null : index);
+  };
+
+  // "Show on Map" handler: Build a query string from hotel data.
+  const handleShowHotelOnMap = (hotel: HotelDto | HotelOffersDto, e: React.MouseEvent<HTMLButtonElement>) => {
+    e.stopPropagation();
+    let mapQuery = '';
+    // If hotel has latitude and longitude, use them.
+    if ((hotel as HotelDto).latitude != null && (hotel as HotelDto).longitude != null) {
+      mapQuery = `${(hotel as HotelDto).latitude},${(hotel as HotelDto).longitude}`;
+    } else {
+      // Fallback: use hotel name and cityName
+      mapQuery = `${hotel.name}, ${cityName}`;
+    }
+    // Here you could update a global state or call a callback to update your MapComponent.
+    onShowHotelOnMap(hotel);
+    // Scroll to map (assumes an element with id "map-container" wraps your MapComponent)
+    const mapContainer = document.getElementById('map-container');
+    if (mapContainer) {
+      mapContainer.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   const renderHotelDetails = (offer: HotelOffersDto) => {
@@ -124,24 +136,37 @@ const HotelComponent: React.FC<{ cityName: string }> = ({ cityName }) => {
             {(offer.room.beds || offer.room.beds === 0) && <p><strong>Beds:</strong> {offer.room.beds}</p>}
           </>
         )}
+        <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowHotelOnMap(offer, e); }}>
+          Show on Map
+        </button>
       </div>
     );
   };
 
   const renderHotels = () => {
-    // Use advanced offers if available, otherwise use basic hotel data.
+    // Use advanced offers if available; otherwise, use basic hotel data.
     const hotelList = hotelOffers.length > 0 ? hotelOffers : hotels;
     return (
       <div className="hotels-list">
         {hotelList.map((hotel, index) => {
           const key = hotelOffers.length > 0 ? index : (hotel as HotelDto).hotelId;
-          const offer = hotelOffers.length > 0 ? (hotel as HotelOffersDto) : null;
+          const offer = hotelOffers.length > 0 ? hotel as HotelOffersDto : null;
           return (
             <div key={key} className="hotel-item" onClick={() => toggleHotelDetails(index)}>
               <div className="hotel-summary">
                 <p>{hotel.name ? toTitleCase(hotel.name) : 'Unknown Hotel'}</p>
                 {offer && offer.totalPrice && offer.priceCurrency && (
                   <p>{offer.priceCurrency} {offer.totalPrice}</p>
+                )}
+                {hotelOffers.length === 0 && (
+                  <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowHotelOnMap(hotel, e); }}>
+                    Show on Map
+                  </button>
+                )}
+                {hotelOffers.length > 0 && (
+                  <button className="show-on-map-btn center-btn" onClick={(e) => { e.stopPropagation(); handleShowHotelOnMap(offer!, e); }}>
+                    Show on Map
+                  </button>
                 )}
               </div>
               {expandedHotelIndex === index && (
@@ -200,9 +225,7 @@ const HotelComponent: React.FC<{ cityName: string }> = ({ cityName }) => {
               style={{ maxWidth: '80px' }}
             />
           </div>
-          <button className="advanced-search-btn" onClick={fetchHotelOffersInBatches}>
-            Search
-          </button>
+          <button className="advanced-search-btn" onClick={fetchHotelOffersInBatches}>Search</button>
         </div>
       )}
       {hotelsLoading && <div className="loader">Loading hotels...</div>}
