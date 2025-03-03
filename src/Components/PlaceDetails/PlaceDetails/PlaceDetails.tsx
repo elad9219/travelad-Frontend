@@ -9,7 +9,6 @@ import AttractionComponent from '../../Components/AttractionComponent/Attraction
 import Loader from '../../Components/Loader/Loader';
 import axios from 'axios';
 import './PlaceDetails.css';
-import { HotelDto, HotelOffersDto } from '../../../modal/Hotel';
 
 const PlaceDetails: React.FC = () => {
   const [places, setPlaces] = useState<any[]>([]);
@@ -17,7 +16,7 @@ const PlaceDetails: React.FC = () => {
   const [placesError, setPlacesError] = useState('');
   const [recentCities, setRecentCities] = useState<string[]>([]);
   const [searchPerformed, setSearchPerformed] = useState(false);
-  // State for the map query (to update the MapComponent)
+  // State to store the current map query (updated when a "show on map" button is clicked)
   const [mapQuery, setMapQuery] = useState<string>('');
 
   const handleSearch = async (city: string) => {
@@ -27,8 +26,9 @@ const PlaceDetails: React.FC = () => {
     setPlaces([]);
     try {
       const response = await axios.get('http://localhost:8080/api/places/search', { params: { city } });
+      // Assume response.data returns an object with properties: id, name, address, icon, latitude, longitude, country, etc.
       setPlaces(response.data ? [response.data] : []);
-      // Set initial map query to the city name.
+      // Set the initial map query to the city name
       setMapQuery(city);
     } catch (err) {
       console.error('Error fetching place details:', err);
@@ -38,34 +38,14 @@ const PlaceDetails: React.FC = () => {
     }
   };
 
-  // Update the handler to accept a hotel object and extract a query.
-  const handleShowHotelOnMap = (hotel: HotelDto | HotelOffersDto) => {
-    let query = '';
-    // Example: if the hotel object contains latitude/longitude, use them.
-    if ((hotel as any).latitude != null && (hotel as any).longitude != null) {
-      query = `${(hotel as any).latitude},${(hotel as any).longitude}`;
-    } else {
-      // Otherwise, fallback to using hotel name (and optionally city)
-      query = `${hotel.name}, ${places[0]?.name || ''}`;
-    }
-    setMapQuery(query);
-    // Scroll to the map (assuming your MapComponent is wrapped in an element with id "map-container")
-    const mapContainer = document.getElementById('map-container');
-    if (mapContainer) {
-      mapContainer.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
+  // Callback passed to AttractionComponent so that when a user clicks "Show on Map" on an attraction, the map updates.
   const handleShowAttractionOnMap = (query: string) => {
     setMapQuery(query);
-    const mapContainer = document.getElementById('map-container');
-    if (mapContainer) {
-      mapContainer.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  };
+
+  // Callback passed to HotelComponent so that when a user clicks "Show on Map" on a hotel, the map updates.
+  const handleShowHotelOnMap = (query: string) => {
+    setMapQuery(query);
   };
 
   return (
@@ -94,9 +74,11 @@ const PlaceDetails: React.FC = () => {
         <>
           <FlightsComponent city={places[0]?.name || ''} />
           <div className="hotels">
+            {/* Pass both cityName and countryName to HotelComponent */}
             <HotelComponent 
               cityName={places[0]?.name || ''} 
-              onShowHotelOnMap={handleShowHotelOnMap} 
+              countryName={places[0]?.country || ''}
+              onShowHotelOnMap={handleShowHotelOnMap}
             />
           </div>
           <div className="attractions-section">

@@ -9,12 +9,15 @@ export interface VendorDto {
     name: string;
     iataCode?: string;
     countryCode?: string;
-    latitude?: number;      // add latitude
-    longitude?: number;     // add longitude
-    rating?: number; 
-    price?: number; 
-    vendors?: VendorDto[]; 
+    rating?: number;
+    price?: number;
+    vendors?: VendorDto[];
+    geoCode?: {
+      latitude: number;
+      longitude: number;
+    };
   }
+  
   
   export interface RoomDto {
     bedType?: string;
