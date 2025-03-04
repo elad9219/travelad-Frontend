@@ -49,7 +49,7 @@ const WeatherComponent: React.FC<WeatherProps> = ({ city }) => {
                     </div>
                     <div className="weather-details">
                         <h3>{weather.city}, {weather.country}</h3>
-                        <p><span>{weather.temperatureC}°C</span></p>
+                        <p><span className='temperature'>{weather.temperatureC}°C</span></p>
                         <p>Condition: {weather.condition}</p>
                         <p>Wind Speed: {weather.windSpeedKph} km/h</p>
                         <p>Humidity: {weather.humidity}%</p>
