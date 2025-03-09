@@ -1,41 +1,37 @@
-/* src/Components/Components/HotelComponent/HotelComponent.css */
 .hotels-container {
-  position: absolute;
-  left: 20px;
-  top: 780px;
-  width: 545px;
-  height: 240px;
+  width: 100%;
+  aspect-ratio: 16 / 8;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 10px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  z-index: 1;
+  box-sizing: border-box;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .hotels-header {
   position: relative;
   width: 100%;
-  padding: 8px 0;
+  padding: 8px 0; /* Matches Flights */
   text-align: center;
+  margin-bottom: 10px; /* Matches Flights */
 }
 
 .hotels-title {
-  font-size: 1.3rem;
+  font-size: clamp(1rem, 2vw, 1.2rem); /* Matches Flights */
   font-weight: bold;
   color: #333;
-  margin: 0;
-  padding: 10px;
-  text-align: center;
+  margin: 0; /* Matches Flights */
+  padding: 0; /* Matches Flights */
 }
 
 .advanced-search-toggle {
   position: absolute;
-  left: 390px;
+  right: 10px;
   top: 50%;
-  transform: translateY(20px);
-  font-size: 0.9rem;
+  transform: translateY(-50%);
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   background: none;
   border: none;
   color: #0077cc;
@@ -43,12 +39,11 @@
 }
 
 .advanced-search-form {
-  width: 90%;
-  max-width: 400px;
+  width: 100%;
   background-color: #eef7ff;
-  padding: 8px 16px;
+  padding: 8px;
   border-radius: 4px;
-  margin: 10px auto;
+  margin: 10px 0;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -63,28 +58,27 @@
 }
 
 .search-field label {
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   color: #333;
-  min-width: 60px;
+  min-width: 80px;
 }
 
 .search-field input {
   flex: 1;
   padding: 4px;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   border: 1px solid #ccc;
   border-radius: 4px;
 }
 
 .advanced-search-btn {
   padding: 4px 8px;
-  font-size: 0.9rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   background-color: #0077cc;
   border: none;
   color: #fff;
   border-radius: 4px;
   cursor: pointer;
-  align-self: flex-end;
   width: 100%;
 }
 
@@ -97,9 +91,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 8px 16px;
-  box-sizing: border-box;
-  margin-top: 10px;
+  padding: 0;
+  overflow-y: auto;
 }
 
 .hotel-item {
@@ -117,13 +110,18 @@
 }
 
 .hotel-summary {
-  font-size: 0.95rem;
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
   font-weight: bold;
   color: #555;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 25px;
+  height: auto;
+}
+
+.hotel-name {
+  flex: 1;
+  text-align: center;
 }
 
 .show-on-map-btn {
@@ -133,11 +131,30 @@
   border-radius: 4px;
   padding: 4px 8px;
   cursor: pointer;
-  font-size: 0.8rem;
+  font-size: clamp(0.8rem, 2vw, 0.8rem);
 }
 
-.show-on-map-btn.center-btn {
-  align-self: center;
+/* When hotel offers are displayed, move button to left */
+.hotel-summary.has-offers {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.hotel-summary.has-offers .show-on-map-btn {
+  order: -1; /* Moves button to the left */
+  margin-right: 10px;
+}
+
+.hotel-summary.has-offers .hotel-name {
+  order: 0; /* Keeps name in the center */
+  flex: 1;
+}
+
+.hotel-summary.has-offers .hotel-price {
+  order: 1; /* Keeps price on the right */
+  margin-left: 10px;
+  color: #000; /* Changed to black */
 }
 
 .show-on-map-btn:hover {
@@ -146,8 +163,13 @@
 
 .hotel-details {
   margin-top: 6px;
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 2vw, 0.85rem);
   color: #555;
   border-top: 1px solid #eee;
   padding-top: 6px;
+}
+
+.hotel-price {
+  font-size: clamp(0.95rem, 2vw, 0.95rem);
+  color: #000; /* Changed to black */
 }

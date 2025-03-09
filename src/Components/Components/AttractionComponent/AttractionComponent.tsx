@@ -56,9 +56,11 @@ const AttractionComponent: React.FC<AttractionComponentProps> = ({ city, onShowA
 
   return (
     <div className="attractions-container">
-      <h2 className="attractions-title">
-        <span role="img" aria-label="attractions">🎡</span> Attractions
-      </h2>
+      <div className="attractions-header">
+        <h2 className="attractions-title">
+          <span role="img" aria-label="attractions">🎡</span> Attractions
+        </h2>
+      </div>
       {loading && <Loader />}
       {error && <p className="error-message">{error}</p>}
       {(!loading && attractions.length === 0) && <p className="no-attractions-message">No attractions found.</p>}

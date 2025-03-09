@@ -151,13 +151,13 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
           const offer = hotelOffers.length > 0 ? hotel as HotelOffersDto : null;
           return (
             <div key={key} className="hotel-item" onClick={() => toggleHotelDetails(index)}>
-              <div className="hotel-summary">
+              <div className={`hotel-summary ${hotelOffers.length > 0 ? 'has-offers' : ''}`}>
                 <div className="hotel-name">
                   {hotel.name ? toTitleCase(hotel.name) : 'Unknown Hotel'}
                 </div>
                 {hotelOffers.length > 0 ? (
                   <>
-                    <button className="show-on-map-btn center-btn" onClick={(e) => { e.stopPropagation(); handleShowHotelOnMap(offer!, e); }}>
+                    <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowHotelOnMap(offer!, e); }}>
                       Show on Map
                     </button>
                     {offer && offer.totalPrice && offer.priceCurrency && (

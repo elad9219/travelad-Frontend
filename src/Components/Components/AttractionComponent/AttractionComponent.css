@@ -1,27 +1,29 @@
 .attractions-container {
-  position: absolute;
-  right: 20px;
-  top: 780px;
-  width: 545px;
-  height: 240px;
+  width: 100%;
+  aspect-ratio: 16 / 8; /* Maintains the 16:9 ratio */
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 10px;
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
   box-sizing: border-box;
-  z-index: 1;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.attractions-header {
+  position: relative;
+  width: 100%;
+  padding: 8px 0; /* Unchanged to keep headline position */
+  text-align: center;
+  margin-bottom: clamp(10px, 2vw, 20px); /* Increased and made relative */
 }
 
 .attractions-title {
-  font-size: 1.3rem;
+  font-size: clamp(1rem, 2vw, 1.2rem); /* Unchanged */
   font-weight: bold;
   color: #333;
-  text-align: center;
-  margin: 0 0 10px; /* Added bottom margin for extra space */
-  padding: 10px;
+  margin: 0; /* Unchanged */
+  padding: 0; /* Unchanged */
 }
 
 .attractions-list {
@@ -31,7 +33,7 @@
 }
 
 .attraction-item {
-  padding: 18px;
+  padding: 12px;
   border-bottom: 1px solid #eee;
   cursor: pointer;
 }
@@ -76,7 +78,7 @@
 }
 
 .attraction-details p {
-  margin-bottom: 8px;  /* Increase space between details */
+  margin-bottom: 8px;
   font-size: 0.9rem;
   color: #555;
   word-wrap: break-word;
@@ -97,14 +99,14 @@
 
 .loader {
   text-align: center;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .loader::after {
   content: "";
   display: block;
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   margin: 10px auto;
   border-radius: 50%;
   border: 4px solid #ccc;

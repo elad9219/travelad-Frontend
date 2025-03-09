@@ -35,15 +35,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (placeName.trim()) {
-        // Call onSearch with the entered city name only
         onSearch(placeName);
-        // Update recent cities list
         setRecentCities((prevCities) =>
           Array.from(new Set([placeName, ...prevCities])).slice(0, 8)
         );
         setShowRecentCities(false);
         updateCities([placeName, ...recentCities.filter((c) => c !== placeName)].slice(0, 8));
-        // Save to backend cache
         try {
           await axios.post('http://localhost:8080/cache/cities', { city: placeName });
         } catch (err) {

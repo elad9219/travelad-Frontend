@@ -1,168 +1,39 @@
 /* General container styles */
 .place-details-container {
   text-align: center;
-  padding: 20px;
+  padding: 1rem;
+  min-height: 100vh;
+  background-color: #f5f5f5;
 }
 
-/* Search section */
-.search-section {
-  background-image: url('https://images.pexels.com/photos/335394/pexels-photo-335394.jpeg');
-  background-size: cover;
-  background-position: center;
-  padding: 30px 20px;
-  border-radius: 10px;
-  color: white;
-  position: relative;
-}
-
-.search-section::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image: inherit;
-  background-size: cover;
-  background-position: center;
-  z-index: -1;
-}
-
-/* Search bar form */
-.search-bar {
+/* Content grid with two columns */
+.content-grid {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-}
-
-/* Search bar input */
-.search-input {
-  width: 12%;
-  padding: 15px;
-  font-size: 1rem;
-  border-radius: 25px;
-  border: 1px solid #ddd;
-  outline: none;
-  transition: border 0.3s ease;
-}
-
-.search-input:focus {
-  border-color: #007bff;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-/* Search button */
-.search-button {
-  margin-left: 10px;
-  padding: 15px 25px;
-  font-size: 1rem;
-  font-weight: bold;
-  color: white;
-  background-color: #007bff;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.search-button:hover {
-  background-color: #0056b3;
-  transform: scale(1.05);
-}
-
-.search-button:active {
-  background-color: #004494;
-}
-
-/* Recent cities list */
-.recent-cities {
-  position: absolute;
-  top: 90%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 300px;
-  background-color: rgba(255, 255, 255, 0.95);
-  border-radius: 5px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  z-index: 100;
-}
-
-.recent-cities.expanded {
-  max-height: none; /* Remove height limit */
-  overflow-y: visible; /* Remove scrolling */
-  padding-bottom: 10px; /* Add space for the Clear History button */
-}
-
-.recent-cities ul {
-  list-style: none;
-  margin: 0;
-  padding: 10px 0;
-}
-
-.recent-cities li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 5px 10px;
-  font-size: 16px;
-  color: black;
-  border-radius: 5px;
-  transition: background-color 0.3s;
-  cursor: pointer;
-}
-
-.recent-cities li:hover {
-  background-color: #f0f0f0;
-}
-
-.remove-btn {
-  background: none;
-  border: none;
-  color: red;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.clear-history-btn {
-  background-color: #f44336;
-  color: white;
-  padding: 10px;
-  margin-top: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Place details styles */
-.places-list {
-  margin-top: 20px;
-  position: relative;
-  z-index: 1;
-}
-
-.place-details {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  max-width: 1200px;
-  margin: 20px auto;
   gap: 20px;
-  cursor: pointer;
+  width: 97%;
+  max-width: 100%;
+  margin: 0 auto;
+  flex-wrap: wrap;
 }
 
-/* Place image styles */
-.place-image {
+.left-column,
+.right-column {
   flex: 1;
-  height: 250px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Place image: use aspect ratio instead of fixed height */
+.place-image {
+  width: 100%;
+  aspect-ratio: 16 / 8;
   background-size: cover;
   background-position: center;
-  image-rendering: -webkit-optimize-contrast;
   position: relative;
-  z-index: 0;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .place-address {
@@ -170,7 +41,7 @@
   bottom: 10px;
   left: 10px;
   right: 10px;
-  font-size: 1.5rem;
+  font-size: 2vw; /* Scales with viewport width */
   font-weight: bold;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
@@ -179,21 +50,47 @@
   border-radius: 5px;
 }
 
-.place-map {
-  flex: 1;
-  height: 400px;
-}
-
-.map-container {
+/* If you use any common rectangle class for other components: */
+.rectangle {
   width: 100%;
-  height: 100%;
+  aspect-ratio: 16 / 8;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
   border-radius: 10px;
-  overflow: hidden;
-  position: relative;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Media queries for responsiveness */
+@media (max-width: 1024px) {
+  .content-grid {
+    flex-direction: column;
+  }
+  .left-column,
+  .right-column {
+    width: 100%;
+  }
+}
 
+@media (max-width: 768px) {
+  .place-details-container {
+    padding: 1rem;
+  }
+}
 
+@media (max-width: 480px) {
+  .place-details-container {
+    padding: 0.5rem;
+  }
+  .place-address {
+    font-size: 3vw; /* Slightly larger at small screens for readability */
+  }
+}
 
-
-
+.error-message {
+  color: red;
+  font-size: 1rem;
+  margin: 10px 0;
+}
