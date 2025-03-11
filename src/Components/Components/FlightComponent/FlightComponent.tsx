@@ -64,6 +64,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   const [advancedMode, setAdvancedMode] = useState(false);
   const [adultCount, setAdultCount] = useState<number>(1);
   const [iataMapping, setIataMapping] = useState<IataMapping>({});
+  const [directFlightsOnly, setDirectFlightsOnly] = useState(false);
 
   useEffect(() => {
     const fetchIataMapping = async () => {
@@ -174,7 +175,6 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     return <span className="iata-tooltip" title={fullName}>{code}</span>;
   };
 
-  // Render summary row with carrier logo, route, total duration, and departure time.
   const renderSummaryRow = (leg: FlightSegment[], itineraryDuration?: string): JSX.Element => {
     const origin = renderIataCode(leg[0].origin);
     const destination = renderIataCode(leg[leg.length - 1].destination);
@@ -280,13 +280,38 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     );
   };
 
+  // Updated filtering logic for direct flights
+  const filteredFlights = directFlightsOnly
+    ? flights.filter(flight => {
+        if (flight.returnSegments && flight.returnSegments.length > 0 && flight.outboundSegments) {
+          // Round-trip: show if either outbound or return is direct
+          return flight.outboundSegments.length === 1 || flight.returnSegments.length === 1;
+        } else if (flight.segments) {
+          // One-way: show only if direct
+          return flight.segments.length === 1;
+        }
+        return false; // Neither condition met
+      })
+    : flights;
+
   return (
     <div className="flights-container">
       <div className="flights-header">
         <h2 className="flights-title">✈ Flights</h2>
-        <button className="advanced-search-toggle" onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}>
-          Advanced Search
-        </button>
+        <div className="header-controls">
+          <button
+            className={`direct-flights-btn ${directFlightsOnly ? 'checked' : ''}`}
+            onClick={() => setDirectFlightsOnly(prev => !prev)}
+          >
+            Direct Flights Only
+          </button>
+          <button
+            className="advanced-search-toggle"
+            onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+          >
+            Advanced Search
+          </button>
+        </div>
       </div>
       {showAdvancedSearch && (
         <div className="advanced-search-form">
@@ -330,8 +355,14 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
       )}
       {loading && <Loader />}
       {error && <p className="error-message">{error}</p>}
-      {!loading && !error && flights.length === 0 && (<p className="no-flights-message">No flights found.</p>)}
-      {!loading && !error && flights.map((flight, index) => renderFlightItem(flight, index))}
+      {!loading && !error && filteredFlights.length === 0 && (
+        flights.length === 0 ? (
+          <p className="no-flights-message">No flights found.</p>
+        ) : (
+          <p className="no-flights-message">No direct flights found.</p>
+        )
+      )}
+      {!loading && !error && filteredFlights.map((flight, index) => renderFlightItem(flight, index))}
     </div>
   );
 };

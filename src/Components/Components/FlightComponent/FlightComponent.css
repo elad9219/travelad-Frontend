@@ -12,10 +12,8 @@
 }
 
 .flights-header {
-  position: relative;
   width: 100%;
   padding: 8px 0;
-  text-align: center;
   margin-bottom: 10px;
 }
 
@@ -25,8 +23,44 @@
   color: #333;
   margin: 0;
   padding: 0;
+  text-align: center;
 }
 
+/* Flex container for controls below the headline */
+.header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+
+/* Style for the Direct Flights Only button */
+.direct-flights-btn {
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  background: none;
+  border: 1px solid #0077cc;
+  color: #0077cc;
+  padding: 2px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  position: relative;
+  padding-left: 20px; /* Space for the checkmark */
+}
+
+.direct-flights-btn.checked::before {
+  content: '✔'; /* Unicode checkmark */
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0077cc;
+}
+
+.direct-flights-btn:hover {
+  background-color: #eef7ff;
+}
+
+/* Restore original Advanced Search button styling */
 .advanced-search-toggle {
   position: absolute;
   right: 10px;
@@ -37,6 +71,14 @@
   border: none;
   color: #0077cc;
   cursor: pointer;
+}
+
+/* Adjust header to accommodate absolute positioning */
+.flights-header {
+  position: relative; /* Ensure header supports absolute positioning */
+  width: 100%;
+  padding: 8px 0;
+  margin-bottom: 10px;
 }
 
 .advanced-search-form {
@@ -147,7 +189,7 @@
 .route-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center the route info */
+  align-items: center;
 }
 
 .route {
@@ -167,26 +209,26 @@
 .details-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Changed to center for consistency */
+  align-items: center;
 }
 
 .duration {
   font-size: clamp(0.8rem, 2vw, 0.8rem);
   color: #666;
   margin-bottom: 2px;
-  margin-left: 0; /* Removed negative margin to center */
+  margin-left: 0;
 }
 
 .stops {
   font-size: clamp(0.8rem, 2vw, 0.8rem);
   color: #666;
-  margin-left: 0; 
+  margin-left: 0;
 }
 
 .direct-flight {
   color: green;
   font-weight: bold;
-  margin-left: 0; 
+  margin-left: 0;
 }
 
 .with-stops {
@@ -196,7 +238,7 @@
 
 .summary-center {
   flex: 1;
-  text-align: center; /* Always center time and date */
+  text-align: center;
   font-size: clamp(0.9rem, 2vw, 0.9rem);
   color: #666;
 }
