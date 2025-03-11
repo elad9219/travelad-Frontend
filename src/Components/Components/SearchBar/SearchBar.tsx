@@ -10,7 +10,8 @@ interface SearchBarProps {
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
   const [placeName, setPlaceName] = useState('');
   const [recentCities, setRecentCities] = useState<string[]>([]);
-  const [showRecentCities, setShowRecentCities] = useState(false);
+  const [filteredCities, setFilteredCities] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
 
   const fetchRecentCities = useCallback(async () => {
     try {
@@ -19,10 +20,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
         ? Array.from(new Set(response.data)).slice(0, 8)
         : [];
       setRecentCities(cities);
+      setFilteredCities(cities); // Initially, show all recent cities
       updateCities(cities);
     } catch (err) {
       console.error('Error fetching recent cities:', err);
       setRecentCities([]);
+      setFilteredCities([]);
       updateCities([]);
     }
   }, [updateCities]);
@@ -31,16 +34,29 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     fetchRecentCities();
   }, [fetchRecentCities]);
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value;
+    setPlaceName(input);
+    if (input.trim()) {
+      const filtered = recentCities.filter(city =>
+        city.toLowerCase().startsWith(input.toLowerCase())
+      );
+      setFilteredCities(filtered);
+    } else {
+      setFilteredCities(recentCities); // Show all recent cities when input is empty
+    }
+  };
+
   const handleSearch = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       if (placeName.trim()) {
         onSearch(placeName);
-        setRecentCities((prevCities) =>
-          Array.from(new Set([placeName, ...prevCities])).slice(0, 8)
-        );
-        setShowRecentCities(false);
-        updateCities([placeName, ...recentCities.filter((c) => c !== placeName)].slice(0, 8));
+        const updatedCities = Array.from(new Set([placeName, ...recentCities])).slice(0, 8);
+        setRecentCities(updatedCities);
+        setFilteredCities(updatedCities);
+        setShowSuggestions(false);
+        updateCities(updatedCities);
         try {
           await axios.post('http://localhost:8080/cache/cities', { city: placeName });
         } catch (err) {
@@ -55,11 +71,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     (city: string) => {
       setPlaceName(city);
       onSearch(city);
-      setRecentCities((prevCities) =>
-        Array.from(new Set([city, ...prevCities.filter((c) => c !== city)])).slice(0, 8)
-      );
-      setShowRecentCities(false);
-      updateCities([city, ...recentCities.filter((c) => c !== city)].slice(0, 8));
+      const updatedCities = Array.from(new Set([city, ...recentCities.filter((c) => c !== city)])).slice(0, 8);
+      setRecentCities(updatedCities);
+      setFilteredCities(updatedCities);
+      setShowSuggestions(false);
+      updateCities(updatedCities);
     },
     [onSearch, recentCities, updateCities]
   );
@@ -68,6 +84,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     async (city: string) => {
       const newList = recentCities.filter((item) => item !== city);
       setRecentCities(newList);
+      setFilteredCities(newList);
       updateCities(newList);
       try {
         await axios.delete('http://localhost:8080/cache/cities', { params: { city } });
@@ -84,6 +101,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     try {
       await axios.delete('http://localhost:8080/cache/cities/clear');
       setRecentCities([]);
+      setFilteredCities([]);
       updateCities([]);
     } catch (err) {
       console.error('Error clearing history:', err);
@@ -97,9 +115,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
         <input
           type="text"
           value={placeName}
-          onChange={(e) => setPlaceName(e.target.value)}
-          onFocus={() => setShowRecentCities(true)}
-          onBlur={() => setTimeout(() => setShowRecentCities(false), 200)}
+          onChange={handleInputChange}
+          onFocus={() => setShowSuggestions(true)}
+          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           placeholder="Enter a city name"
           className="search-input"
         />
@@ -107,10 +125,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
           Search
         </button>
       </form>
-      {showRecentCities && recentCities.length > 0 && (
+      {showSuggestions && filteredCities.length > 0 && (
         <div className="recent-cities">
           <ul>
-            {recentCities.map((city) => (
+            {filteredCities.map((city) => (
               <li key={city} onClick={() => handleCityClick(city)}>
                 <span>{city}</span>
                 <button
