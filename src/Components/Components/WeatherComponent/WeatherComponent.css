@@ -51,6 +51,8 @@
 .weather-container.patchy-rain-nearby { background-image: url('https://images.pexels.com/photos/459451/pexels-photo-459451.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); }
 .weather-container.patchy-snow-possible { background-image: url('https://images.pexels.com/photos/30015442/pexels-photo-30015442/free-photo-of-frosty-leaf-on-winter-branch-with-blurred-background.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); }
 .weather-container.light-rain-shower { background-image: url('https://images.pexels.com/photos/7815649/pexels-photo-7815649.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); }
+.weather-container.moderate-or-heavy-rain-shower { background-image: url('https://images.pexels.com/photos/243971/pexels-photo-243971.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); }
+
 
 .weather-info {
   display: flex;

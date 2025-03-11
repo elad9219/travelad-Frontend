@@ -22,13 +22,21 @@ const PlaceDetails: React.FC = () => {
     setPlacesLoading(true);
     setPlacesError('');
     setPlaces([]);
+
     try {
-      const response = await axios.get('http://localhost:8080/api/places/search', { params: { city } });
-      setPlaces(response.data ? [response.data] : []);
-      setMapQuery(city);
+      const response = await axios.get('http://localhost:8080/api/places/search', {
+        params: { city },
+      });
+
+      if (response.data) {
+        setPlaces([response.data]); // Store the data even if it comes from APIs
+        setMapQuery(city);
+      } else {
+        setPlacesError('No data found for this city.');
+      }
     } catch (err) {
       console.error('Error fetching place details:', err);
-      setPlacesError('An error occurred while fetching place details.');
+      setPlacesError('Unable to fetch place details. Please try again later.');
     } finally {
       setPlacesLoading(false);
     }
@@ -52,13 +60,16 @@ const PlaceDetails: React.FC = () => {
       {!placesLoading && places.length > 0 && (
         <div className="content-grid">
           <div className="left-column">
-            <div className="place-image" style={{ backgroundImage: `url(${places[0].icon || 'default_image_url'})` }}>
+            <div
+              className="place-image"
+              style={{ backgroundImage: `url(${places[0].icon || 'default_image_url'})` }}
+            >
               <div className="place-address">{places[0].address}</div>
             </div>
             <WeatherComponent city={places[0].name || places[0].address} />
-            <HotelComponent 
-              cityName={places[0].name || ''} 
-              countryName={places[0].country || ''} 
+            <HotelComponent
+              cityName={places[0].name || ''}
+              countryName={places[0].country || ''}
               onShowHotelOnMap={handleShowHotelOnMap}
             />
           </div>
@@ -67,12 +78,16 @@ const PlaceDetails: React.FC = () => {
               <MapComponent query={mapQuery} />
             </div>
             <FlightsComponent city={places[0].name || ''} />
-            <AttractionComponent 
-              city={places[0].name || ''} 
+            <AttractionComponent
+              city={places[0].name || ''}
               onShowAttractionOnMap={handleShowAttractionOnMap}
             />
           </div>
         </div>
+      )}
+
+      {!placesLoading && places.length === 0 && searchPerformed && !placesError && (
+        <p className="no-data-message">No data available for this city.</p>
       )}
     </div>
   );
