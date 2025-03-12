@@ -23,7 +23,7 @@ const formatDuration = (duration?: string): string => {
   return `${hours}:${minutes.toString().padStart(2, '0')}h`;
 };
 
-// Calculate total duration from segments (fallback if itinerary duration is not provided).
+// Calculate total duration from segments (fallback if duration is not provided).
 const calculateTotalDuration = (segments: FlightSegment[]): string => {
   let totalMinutes = 0;
   segments.forEach(segment => {
@@ -37,6 +37,48 @@ const calculateTotalDuration = (segments: FlightSegment[]): string => {
   const totalHours = Math.floor(totalMinutes / 60);
   const remainingMinutes = totalMinutes % 60;
   return `${totalHours}:${remainingMinutes.toString().padStart(2, '0')}h`;
+};
+
+// Helper functions for sorting by duration
+const parseDurationToMinutes = (duration: string): number => {
+  const match = duration.match(/PT(\d+H)?(\d+M)?/);
+  if (!match) return 0;
+  const hours = match[1] ? parseInt(match[1].replace('H', '')) : 0;
+  const minutes = match[2] ? parseInt(match[2].replace('M', '')) : 0;
+  return hours * 60 + minutes;
+};
+
+const calculateLegDurationInMinutes = (leg: FlightSegment[]): number => {
+  let totalMinutes = 0;
+  leg.forEach(segment => {
+    const match = segment.duration.match(/PT(\d+H)?(\d+M)?/);
+    if (match) {
+      const hours = match[1] ? parseInt(match[1].replace('H', '')) : 0;
+      const minutes = match[2] ? parseInt(match[2].replace('M', '')) : 0;
+      totalMinutes += hours * 60 + minutes;
+    }
+  });
+  return totalMinutes;
+};
+
+const getLegDuration = (leg: FlightSegment[], duration?: string): number => {
+  if (duration) {
+    return parseDurationToMinutes(duration);
+  } else {
+    return calculateLegDurationInMinutes(leg);
+  }
+};
+
+const getTotalDuration = (flight: Flight): number => {
+  if (flight.returnSegments && flight.returnSegments.length > 0) {
+    // Round-trip: sum outbound and return durations
+    const outboundDuration = getLegDuration(flight.outboundSegments || [], flight.outboundDuration);
+    const returnDuration = getLegDuration(flight.returnSegments, flight.returnDuration);
+    return outboundDuration + returnDuration;
+  } else {
+    // One-way: use segments or outbound duration
+    return getLegDuration(flight.segments || [], flight.outboundDuration);
+  }
 };
 
 // Helper: Render carrier logo.
@@ -59,12 +101,13 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     departDate: '',
     returnDate: '',
     adults: '1',
-    flightType: 'roundTrip'
+    flightType: 'roundTrip',
   });
   const [advancedMode, setAdvancedMode] = useState(false);
   const [adultCount, setAdultCount] = useState<number>(1);
   const [iataMapping, setIataMapping] = useState<IataMapping>({});
   const [directFlightsOnly, setDirectFlightsOnly] = useState(false);
+  const [sortBy, setSortBy] = useState<'price' | 'duration' | ''>('');
 
   useEffect(() => {
     const fetchIataMapping = async () => {
@@ -77,7 +120,6 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           }
         });
         setIataMapping(mapping);
-        console.log("IATA Mapping:", mapping);
       } catch (err) {
         console.error('Error fetching IATA mapping:', err);
       }
@@ -123,7 +165,9 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  const handleAdvancedParamsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleAdvancedParamsChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setAdvancedParams(prev => ({ ...prev, [name]: value }));
   };
@@ -151,7 +195,9 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     setError('');
     setFlights([]);
     try {
-      const response = await axios.get('http://localhost:8080/flights/advancedFlightSearch', { params });
+      const response = await axios.get('http://localhost:8080/flights/advancedFlightSearch', {
+        params,
+      });
       setFlights(response.data || []);
     } catch (err) {
       console.error('Error fetching advanced flights:', err);
@@ -175,12 +221,15 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     return <span className="iata-tooltip" title={fullName}>{code}</span>;
   };
 
-  const renderSummaryRow = (leg: FlightSegment[], itineraryDuration?: string): JSX.Element => {
+  const renderSummaryRow = (
+    leg: FlightSegment[],
+    itineraryDuration?: string
+  ): JSX.Element => {
     const origin = renderIataCode(leg[0].origin);
     const destination = renderIataCode(leg[leg.length - 1].destination);
     const stopsCount = leg.length - 1;
     const stopsText = stopsCount === 0 ? 'Direct Flight' : `${stopsCount} Stop${stopsCount > 1 ? 's' : ''}`;
-    const totalDuration = itineraryDuration ? formatDuration(itineraryDuration) : calculateTotalDuration(leg);
+    const legDuration = itineraryDuration ? formatDuration(itineraryDuration) : calculateTotalDuration(leg);
     const { date, time } = formatDateTime(leg[0].departureDate);
     return (
       <div className="summary-row">
@@ -193,8 +242,10 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
               {origin} <span className="arrow">→</span> {destination}
             </div>
             <div className="details-container">
-              <div className="duration">{totalDuration}</div>
-              <div className={`stops ${stopsCount === 0 ? 'direct-flight' : 'with-stops'}`}>{stopsText}</div>
+              <div className="duration">{legDuration}</div>
+              <div className={`stops ${stopsCount === 0 ? 'direct-flight' : 'with-stops'}`}>
+                {stopsText}
+              </div>
             </div>
           </div>
         </div>
@@ -215,13 +266,27 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           return (
             <div key={idx} className="segment-detail">
               <div className="segment-route">
-                <p><strong>{renderIataCode(seg.origin)} → {renderIataCode(seg.destination)}</strong></p>
+                <p>
+                  <strong>
+                    {renderIataCode(seg.origin)} → {renderIataCode(seg.destination)}
+                  </strong>
+                </p>
                 <p className="segment-duration">{formatDuration(seg.duration)}</p>
               </div>
-              <p><strong>Departure:</strong> {departure.time} {departure.date} {seg.departureTerminal && `(Terminal ${seg.departureTerminal})`}</p>
-              <p><strong>Arrival:</strong> {arrival.time} {arrival.date} {seg.arrivalTerminal && `(Terminal ${seg.arrivalTerminal})`}</p>
-              <p><strong>Flight:</strong> {seg.carrierCode} {seg.flightNumber}</p>
-              <p><strong>Aircraft:</strong> {seg.aircraft}</p>
+              <p>
+                <strong>Departure:</strong> {departure.time} {departure.date}{' '}
+                {seg.departureTerminal && `(Terminal ${seg.departureTerminal})`}
+              </p>
+              <p>
+                <strong>Arrival:</strong> {arrival.time} {arrival.date}{' '}
+                {seg.arrivalTerminal && `(Terminal ${seg.arrivalTerminal})`}
+              </p>
+              <p>
+                <strong>Flight:</strong> {seg.carrierCode} {seg.flightNumber}
+              </p>
+              <p>
+                <strong>Aircraft:</strong> {seg.aircraft}
+              </p>
             </div>
           );
         })}
@@ -234,7 +299,9 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
       const perPerson = flight.price / adultCount;
       return (
         <div className="flight-price">
-          <div className="price-per-person"><span className="per-person">per person: </span>${perPerson.toFixed(2)}</div>
+          <div className="price-per-person">
+            <span className="per-person">per person: </span>${perPerson.toFixed(2)}
+          </div>
           <div className="total-price">Total: ${flight.price.toFixed(2)}</div>
         </div>
       );
@@ -250,7 +317,11 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   const renderFlightItem = (flight: Flight, index: number): JSX.Element => {
     const isRoundTrip = flight.returnSegments && flight.returnSegments.length > 0;
     return (
-      <div key={index} className={`flight-item ${isRoundTrip ? 'return-flight' : ''}`} onClick={() => toggleDetails(index)}>
+      <div
+        key={index}
+        className={`flight-item ${isRoundTrip ? 'return-flight' : ''}`}
+        onClick={() => toggleDetails(index)}
+      >
         <div className="flight-summary">
           <div className="flight-summary-details">
             {isRoundTrip ? (
@@ -280,19 +351,29 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     );
   };
 
-  // Updated filtering logic for direct flights
+  // Filtering logic for direct flights
   const filteredFlights = directFlightsOnly
     ? flights.filter(flight => {
         if (flight.returnSegments && flight.returnSegments.length > 0 && flight.outboundSegments) {
-          // Round-trip: show if either outbound or return is direct
           return flight.outboundSegments.length === 1 || flight.returnSegments.length === 1;
         } else if (flight.segments) {
-          // One-way: show only if direct
           return flight.segments.length === 1;
         }
-        return false; // Neither condition met
+        return false;
       })
     : flights;
+
+  // Sorting logic
+  const sortedFlights = sortBy
+    ? [...filteredFlights].sort((a, b) => {
+        if (sortBy === 'price') {
+          return (a.price || Infinity) - (b.price || Infinity);
+        } else if (sortBy === 'duration') {
+          return getTotalDuration(a) - getTotalDuration(b);
+        }
+        return 0;
+      })
+    : filteredFlights;
 
   return (
     <div className="flights-container">
@@ -312,45 +393,113 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
             Advanced Search
           </button>
         </div>
+        <div className="sort-controls">
+          <label>
+            <input
+              type="radio"
+              name="sort"
+              value="price"
+              checked={sortBy === 'price'}
+              onChange={() => setSortBy('price')}
+            />
+            Show Lowest Price
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="sort"
+              value="duration"
+              checked={sortBy === 'duration'}
+              onChange={() => setSortBy('duration')}
+            />
+            Show Fastest Flights
+          </label>
+        </div>
       </div>
       {showAdvancedSearch && (
         <div className="advanced-search-form">
           <div className="search-field">
             <label>Origin:</label>
-            <input type="text" name="origin" value={advancedParams.origin} onChange={handleAdvancedParamsChange} placeholder="Origin (default Tel Aviv)" />
+            <input
+              type="text"
+              name="origin"
+              value={advancedParams.origin}
+              onChange={handleAdvancedParamsChange}
+              placeholder="Origin (default Tel Aviv)"
+            />
           </div>
           <div className="search-field">
             <label>Destination:</label>
-            <input type="text" name="destination" value={advancedParams.destination} onChange={handleAdvancedParamsChange} placeholder="Destination" />
+            <input
+              type="text"
+              name="destination"
+              value={advancedParams.destination}
+              onChange={handleAdvancedParamsChange}
+              placeholder="Destination"
+            />
           </div>
           <div className="search-field">
             <label>Depart Date:</label>
-            <input type="date" name="departDate" value={advancedParams.departDate} onChange={handleAdvancedParamsChange} min={new Date().toISOString().split('T')[0]} />
+            <input
+              type="date"
+              name="departDate"
+              value={advancedParams.departDate}
+              onChange={handleAdvancedParamsChange}
+              min={new Date().toISOString().split('T')[0]}
+            />
           </div>
           {advancedParams.flightType === 'roundTrip' && (
             <div className="search-field">
               <label>Return Date:</label>
-              <input type="date" name="returnDate" value={advancedParams.returnDate} onChange={handleAdvancedParamsChange} min={advancedParams.departDate || new Date().toISOString().split('T')[0]} />
+              <input
+                type="date"
+                name="returnDate"
+                value={advancedParams.returnDate}
+                onChange={handleAdvancedParamsChange}
+                min={advancedParams.departDate || new Date().toISOString().split('T')[0]}
+              />
             </div>
           )}
           <div className="search-field">
             <label>Adults:</label>
-            <input type="number" name="adults" value={advancedParams.adults} onChange={handleAdultsChange} style={{ maxWidth: '80px' }} min="1" max="9" />
+            <input
+              type="number"
+              name="adults"
+              value={advancedParams.adults}
+              onChange={handleAdultsChange}
+              style={{ maxWidth: '80px' }}
+              min="1"
+              max="9"
+            />
           </div>
           <div className="search-field radio-field">
             <label>Flight Type:</label>
             <div>
               <label>
-                <input type="radio" name="flightType" value="roundTrip" checked={advancedParams.flightType === 'roundTrip'} onChange={handleAdvancedParamsChange} />
+                <input
+                  type="radio"
+                  name="flightType"
+                  value="roundTrip"
+                  checked={advancedParams.flightType === 'roundTrip'}
+                  onChange={handleAdvancedParamsChange}
+                />
                 Round Trip
               </label>
               <label style={{ marginLeft: '10px' }}>
-                <input type="radio" name="flightType" value="oneWay" checked={advancedParams.flightType === 'oneWay'} onChange={handleAdvancedParamsChange} />
+                <input
+                  type="radio"
+                  name="flightType"
+                  value="oneWay"
+                  checked={advancedParams.flightType === 'oneWay'}
+                  onChange={handleAdvancedParamsChange}
+                />
                 One-Way
               </label>
             </div>
           </div>
-          <button className="advanced-search-btn" onClick={handleAdvancedSearch}>Search</button>
+          <button className="advanced-search-btn" onClick={handleAdvancedSearch}>
+            Search
+          </button>
         </div>
       )}
       {loading && <Loader />}
@@ -362,7 +511,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           <p className="no-flights-message">No direct flights found.</p>
         )
       )}
-      {!loading && !error && filteredFlights.map((flight, index) => renderFlightItem(flight, index))}
+      {!loading && !error && sortedFlights.map((flight, index) => renderFlightItem(flight, index))}
     </div>
   );
 };

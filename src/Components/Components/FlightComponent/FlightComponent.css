@@ -311,3 +311,23 @@
   cursor: help;
   font-weight: bold;
 }
+
+.sort-controls {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  margin-top: 5px;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+}
+
+.sort-controls label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.sort-controls input[type="radio"] {
+  margin: 0;
+}
