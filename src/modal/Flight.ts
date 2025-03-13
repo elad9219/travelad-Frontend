@@ -7,6 +7,7 @@ export interface FlightSegment {
     carrierCode: string;
     flightNumber: string;
     aircraft: string;
+    aircraftFullName: string;
     departureTerminal?: string;
     arrivalTerminal?: string;
     airlineLogoUrl?: string; // New field for the logo URL

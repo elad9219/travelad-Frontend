@@ -285,7 +285,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
                 <strong>Flight:</strong> {seg.carrierCode} {seg.flightNumber}
               </p>
               <p>
-                <strong>Aircraft:</strong> {seg.aircraft}
+                <strong>Aircraft:</strong> {seg.aircraftFullName}
               </p>
             </div>
           );
