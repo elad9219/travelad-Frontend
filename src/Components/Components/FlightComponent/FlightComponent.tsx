@@ -71,12 +71,10 @@ const getLegDuration = (leg: FlightSegment[], duration?: string): number => {
 
 const getTotalDuration = (flight: Flight): number => {
   if (flight.returnSegments && flight.returnSegments.length > 0) {
-    // Round-trip: sum outbound and return durations
     const outboundDuration = getLegDuration(flight.outboundSegments || [], flight.outboundDuration);
     const returnDuration = getLegDuration(flight.returnSegments, flight.returnDuration);
     return outboundDuration + returnDuration;
   } else {
-    // One-way: use segments or outbound duration
     return getLegDuration(flight.segments || [], flight.outboundDuration);
   }
 };
@@ -120,7 +118,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           }
         });
         setIataMapping(mapping);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching IATA mapping:', err);
       }
     };
@@ -151,9 +149,13 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           params: { city, origin, departureDate: departDate, returnDate, adults },
         });
         setFlights(response.data || []);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error fetching flights:', err);
-        setError('An error occurred while fetching flights.');
+        if (err.response && err.response.data && typeof err.response.data === 'string') {
+          setError(err.response.data);
+        } else {
+          setError('An error occurred while fetching flights.');
+        }
       } finally {
         setLoading(false);
       }
@@ -199,9 +201,13 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
         params,
       });
       setFlights(response.data || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching advanced flights:', err);
-      setError('An error occurred while fetching flights.');
+      if (err.response && err.response.data && typeof err.response.data === 'string') {
+        setError(err.response.data);
+      } else {
+        setError('An error occurred while fetching flights.');
+      }
     } finally {
       setLoading(false);
       setAdvancedParams({
@@ -351,7 +357,6 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     );
   };
 
-  // Filtering logic for direct flights
   const filteredFlights = directFlightsOnly
     ? flights.filter(flight => {
         if (flight.returnSegments && flight.returnSegments.length > 0 && flight.outboundSegments) {
@@ -363,7 +368,6 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
       })
     : flights;
 
-  // Sorting logic
   const sortedFlights = sortBy
     ? [...filteredFlights].sort((a, b) => {
         if (sortBy === 'price') {
