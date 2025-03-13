@@ -20,7 +20,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
         ? Array.from(new Set(response.data)).slice(0, 8)
         : [];
       setRecentCities(cities);
-      setFilteredCities(cities); // Initially, show all recent cities
+      setFilteredCities(cities);
       updateCities(cities);
     } catch (err) {
       console.error('Error fetching recent cities:', err);
@@ -43,7 +43,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
       );
       setFilteredCities(filtered);
     } else {
-      setFilteredCities(recentCities); // Show all recent cities when input is empty
+      setFilteredCities(recentCities);
     }
   };
 
@@ -110,6 +110,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
 
   return (
     <div className="search-section">
+      <img
+        src="https://i.postimg.cc/15rbQdXx/travelad-logo.png" // Your updated logo URL
+        alt="Travelad Logo"
+        className="logo"
+      />
       <h1>Search for a Place</h1>
       <form onSubmit={handleSearch} className="search-bar">
         <input
