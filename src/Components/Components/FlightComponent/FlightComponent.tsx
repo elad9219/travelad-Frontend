@@ -300,15 +300,15 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
       return (
         <div className="flight-price">
           <div className="price-per-person">
-            <span className="per-person">per person: </span>${perPerson.toFixed(2)}
+            <span className="per-person">per person: </span>€{perPerson.toFixed(2)}
           </div>
-          <div className="total-price">Total: ${flight.price.toFixed(2)}</div>
+          <div className="total-price">Total: €{flight.price.toFixed(2)}</div>
         </div>
       );
     } else {
       return (
         <div className="flight-price">
-          {flight.price ? `$${flight.price.toFixed(2)}` : 'N/A'}
+          {flight.price ? `€${flight.price.toFixed(2)}` : 'N/A'}
         </div>
       );
     }
