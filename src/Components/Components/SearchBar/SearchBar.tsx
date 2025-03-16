@@ -9,19 +9,19 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
   const [placeName, setPlaceName] = useState('');
-  const [recentCities, setRecentCities] = useState<string[]>([]);
-  const [filteredCities, setFilteredCities] = useState<string[]>([]);
+  const [recentCities, setRecentCities] = useState<string[]>([]); // Full list for autocomplete
+  const [filteredCities, setFilteredCities] = useState<string[]>([]); // Filtered suggestions
   const [showSuggestions, setShowSuggestions] = useState(false);
 
   const fetchRecentCities = useCallback(async () => {
     try {
       const response = await axios.get('http://localhost:8080/cache/cities/autocomplete');
-      const cities = Array.isArray(response.data)
-        ? Array.from(new Set(response.data)).slice(0, 8)
+      const allCities = Array.isArray(response.data)
+        ? Array.from(new Set(response.data)) // Remove duplicates, keep all cities
         : [];
-      setRecentCities(cities);
-      setFilteredCities(cities);
-      updateCities(cities);
+      setRecentCities(allCities); // Store full list for autocomplete
+      setFilteredCities(allCities.slice(0, 8)); // Show only last 8 by default
+      updateCities(allCities.slice(0, 8)); // Pass last 8 to parent
     } catch (err) {
       console.error('Error fetching recent cities:', err);
       setRecentCities([]);
@@ -41,9 +41,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
       const filtered = recentCities.filter(city =>
         city.toLowerCase().startsWith(input.toLowerCase())
       );
-      setFilteredCities(filtered);
+      setFilteredCities(filtered); // Filter from full list
     } else {
-      setFilteredCities(recentCities);
+      setFilteredCities(recentCities.slice(0, 8)); // Show last 8 when input is empty
     }
   };
 
@@ -52,11 +52,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
       e.preventDefault();
       if (placeName.trim()) {
         onSearch(placeName);
-        const updatedCities = Array.from(new Set([placeName, ...recentCities])).slice(0, 8);
-        setRecentCities(updatedCities);
-        setFilteredCities(updatedCities);
+        const updatedCities = Array.from(new Set([placeName, ...recentCities.filter(c => c !== placeName)]));
+        setRecentCities(updatedCities); // Update full list
+        setFilteredCities(updatedCities.slice(0, 8)); // Show last 8
         setShowSuggestions(false);
-        updateCities(updatedCities);
+        updateCities(updatedCities.slice(0, 8)); // Pass last 8 to parent
         try {
           await axios.post('http://localhost:8080/cache/cities', { city: placeName });
         } catch (err) {
@@ -71,11 +71,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     (city: string) => {
       setPlaceName(city);
       onSearch(city);
-      const updatedCities = Array.from(new Set([city, ...recentCities.filter((c) => c !== city)])).slice(0, 8);
-      setRecentCities(updatedCities);
-      setFilteredCities(updatedCities);
+      const updatedCities = Array.from(new Set([city, ...recentCities.filter(c => c !== city)]));
+      setRecentCities(updatedCities); // Update full list
+      setFilteredCities(updatedCities.slice(0, 8)); // Show last 8
       setShowSuggestions(false);
-      updateCities(updatedCities);
+      updateCities(updatedCities.slice(0, 8)); // Pass last 8 to parent
     },
     [onSearch, recentCities, updateCities]
   );
@@ -83,12 +83,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
   const handleRemoveCity = useCallback(
     async (city: string) => {
       const newList = recentCities.filter((item) => item !== city);
-      setRecentCities(newList);
-      setFilteredCities(newList);
-      updateCities(newList);
+      setRecentCities(newList); // Update full list
+      setFilteredCities(newList.slice(0, 8)); // Show last 8
+      updateCities(newList.slice(0, 8)); // Pass last 8 to parent
       try {
         await axios.delete('http://localhost:8080/cache/cities', { params: { city } });
-        fetchRecentCities();
+        fetchRecentCities(); // Refresh full list from Redis
       } catch (err) {
         console.error('Error removing city:', err);
         fetchRecentCities();
@@ -111,7 +111,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
   return (
     <div className="search-section">
       <img
-        src="https://i.postimg.cc/15rbQdXx/travelad-logo.png" // Your updated logo URL
+        src="https://i.postimg.cc/15rbQdXx/travelad-logo.png"
         alt="Travelad Logo"
         className="logo"
       />
