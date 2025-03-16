@@ -1,4 +1,3 @@
-// src/Components/Components/HotelComponent/HotelComponent.tsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './HotelComponent.css';
@@ -33,7 +32,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   const [hotelsError, setHotelsError] = useState<string | null>(null);
   const [expandedHotelIndex, setExpandedHotelIndex] = useState<number | null>(null);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
-  const [searchParams, setSearchParams] = useState({ checkInDate: '', checkOutDate: '', adults: '' });
+  const [searchParams, setSearchParams] = useState({ checkInDate: '', checkOutDate: '', adults: '1' });
   const [isFetchingOffers, setIsFetchingOffers] = useState(false);
 
   useEffect(() => {
@@ -57,13 +56,46 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
 
   useEffect(() => {
     if (showAdvancedSearch) {
-      setSearchParams({ checkInDate: '', checkOutDate: '', adults: '' });
+      setSearchParams({ checkInDate: '', checkOutDate: '', adults: '1' });
     }
   }, [showAdvancedSearch]);
 
   const handleSearchParamsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setSearchParams(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleHotelAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numValue = parseInt(value, 10);
+    // Only allow empty string (while typing) or numbers 1-4
+    if (value === '' || (Number.isInteger(numValue) && numValue >= 1 && numValue <= 4)) {
+      setSearchParams(prev => ({ ...prev, adults: value }));
+    } else {
+      // If outside 1-4, reset to the nearest valid value
+      setSearchParams(prev => ({
+        ...prev,
+        adults: numValue < 1 ? '1' : '4'
+      }));
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // Block all keys except numbers 1-4, arrows, backspace, and tab
+    const allowedKeys = ['1', '2', '3', '4', 'ArrowUp', 'ArrowDown', 'Backspace', 'Tab'];
+    if (!allowedKeys.includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  const handleBlur = () => {
+    const numValue = parseInt(searchParams.adults, 10);
+    // If invalid or empty, reset to 1
+    if (isNaN(numValue) || numValue < 1) {
+      setSearchParams(prev => ({ ...prev, adults: '1' }));
+    } else if (numValue > 4) {
+      setSearchParams(prev => ({ ...prev, adults: '4' }));
+    }
   };
 
   const fetchHotelOffersInBatches = async () => {
@@ -78,8 +110,9 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
         const result = await axios.get<HotelOffersDto[]>('http://localhost:8080/hotels/offers', {
           params: {
             hotelIds: batch,
-            ...searchParams,
-            adults: searchParams.adults ? parseInt(searchParams.adults, 10) : undefined
+            checkInDate: searchParams.checkInDate,
+            checkOutDate: searchParams.checkOutDate,
+            adults: searchParams.adults ? parseInt(searchParams.adults, 10) : 1
           }
         });
         setHotelOffers(prev => [...prev, ...result.data]);
@@ -95,16 +128,12 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
     setExpandedHotelIndex(expandedHotelIndex === index ? null : index);
   };
 
-  // "Show on Map" handler:
-  // If geoCode is available, use its coordinates.
-  // Otherwise, form a query using the hotel name, cityName, and countryName.
   const handleShowHotelOnMap = (hotel: HotelDto | HotelOffersDto, e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     let mapQuery = "";
     if (isHotelDto(hotel) && hotel.geoCode && hotel.geoCode.latitude !== 0 && hotel.geoCode.longitude !== 0) {
       mapQuery = `${hotel.geoCode.latitude},${hotel.geoCode.longitude}`;
     } else {
-      // Fallback: use a combined query.
       mapQuery = `${hotel.name}, ${cityName}, ${countryName}`;
     }
     onShowHotelOnMap(mapQuery);
@@ -222,8 +251,13 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
               type="number"
               name="adults"
               value={searchParams.adults}
-              onChange={handleSearchParamsChange}
+              onChange={handleHotelAdultsChange}
+              onKeyDown={handleKeyDown}
+              onBlur={handleBlur}
               style={{ maxWidth: '80px' }}
+              min="1"
+              max="4"
+              step="1"
             />
           </div>
           <button className="advanced-search-btn" onClick={fetchHotelOffersInBatches}>Search</button>

@@ -174,10 +174,38 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     setAdvancedParams(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    if (value === '' || /^[1-9]$/.test(value)) {
+  // Handle changes to the adults input
+  const handleFlightAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const numValue = parseInt(value, 10);
+    if (value === '' || (Number.isInteger(numValue) && numValue >= 1 && numValue <= 9)) {
       setAdvancedParams(prev => ({ ...prev, adults: value }));
+    } else {
+      setAdvancedParams(prev => ({
+        ...prev,
+        adults: numValue < 1 ? '1' : '9'
+      }));
+    }
+  };
+
+  // Restrict key presses to 1-9, arrow keys, backspace, and tab
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowedKeys = [
+      '1', '2', '3', '4', '5', '6', '7', '8', '9',
+      'ArrowUp', 'ArrowDown', 'Backspace', 'Tab'
+    ];
+    if (!allowedKeys.includes(e.key)) {
+      e.preventDefault();
+    }
+  };
+
+  // Correct the input value on blur if out of range
+  const handleBlur = () => {
+    const numValue = parseInt(advancedParams.adults, 10);
+    if (isNaN(numValue) || numValue < 1) {
+      setAdvancedParams(prev => ({ ...prev, adults: '1' }));
+    } else if (numValue > 9) {
+      setAdvancedParams(prev => ({ ...prev, adults: '9' }));
     }
   };
 
@@ -470,10 +498,13 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
               type="number"
               name="adults"
               value={advancedParams.adults}
-              onChange={handleAdultsChange}
+              onChange={handleFlightAdultsChange}
+              onKeyDown={handleKeyDown}
+              onBlur={handleBlur}
               style={{ maxWidth: '80px' }}
               min="1"
               max="9"
+              step="1"
             />
           </div>
           <div className="search-field radio-field">
