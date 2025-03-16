@@ -173,3 +173,10 @@
   font-size: clamp(0.95rem, 2vw, 0.95rem);
   color: #000; /* Changed to black */
 }
+
+.no-offers-message {
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  color: #666;
+  text-align: center;
+  margin-top: 10px;
+}

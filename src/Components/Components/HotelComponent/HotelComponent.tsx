@@ -34,6 +34,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [searchParams, setSearchParams] = useState({ checkInDate: '', checkOutDate: '', adults: '1' });
   const [isFetchingOffers, setIsFetchingOffers] = useState(false);
+  const [advancedSearchPerformed, setAdvancedSearchPerformed] = useState(false); // New state to track advanced search
 
   useEffect(() => {
     const fetchHotels = async () => {
@@ -45,6 +46,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
         );
         setHotels(response.data);
         setHotelOffers([]);
+        setAdvancedSearchPerformed(false); // Reset when fetching hotels by city
       } catch (error) {
         setHotelsError('Error fetching hotels');
       } finally {
@@ -68,11 +70,9 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   const handleHotelAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const numValue = parseInt(value, 10);
-    // Only allow empty string (while typing) or numbers 1-4
     if (value === '' || (Number.isInteger(numValue) && numValue >= 1 && numValue <= 4)) {
       setSearchParams(prev => ({ ...prev, adults: value }));
     } else {
-      // If outside 1-4, reset to the nearest valid value
       setSearchParams(prev => ({
         ...prev,
         adults: numValue < 1 ? '1' : '4'
@@ -81,7 +81,6 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // Block all keys except numbers 1-4, arrows, backspace, and tab
     const allowedKeys = ['1', '2', '3', '4', 'ArrowUp', 'ArrowDown', 'Backspace', 'Tab'];
     if (!allowedKeys.includes(e.key)) {
       e.preventDefault();
@@ -90,7 +89,6 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
 
   const handleBlur = () => {
     const numValue = parseInt(searchParams.adults, 10);
-    // If invalid or empty, reset to 1
     if (isNaN(numValue) || numValue < 1) {
       setSearchParams(prev => ({ ...prev, adults: '1' }));
     } else if (numValue > 4) {
@@ -103,6 +101,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
     setHotelOffers([]);
     setHotelsError(null);
     setShowAdvancedSearch(false);
+    setAdvancedSearchPerformed(true); // Indicate that an advanced search is performed
     try {
       const hotelIds = hotels.map(hotel => hotel.hotelId);
       for (let i = 0; i < hotelIds.length; i += BATCH_SIZE) {
@@ -119,6 +118,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
       }
     } catch (error) {
       console.error('Error performing advanced search:', error);
+      setHotelsError('Error fetching hotel offers');
     } finally {
       setIsFetchingOffers(false);
     }
@@ -170,6 +170,12 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   );
 
   const renderHotels = () => {
+    // If an advanced search was performed and no offers were found, show a message
+    if (advancedSearchPerformed && hotelOffers.length === 0) {
+      return <p className="no-offers-message">No hotel offers found for the selected criteria.</p>;
+    }
+
+    // Otherwise, render the list of hotel offers or hotels
     const hotelList = hotelOffers.length > 0 ? hotelOffers : hotels;
     return (
       <div className="hotels-list">
