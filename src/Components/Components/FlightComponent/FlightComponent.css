@@ -330,3 +330,11 @@
 .sort-controls input[type="radio"] {
   margin: 0;
 }
+
+.search-field.invalid input {
+  border: 2px solid red;
+}
+
+.search-field.invalid label {
+  color: red;
+}

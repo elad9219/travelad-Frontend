@@ -106,6 +106,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   const [iataMapping, setIataMapping] = useState<IataMapping>({});
   const [directFlightsOnly, setDirectFlightsOnly] = useState(false);
   const [sortBy, setSortBy] = useState<'price' | 'duration' | ''>('');
+  const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
   useEffect(() => {
     const fetchIataMapping = async () => {
@@ -172,14 +173,19 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   ) => {
     const { name, value } = e.target;
     setAdvancedParams(prev => ({ ...prev, [name]: value }));
+    if (invalidFields.includes(name)) {
+      setInvalidFields(prev => prev.filter(field => field !== name));
+    }
   };
 
-  // Handle changes to the adults input
   const handleFlightAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     const numValue = parseInt(value, 10);
     if (value === '' || (Number.isInteger(numValue) && numValue >= 1 && numValue <= 9)) {
       setAdvancedParams(prev => ({ ...prev, adults: value }));
+      if (invalidFields.includes('adults')) {
+        setInvalidFields(prev => prev.filter(field => field !== 'adults'));
+      }
     } else {
       setAdvancedParams(prev => ({
         ...prev,
@@ -188,7 +194,6 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     }
   };
 
-  // Restrict key presses to 1-9, arrow keys, backspace, and tab
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const allowedKeys = [
       '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -199,7 +204,6 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     }
   };
 
-  // Correct the input value on blur if out of range
   const handleBlur = () => {
     const numValue = parseInt(advancedParams.adults, 10);
     if (isNaN(numValue) || numValue < 1) {
@@ -209,7 +213,28 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     }
   };
 
+  const validateForm = (): string[] => {
+    const { origin, destination, departDate, returnDate, adults, flightType } = advancedParams;
+    const adultsNum = parseInt(adults, 10);
+    const isAdultsValid = adults.trim() !== '' && !isNaN(adultsNum) && adultsNum >= 1 && adultsNum <= 9;
+
+    const requiredFields = flightType === 'roundTrip'
+      ? ['origin', 'destination', 'departDate', 'returnDate']
+      : ['origin', 'destination', 'departDate'];
+
+    const invalid: string[] = requiredFields.filter(field => !advancedParams[field as keyof AdvancedSearchParams].trim());
+    if (!isAdultsValid) invalid.push('adults');
+
+    return invalid;
+  };
+
   const handleAdvancedSearch = async () => {
+    const invalid = validateForm();
+    if (invalid.length > 0) {
+      setInvalidFields(invalid);
+      return;
+    }
+    setInvalidFields([]);
     setShowAdvancedSearch(false);
     setAdvancedMode(true);
     const count = parseInt(advancedParams.adults, 10) || 1;
@@ -450,7 +475,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
       </div>
       {showAdvancedSearch && (
         <div className="advanced-search-form">
-          <div className="search-field">
+          <div className={`search-field ${invalidFields.includes('origin') ? 'invalid' : ''}`}>
             <label>Origin:</label>
             <input
               type="text"
@@ -460,7 +485,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
               placeholder="Origin (default Tel Aviv)"
             />
           </div>
-          <div className="search-field">
+          <div className={`search-field ${invalidFields.includes('destination') ? 'invalid' : ''}`}>
             <label>Destination:</label>
             <input
               type="text"
@@ -470,7 +495,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
               placeholder="Destination"
             />
           </div>
-          <div className="search-field">
+          <div className={`search-field ${invalidFields.includes('departDate') ? 'invalid' : ''}`}>
             <label>Depart Date:</label>
             <input
               type="date"
@@ -481,7 +506,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
             />
           </div>
           {advancedParams.flightType === 'roundTrip' && (
-            <div className="search-field">
+            <div className={`search-field ${invalidFields.includes('returnDate') ? 'invalid' : ''}`}>
               <label>Return Date:</label>
               <input
                 type="date"
@@ -492,7 +517,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
               />
             </div>
           )}
-          <div className="search-field">
+          <div className={`search-field ${invalidFields.includes('adults') ? 'invalid' : ''}`}>
             <label>Adults:</label>
             <input
               type="number"
@@ -532,7 +557,10 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
               </label>
             </div>
           </div>
-          <button className="advanced-search-btn" onClick={handleAdvancedSearch}>
+          <button
+            className="advanced-search-btn"
+            onClick={handleAdvancedSearch}
+          >
             Search
           </button>
         </div>
