@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './HotelComponent.css';
 import { HotelDto, HotelOffersDto } from '../../../modal/Hotel';
+import globals from '../../../utils/globals';
 
 interface HotelComponentProps {
   cityName: string;
-  countryName: string; // Full country name (e.g., "Poland")
+  countryName: string; 
   onShowHotelOnMap: (query: string) => void;
 }
 
-// Type guard to check if a hotel is a basic HotelDto (with hotelId and geoCode)
 function isHotelDto(hotel: HotelDto | HotelOffersDto): hotel is HotelDto {
   return (hotel as HotelDto).hotelId !== undefined;
 }
@@ -21,34 +21,33 @@ const toTitleCase = (str: string): string =>
 
 const formatDate = (dateStr: string): string => {
   const date = new Date(dateStr);
-  return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
-    .toString().padStart(2, '0')}/${date.getFullYear()}`;
+  return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
 };
 
 const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, onShowHotelOnMap }) => {
   const [hotels, setHotels] = useState<HotelDto[]>([]);
   const [hotelOffers, setHotelOffers] = useState<HotelOffersDto[]>([]);
   const [hotelsLoading, setHotelsLoading] = useState(false);
-  const [hotelsError, setHotelsError] = useState<string | null>(null);
+  const [hotelsFetchError, setHotelsFetchError] = useState<string | null>(null);
   const [expandedHotelIndex, setExpandedHotelIndex] = useState<number | null>(null);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [searchParams, setSearchParams] = useState({ checkInDate: '', checkOutDate: '', adults: '1' });
   const [isFetchingOffers, setIsFetchingOffers] = useState(false);
-  const [advancedSearchPerformed, setAdvancedSearchPerformed] = useState(false); // New state to track advanced search
+  const [advancedSearchPerformed, setAdvancedSearchPerformed] = useState(false);
 
   useEffect(() => {
     const fetchHotels = async () => {
       setHotelsLoading(true);
-      setHotelsError(null);
+      setHotelsFetchError(null);
       try {
-        const response = await axios.get<HotelDto[]>(
-          `http://localhost:8080/hotels/by-city-name?cityName=${encodeURIComponent(cityName)}`
-        );
+        const response = await axios.get<HotelDto[]>(`${globals.api.hotels}?cityName=${encodeURIComponent(cityName)}`);
         setHotels(response.data);
         setHotelOffers([]);
-        setAdvancedSearchPerformed(false); // Reset when fetching hotels by city
+        setAdvancedSearchPerformed(false);
       } catch (error) {
-        setHotelsError('Error fetching hotels');
+        console.error('Error fetching hotels:', error);
+        setHotelsFetchError('Error loading hotels. Please try again later.');
+        setHotels([]);
       } finally {
         setHotelsLoading(false);
       }
@@ -73,10 +72,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
     if (value === '' || (Number.isInteger(numValue) && numValue >= 1 && numValue <= 4)) {
       setSearchParams(prev => ({ ...prev, adults: value }));
     } else {
-      setSearchParams(prev => ({
-        ...prev,
-        adults: numValue < 1 ? '1' : '4'
-      }));
+      setSearchParams(prev => ({ ...prev, adults: numValue < 1 ? '1' : '4' }));
     }
   };
 
@@ -99,14 +95,14 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   const fetchHotelOffersInBatches = async () => {
     setIsFetchingOffers(true);
     setHotelOffers([]);
-    setHotelsError(null);
+    setHotelsFetchError(null);
     setShowAdvancedSearch(false);
-    setAdvancedSearchPerformed(true); // Indicate that an advanced search is performed
+    setAdvancedSearchPerformed(true);
     try {
       const hotelIds = hotels.map(hotel => hotel.hotelId);
       for (let i = 0; i < hotelIds.length; i += BATCH_SIZE) {
         const batch = hotelIds.slice(i, i + BATCH_SIZE).join(',');
-        const result = await axios.get<HotelOffersDto[]>('http://localhost:8080/hotels/offers', {
+        const result = await axios.get<HotelOffersDto[]>(`${globals.api.hotelOffers}`, {
           params: {
             hotelIds: batch,
             checkInDate: searchParams.checkInDate,
@@ -118,7 +114,8 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
       }
     } catch (error) {
       console.error('Error performing advanced search:', error);
-      setHotelsError('Error fetching hotel offers');
+      setHotelsFetchError('Error loading hotel offers. Please try again later.');
+      setHotelOffers([]);
     } finally {
       setIsFetchingOffers(false);
     }
@@ -170,19 +167,20 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   );
 
   const renderHotels = () => {
-    // If an advanced search was performed and no offers were found, show a message
+    if (hotelsFetchError) {
+      return <p className="error-message">{hotelsFetchError}</p>;
+    }
     if (advancedSearchPerformed && hotelOffers.length === 0) {
       return <p className="no-offers-message">No hotel offers found for the selected criteria.</p>;
     }
-
-    // Otherwise, render the list of hotel offers or hotels
     const hotelList = hotelOffers.length > 0 ? hotelOffers : hotels;
+    if (!Array.isArray(hotelList)) {
+      return <p className="error-message">Error: Invalid data format for hotels.</p>;
+    }
     return (
       <div className="hotels-list">
         {hotelList.map((hotel, index) => {
-          const key = hotelOffers.length > 0
-            ? index
-            : (isHotelDto(hotel) ? hotel.hotelId : index);
+          const key = hotelOffers.length > 0 ? index : (isHotelDto(hotel) ? hotel.hotelId : index);
           const offer = hotelOffers.length > 0 ? hotel as HotelOffersDto : null;
           return (
             <div key={key} className="hotel-item" onClick={() => toggleHotelDetails(index)}>
@@ -270,7 +268,6 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
         </div>
       )}
       {hotelsLoading && <div className="loader">Loading hotels...</div>}
-      {hotelsError && <p className="error-message">{hotelsError}</p>}
       {isFetchingOffers ? (
         <div className="loader">Loading offers...</div>
       ) : (

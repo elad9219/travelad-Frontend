@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Weather } from '../../../modal/Weather';
 import './WeatherComponent.css';
+import globals from '../../../utils/globals';
 
 interface WeatherProps {
     city: string;
@@ -16,7 +17,9 @@ const WeatherComponent: React.FC<WeatherProps> = ({ city }) => {
         const fetchWeather = async () => {
             setLoading(true);
             try {
-                const response = await axios.get<Weather>(`http://localhost:8080/weather?city=${encodeURIComponent(city)}`);
+                const response = await axios.get<Weather>(globals.api.weather, {
+                    params: { city: encodeURIComponent(city) }
+                });
                 setWeather(response.data);
                 setError(null);
             } catch (err) {
@@ -33,7 +36,6 @@ const WeatherComponent: React.FC<WeatherProps> = ({ city }) => {
 
     const getWeatherClass = () => {
         if (!weather || !weather.condition) return 'default';
-        // Convert condition to lowercase and replace spaces with hyphens for matching CSS class
         return weather.condition.toLowerCase().replace(/\s+/g, '-');
     };
 

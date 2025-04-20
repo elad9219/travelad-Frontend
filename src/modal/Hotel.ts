@@ -1,4 +1,3 @@
-// modal/Hotel.ts
 export interface VendorDto {
     name: string;
     price: number;
@@ -34,7 +33,6 @@ export interface VendorDto {
     checkInDate?: string;
     checkOutDate?: string;
     room?: RoomDto;
-    // Optionally, offers may include geoCode info:
     latitude?: number;
     longitude?: number;
   }

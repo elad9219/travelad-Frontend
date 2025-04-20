@@ -3,6 +3,7 @@ import axios from 'axios';
 import Loader from '../Loader/Loader';
 import './FlightComponent.css';
 import { AdvancedSearchParams, Flight, FlightSegment, IataMapping } from '../../../modal/Flight';
+import globals from '../../../utils/globals';
 
 // Format a date-time string.
 const formatDateTime = (dateTime: string): { date: string; time: string } => {
@@ -108,159 +109,123 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   const [sortBy, setSortBy] = useState<'price' | 'duration' | ''>('');
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
+  // load IATA codes
   useEffect(() => {
-    const fetchIataMapping = async () => {
-      try {
-        const response = await axios.get('http://localhost:8080/iata-codes');
+    axios.get(globals.api.iataCodes)
+      .then(res => {
         const mapping: IataMapping = {};
-        response.data.forEach((entry: any) => {
+        res.data.forEach((entry: any) => {
           if (entry["AIRPORT CODE"] && entry["FULL NAME"]) {
             mapping[entry["AIRPORT CODE"].toUpperCase()] = entry["FULL NAME"];
           }
         });
         setIataMapping(mapping);
-      } catch (err: any) {
-        console.error('Error fetching IATA mapping:', err);
-      }
-    };
-    fetchIataMapping();
+      })
+      .catch(err => console.error('Error fetching IATA mapping:', err));
   }, []);
 
+  // reset advanced mode on city change
   useEffect(() => {
     setAdvancedMode(false);
   }, [city]);
 
+  // fetch regular flights
   useEffect(() => {
-    if (!city) return;
-    if (advancedMode) return;
-    const fetchFlights = async () => {
-      setLoading(true);
-      setError('');
-      setFlights([]);
-      try {
-        const origin = 'TLV';
-        const departDateObj = new Date();
-        departDateObj.setDate(departDateObj.getDate() + 10);
-        const returnDateObj = new Date();
-        returnDateObj.setDate(returnDateObj.getDate() + 15);
-        const adults = '1';
-        const departDate = departDateObj.toISOString().split('T')[0];
-        const returnDate = returnDateObj.toISOString().split('T')[0];
-        const response = await axios.get('http://localhost:8080/flights', {
-          params: { city, origin, departureDate: departDate, returnDate, adults },
-        });
-        setFlights(response.data || []);
-      } catch (err: any) {
+    if (!city || advancedMode) return;
+    setLoading(true);
+    setError('');
+    setFlights([]);
+
+    const departDateObj = new Date();
+    departDateObj.setDate(departDateObj.getDate() + 10);
+    const returnDateObj = new Date();
+    returnDateObj.setDate(returnDateObj.getDate() + 15);
+
+    axios.get<Flight[]>(globals.api.flights, {
+      params: {
+        city,
+        origin: 'TLV',
+        departureDate: departDateObj.toISOString().split('T')[0],
+        returnDate: returnDateObj.toISOString().split('T')[0],
+        adults: '1'
+      },
+      timeout: 30000
+    })
+      .then(res => {
+        setFlights(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch(err => {
         console.error('Error fetching flights:', err);
-        if (err.response && err.response.data && typeof err.response.data === 'string') {
-          setError(err.response.data);
-        } else {
-          setError('An error occurred while fetching flights.');
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchFlights();
+        setError(typeof err.response?.data === 'string' ? err.response.data : 'An error occurred while fetching flights.');
+      })
+      .finally(() => setLoading(false));
   }, [city, advancedMode]);
 
   const toggleDetails = (index: number) => {
     setExpandedIndex(expandedIndex === index ? null : index);
   };
 
-  const handleAdvancedParamsChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
+  const handleAdvancedParamsChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setAdvancedParams(prev => ({ ...prev, [name]: value }));
-    if (invalidFields.includes(name)) {
-      setInvalidFields(prev => prev.filter(field => field !== name));
-    }
+    setInvalidFields(prev => prev.filter(f => f !== name));
   };
 
   const handleFlightAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const numValue = parseInt(value, 10);
-    if (value === '' || (Number.isInteger(numValue) && numValue >= 1 && numValue <= 9)) {
+    const { value } = e.target;
+    const num = parseInt(value, 10);
+    if (value === '' || (Number.isInteger(num) && num >= 1 && num <= 9)) {
       setAdvancedParams(prev => ({ ...prev, adults: value }));
-      if (invalidFields.includes('adults')) {
-        setInvalidFields(prev => prev.filter(field => field !== 'adults'));
-      }
-    } else {
-      setAdvancedParams(prev => ({
-        ...prev,
-        adults: numValue < 1 ? '1' : '9'
-      }));
+      setInvalidFields(prev => prev.filter(f => f !== 'adults'));
     }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowedKeys = [
-      '1', '2', '3', '4', '5', '6', '7', '8', '9',
-      'ArrowUp', 'ArrowDown', 'Backspace', 'Tab'
-    ];
-    if (!allowedKeys.includes(e.key)) {
-      e.preventDefault();
-    }
+    const allowed = ['1','2','3','4','5','6','7','8','9','ArrowUp','ArrowDown','Backspace','Tab'];
+    if (!allowed.includes(e.key)) e.preventDefault();
   };
 
   const handleBlur = () => {
-    const numValue = parseInt(advancedParams.adults, 10);
-    if (isNaN(numValue) || numValue < 1) {
-      setAdvancedParams(prev => ({ ...prev, adults: '1' }));
-    } else if (numValue > 9) {
-      setAdvancedParams(prev => ({ ...prev, adults: '9' }));
-    }
+    const num = parseInt(advancedParams.adults, 10);
+    if (isNaN(num) || num < 1) setAdvancedParams(prev => ({ ...prev, adults: '1' }));
+    else if (num > 9) setAdvancedParams(prev => ({ ...prev, adults: '9' }));
   };
 
   const validateForm = (): string[] => {
-    const { origin, destination, departDate, returnDate, adults, flightType } = advancedParams;
-    const adultsNum = parseInt(adults, 10);
-    const isAdultsValid = adults.trim() !== '' && !isNaN(adultsNum) && adultsNum >= 1 && adultsNum <= 9;
-
-    const requiredFields = flightType === 'roundTrip'
-      ? ['origin', 'destination', 'departDate', 'returnDate']
-      : ['origin', 'destination', 'departDate'];
-
-    const invalid: string[] = requiredFields.filter(field => !advancedParams[field as keyof AdvancedSearchParams].trim());
-    if (!isAdultsValid) invalid.push('adults');
-
+    const fields = advancedParams.flightType === 'roundTrip'
+      ? ['origin','destination','departDate','returnDate']
+      : ['origin','destination','departDate'];
+    const invalid = fields.filter(f => !advancedParams[f as keyof AdvancedSearchParams].trim());
+    if (!advancedParams.adults.trim()) invalid.push('adults');
     return invalid;
   };
 
   const handleAdvancedSearch = async () => {
-    const invalid = validateForm();
-    if (invalid.length > 0) {
-      setInvalidFields(invalid);
+    const inv = validateForm();
+    if (inv.length) {
+      setInvalidFields(inv);
       return;
     }
     setInvalidFields([]);
     setShowAdvancedSearch(false);
     setAdvancedMode(true);
-    const count = parseInt(advancedParams.adults, 10) || 1;
-    setAdultCount(count);
+    setLoading(true);
+
     const params = {
       origin: advancedParams.origin,
       destination: advancedParams.destination,
       departDate: advancedParams.departDate,
       returnDate: advancedParams.flightType === 'roundTrip' ? advancedParams.returnDate : '',
-      adults: advancedParams.adults,
+      adults: advancedParams.adults
     };
-    setLoading(true);
-    setError('');
-    setFlights([]);
+
     try {
-      const response = await axios.get('http://localhost:8080/flights/advancedFlightSearch', {
-        params,
-      });
-      setFlights(response.data || []);
+      const res = await axios.get<Flight[]>(globals.api.advancedFlights, { params });
+      setFlights(Array.isArray(res.data) ? res.data : []);
+      setAdultCount(parseInt(advancedParams.adults, 10) || 1);
     } catch (err: any) {
       console.error('Error fetching advanced flights:', err);
-      if (err.response && err.response.data && typeof err.response.data === 'string') {
-        setError(err.response.data);
-      } else {
-        setError('An error occurred while fetching flights.');
-      }
+      setError(typeof err.response?.data === 'string' ? err.response.data : 'An error occurred while fetching flights.');
     } finally {
       setLoading(false);
       setAdvancedParams({
@@ -269,26 +234,21 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
         departDate: '',
         returnDate: '',
         adults: '1',
-        flightType: 'roundTrip',
+        flightType: 'roundTrip'
       });
     }
   };
 
   const renderIataCode = (code: string): JSX.Element => {
-    const key = code.trim().toUpperCase();
-    const fullName = iataMapping[key] || code;
-    return <span className="iata-tooltip" title={fullName}>{code}</span>;
+    const full = iataMapping[code.toUpperCase()] || code;
+    return <span className="iata-tooltip" title={full}>{code}</span>;
   };
 
-  const renderSummaryRow = (
-    leg: FlightSegment[],
-    itineraryDuration?: string
-  ): JSX.Element => {
+  const renderSummaryRow = (leg: FlightSegment[], dur?: string): JSX.Element => {
     const origin = renderIataCode(leg[0].origin);
-    const destination = renderIataCode(leg[leg.length - 1].destination);
-    const stopsCount = leg.length - 1;
-    const stopsText = stopsCount === 0 ? 'Direct Flight' : `${stopsCount} Stop${stopsCount > 1 ? 's' : ''}`;
-    const legDuration = itineraryDuration ? formatDuration(itineraryDuration) : calculateTotalDuration(leg);
+    const dest = renderIataCode(leg[leg.length - 1].destination);
+    const stops = leg.length - 1;
+    const duration = dur ? formatDuration(dur) : calculateTotalDuration(leg);
     const { date, time } = formatDateTime(leg[0].departureDate);
     return (
       <div className="summary-row">
@@ -297,13 +257,11 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
             {leg[0].carrierCode && renderCarrierLogo(leg[0].carrierCode, leg[0].airlineLogoUrl)}
           </div>
           <div className="route-container">
-            <div className="route">
-              {origin} <span className="arrow">→</span> {destination}
-            </div>
+            <div className="route">{origin} <span className="arrow">→</span> {dest}</div>
             <div className="details-container">
-              <div className="duration">{legDuration}</div>
-              <div className={`stops ${stopsCount === 0 ? 'direct-flight' : 'with-stops'}`}>
-                {stopsText}
+              <div className="duration">{duration}</div>
+              <div className={`stops ${stops===0?'direct-flight':'with-stops'}`}>
+                {stops===0?'Direct Flight':`${stops} Stop${stops>1?'s':''}`}
               </div>
             </div>
           </div>
@@ -315,122 +273,94 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     );
   };
 
-  const renderLegDetails = (leg: FlightSegment[], label: string): JSX.Element => {
-    return (
-      <div className="leg-details">
-        <h4>{label}</h4>
-        {leg.map((seg, idx) => {
-          const departure = formatDateTime(seg.departureDate);
-          const arrival = formatDateTime(seg.arrivalDate);
-          return (
-            <div key={idx} className="segment-detail">
-              <div className="segment-route">
-                <p>
-                  <strong>
-                    {renderIataCode(seg.origin)} → {renderIataCode(seg.destination)}
-                  </strong>
-                </p>
-                <p className="segment-duration">{formatDuration(seg.duration)}</p>
-              </div>
-              <p>
-                <strong>Departure:</strong> {departure.time} {departure.date}{' '}
-                {seg.departureTerminal && `(Terminal ${seg.departureTerminal})`}
-              </p>
-              <p>
-                <strong>Arrival:</strong> {arrival.time} {arrival.date}{' '}
-                {seg.arrivalTerminal && `(Terminal ${seg.arrivalTerminal})`}
-              </p>
-              <p>
-                <strong>Flight:</strong> {seg.carrierCode} {seg.flightNumber}
-              </p>
-              <p>
-                <strong>Aircraft:</strong> {seg.aircraftFullName}
-              </p>
+  const renderLegDetails = (leg: FlightSegment[], label: string): JSX.Element => (
+    <div className="leg-details">
+      <h4>{label}</h4>
+      {leg.map((seg, idx) => {
+        const dep = formatDateTime(seg.departureDate);
+        const arr = formatDateTime(seg.arrivalDate);
+        return (
+          <div key={idx} className="segment-detail">
+            <div className="segment-route">
+              <p><strong>{renderIataCode(seg.origin)} → {renderIataCode(seg.destination)}</strong></p>
+              <p className="segment-duration">{formatDuration(seg.duration)}</p>
             </div>
-          );
-        })}
-      </div>
-    );
-  };
+            <p><strong>Departure:</strong> {dep.time} {dep.date} {seg.departureTerminal && `(Terminal ${seg.departureTerminal})`}</p>
+            <p><strong>Arrival:</strong> {arr.time} {arr.date} {seg.arrivalTerminal && `(Terminal ${seg.arrivalTerminal})`}</p>
+            <p><strong>Flight:</strong> {seg.carrierCode} {seg.flightNumber}</p>
+            <p><strong>Aircraft:</strong> {seg.aircraftFullName}</p>
+          </div>
+        );
+      })}
+    </div>
+  );
 
   const renderPrice = (flight: Flight): JSX.Element => {
     if (advancedMode && adultCount > 1 && flight.price !== undefined) {
-      const perPerson = flight.price / adultCount;
+      const per = flight.price / adultCount;
       return (
         <div className="flight-price">
-          <div className="price-per-person">
-            <span className="per-person">per person: </span>€{perPerson.toFixed(2)}
-          </div>
+          <div className="price-per-person"><span className="per-person">per person: </span>€{per.toFixed(2)}</div>
           <div className="total-price">Total: €{flight.price.toFixed(2)}</div>
         </div>
       );
-    } else {
-      return (
-        <div className="flight-price">
-          {flight.price ? `€${flight.price.toFixed(2)}` : 'N/A'}
-        </div>
-      );
     }
+    return <div className="flight-price">{flight.price ? `€${flight.price.toFixed(2)}` : 'N/A'}</div>;
   };
 
-  const renderFlightItem = (flight: Flight, index: number): JSX.Element => {
-    const isRoundTrip = flight.returnSegments && flight.returnSegments.length > 0;
+  const renderFlightItem = (flight: Flight, idx: number): JSX.Element => {
+    const isRound = !!flight.returnSegments?.length;
     return (
-      <div
-        key={index}
-        className={`flight-item ${isRoundTrip ? 'return-flight' : ''}`}
-        onClick={() => toggleDetails(index)}
-      >
+      <div key={idx} className={`flight-item ${isRound?'return-flight':''}`} onClick={()=>toggleDetails(idx)}>
         <div className="flight-summary">
           <div className="flight-summary-details">
-            {isRoundTrip ? (
-              <>
-                {renderSummaryRow(flight.outboundSegments!, flight.outboundDuration)}
-                {renderSummaryRow(flight.returnSegments!, flight.returnDuration)}
-              </>
-            ) : (
-              flight.segments && renderSummaryRow(flight.segments, flight.outboundDuration)
-            )}
+            {isRound
+              ? <>
+                  {renderSummaryRow(flight.outboundSegments!, flight.outboundDuration)}
+                  {renderSummaryRow(flight.returnSegments!, flight.returnDuration)}
+                </>
+              : flight.segments && renderSummaryRow(flight.segments, flight.outboundDuration)
+            }
           </div>
           {renderPrice(flight)}
         </div>
-        {expandedIndex === index && (
+        {expandedIndex===idx && (
           <div className="flight-details">
-            {isRoundTrip ? (
-              <>
-                {renderLegDetails(flight.outboundSegments!, 'Outbound')}
-                {renderLegDetails(flight.returnSegments!, 'Return')}
-              </>
-            ) : (
-              flight.segments && renderLegDetails(flight.segments, 'Flight')
-            )}
+            {isRound
+              ? <>
+                  {renderLegDetails(flight.outboundSegments!, 'Outbound')}
+                  {renderLegDetails(flight.returnSegments!, 'Return')}
+                </>
+              : flight.segments && renderLegDetails(flight.segments, 'Flight')
+            }
           </div>
         )}
       </div>
     );
   };
 
+  // apply filters & sorting
+  const safeFlights = Array.isArray(flights) ? flights : [];
   const filteredFlights = directFlightsOnly
-    ? flights.filter(flight => {
-        if (flight.returnSegments && flight.returnSegments.length > 0 && flight.outboundSegments) {
-          return flight.outboundSegments.length === 1 || flight.returnSegments.length === 1;
-        } else if (flight.segments) {
-          return flight.segments.length === 1;
+    ? safeFlights.filter(f => {
+        if (f.returnSegments?.length) {
+          return f.outboundSegments!.length===1 && f.returnSegments!.length===1;
+        } else {
+          return f.segments!.length===1;
         }
-        return false;
       })
-    : flights;
+    : safeFlights;
+  const sortedFlights = sortBy==='price'
+    ? [...filteredFlights].sort((a,b)=>(a.price||0)-(b.price||0))
+    : sortBy==='duration'
+      ? [...filteredFlights].sort((a,b)=>getTotalDuration(a)-getTotalDuration(b))
+      : filteredFlights;
 
-  const sortedFlights = sortBy
-    ? [...filteredFlights].sort((a, b) => {
-        if (sortBy === 'price') {
-          return (a.price || Infinity) - (b.price || Infinity);
-        } else if (sortBy === 'duration') {
-          return getTotalDuration(a) - getTotalDuration(b);
-        }
-        return 0;
-      })
-    : filteredFlights;
+  const renderErrorMessage = () => {
+    if (error) return <p className="error-message">{error}</p>;
+    if (!loading && sortedFlights.length===0) return <p className="no-flights-message">No flights found.</p>;
+    return null;
+  };
 
   return (
     <div className="flights-container">
@@ -438,143 +368,71 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
         <h2 className="flights-title">✈ Flights</h2>
         <div className="header-controls">
           <button
-            className={`direct-flights-btn ${directFlightsOnly ? 'checked' : ''}`}
-            onClick={() => setDirectFlightsOnly(prev => !prev)}
-          >
-            Direct Flights Only
-          </button>
+            className={`direct-flights-btn ${directFlightsOnly?'checked':''}`}
+            onClick={()=>setDirectFlightsOnly(d=>!d)}
+          >Direct Flights Only</button>
           <button
             className="advanced-search-toggle"
-            onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
-          >
-            Advanced Search
-          </button>
+            onClick={()=>setShowAdvancedSearch(s=>!s)}
+          >Advanced Search</button>
         </div>
         <div className="sort-controls">
           <label>
-            <input
-              type="radio"
-              name="sort"
-              value="price"
-              checked={sortBy === 'price'}
-              onChange={() => setSortBy('price')}
-            />
+            <input type="radio" name="sort" value="price" checked={sortBy==='price'} onChange={()=>setSortBy('price')} />
             Show Lowest Price
           </label>
           <label>
-            <input
-              type="radio"
-              name="sort"
-              value="duration"
-              checked={sortBy === 'duration'}
-              onChange={() => setSortBy('duration')}
-            />
+            <input type="radio" name="sort" value="duration" checked={sortBy==='duration'} onChange={()=>setSortBy('duration')} />
             Show Fastest Flights
           </label>
         </div>
       </div>
+
       {showAdvancedSearch && (
         <div className="advanced-search-form">
-          <div className={`search-field ${invalidFields.includes('origin') ? 'invalid' : ''}`}>
+          <div className={`search-field ${invalidFields.includes('origin')?'invalid':''}`}>
             <label>Origin:</label>
-            <input
-              type="text"
-              name="origin"
-              value={advancedParams.origin}
-              onChange={handleAdvancedParamsChange}
-              placeholder="Origin (default Tel Aviv)"
-            />
+            <input type="text" name="origin" value={advancedParams.origin} onChange={handleAdvancedParamsChange} />
           </div>
-          <div className={`search-field ${invalidFields.includes('destination') ? 'invalid' : ''}`}>
+          <div className={`search-field ${invalidFields.includes('destination')?'invalid':''}`}>
             <label>Destination:</label>
-            <input
-              type="text"
-              name="destination"
-              value={advancedParams.destination}
-              onChange={handleAdvancedParamsChange}
-              placeholder="Destination"
-            />
+            <input type="text" name="destination" value={advancedParams.destination} onChange={handleAdvancedParamsChange} />
           </div>
-          <div className={`search-field ${invalidFields.includes('departDate') ? 'invalid' : ''}`}>
+          <div className={`search-field ${invalidFields.includes('departDate')?'invalid':''}`}>
             <label>Depart Date:</label>
-            <input
-              type="date"
-              name="departDate"
-              value={advancedParams.departDate}
-              onChange={handleAdvancedParamsChange}
-              min={new Date().toISOString().split('T')[0]}
-            />
+            <input type="date" name="departDate" value={advancedParams.departDate} onChange={handleAdvancedParamsChange} />
           </div>
-          {advancedParams.flightType === 'roundTrip' && (
-            <div className={`search-field ${invalidFields.includes('returnDate') ? 'invalid' : ''}`}>
+          {advancedParams.flightType==='roundTrip' && (
+            <div className={`search-field ${invalidFields.includes('returnDate')?'invalid':''}`}>
               <label>Return Date:</label>
-              <input
-                type="date"
-                name="returnDate"
-                value={advancedParams.returnDate}
-                onChange={handleAdvancedParamsChange}
-                min={advancedParams.departDate || new Date().toISOString().split('T')[0]}
-              />
+              <input type="date" name="returnDate" value={advancedParams.returnDate} onChange={handleAdvancedParamsChange} />
             </div>
           )}
-          <div className={`search-field ${invalidFields.includes('adults') ? 'invalid' : ''}`}>
+          <div className={`search-field ${invalidFields.includes('adults')?'invalid':''}`}>
             <label>Adults:</label>
-            <input
-              type="number"
-              name="adults"
-              value={advancedParams.adults}
-              onChange={handleFlightAdultsChange}
-              onKeyDown={handleKeyDown}
-              onBlur={handleBlur}
-              style={{ maxWidth: '80px' }}
-              min="1"
-              max="9"
-              step="1"
-            />
+            <input type="number" name="adults" min="1" max="9" value={advancedParams.adults}
+                   onChange={handleFlightAdultsChange} onKeyDown={handleKeyDown} onBlur={handleBlur} />
           </div>
           <div className="search-field radio-field">
-            <label>Flight Type:</label>
-            <div>
-              <label>
-                <input
-                  type="radio"
-                  name="flightType"
-                  value="roundTrip"
-                  checked={advancedParams.flightType === 'roundTrip'}
-                  onChange={handleAdvancedParamsChange}
-                />
-                Round Trip
-              </label>
-              <label style={{ marginLeft: '10px' }}>
-                <input
-                  type="radio"
-                  name="flightType"
-                  value="oneWay"
-                  checked={advancedParams.flightType === 'oneWay'}
-                  onChange={handleAdvancedParamsChange}
-                />
-                One-Way
-              </label>
-            </div>
+            <label>
+              <input type="radio" name="flightType" value="roundTrip"
+                     checked={advancedParams.flightType==='roundTrip'}
+                     onChange={handleAdvancedParamsChange} />
+              Round Trip
+            </label>
+            <label style={{marginLeft:'10px'}}>
+              <input type="radio" name="flightType" value="oneWay"
+                     checked={advancedParams.flightType==='oneWay'}
+                     onChange={handleAdvancedParamsChange} />
+              One-Way
+            </label>
           </div>
-          <button
-            className="advanced-search-btn"
-            onClick={handleAdvancedSearch}
-          >
-            Search
-          </button>
+          <button className="advanced-search-btn" onClick={handleAdvancedSearch}>Search</button>
         </div>
       )}
-      {loading && <Loader />}
-      {error && <p className="error-message">{error}</p>}
-      {!loading && !error && filteredFlights.length === 0 && (
-        flights.length === 0 ? (
-          <p className="no-flights-message">No flights found.</p>
-        ) : (
-          <p className="no-flights-message">No direct flights found.</p>
-        )
-      )}
-      {!loading && !error && sortedFlights.map((flight, index) => renderFlightItem(flight, index))}
+
+      {loading ? <Loader /> : renderErrorMessage()}
+      {!loading && sortedFlights.map((f,i)=>renderFlightItem(f,i))}
     </div>
   );
 };
