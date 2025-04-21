@@ -39,7 +39,7 @@ const WeatherComponent: React.FC<WeatherProps> = ({ city }) => {
         return weather.condition.toLowerCase().replace(/\s+/g, '-');
     };
 
-    if (loading) return <p>Loading weather...</p>;
+    if (loading) return <p className="loader">Loading weather...</p>;
 
     return (
         <div className={`weather-container ${getWeatherClass()}`}>

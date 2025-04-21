@@ -62,7 +62,7 @@ const AttractionComponent: React.FC<AttractionComponentProps> = ({ city, onShowA
           <span role="img" aria-label="attractions">🎡</span> Attractions
         </h2>
       </div>
-      {loading && <div>Loading attractions...</div>}
+      {loading && <div className="loader">Loading attractions...</div>}
       {error && <p className="error-message">{error}</p>}
       {(!loading && attractions.length === 0) && <p className="no-attractions-message">No attractions found.</p>}
       <ul className="attractions-list">
