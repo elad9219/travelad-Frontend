@@ -98,16 +98,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     [recentCities, updateCities, fetchRecentCities]
   );
 
-  const handleClearHistory = useCallback(async () => {
-    try {
-      await axios.delete(`${globals.api.cacheCities}/clear`);
-      setRecentCities([]);
-      setFilteredCities([]);
-      updateCities([]);
-    } catch (err) {
-      console.error('Error clearing history:', err);
-    }
-  }, [updateCities]);
 
   return (
     <div className="search-section">
@@ -149,9 +139,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
               </li>
             ))}
           </ul>
-          <button onClick={handleClearHistory} className="clear-history-btn">
-            Clear History
-          </button>
         </div>
       )}
     </div>
