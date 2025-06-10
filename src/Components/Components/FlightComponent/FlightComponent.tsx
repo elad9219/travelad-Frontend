@@ -411,19 +411,19 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           <div className={`search-field ${invalidFields.includes('adults')?'invalid':''}`}>
             <label>Adults:</label>
             <input type="number" name="adults" min="1" max="9" value={advancedParams.adults}
-                   onChange={handleFlightAdultsChange} onKeyDown={handleKeyDown} onBlur={handleBlur} />
+                    onChange={handleFlightAdultsChange} onKeyDown={handleKeyDown} onBlur={handleBlur} />
           </div>
           <div className="search-field radio-field">
             <label>
               <input type="radio" name="flightType" value="roundTrip"
-                     checked={advancedParams.flightType==='roundTrip'}
-                     onChange={handleAdvancedParamsChange} />
-              Round Trip
-            </label>
-            <label style={{marginLeft:'10px'}}>
-              <input type="radio" name="flightType" value="oneWay"
-                     checked={advancedParams.flightType==='oneWay'}
-                     onChange={handleAdvancedParamsChange} />
+                      checked={advancedParams.flightType==='roundTrip'}
+                      onChange={handleAdvancedParamsChange} />
+                Round Trip
+              </label>
+              <label style={{marginLeft:'10px'}}>
+                <input type="radio" name="flightType" value="oneWay"
+                      checked={advancedParams.flightType==='oneWay'}
+                      onChange={handleAdvancedParamsChange} />
               One-Way
             </label>
           </div>
