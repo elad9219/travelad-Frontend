@@ -25,23 +25,25 @@
   gap: 20px;
 }
 
-/* Place image: use aspect ratio instead of fixed height */
+/* Place image */
 .place-image {
   width: 100%;
-  aspect-ratio: 16 / 8;
+  aspect-ratio: 16 / 8; /* Adjusted for better image display */
   background-size: cover;
   background-position: center;
   position: relative;
   border-radius: 10px;
   overflow: hidden;
+  background-color: #ddd; /* Fallback background */
 }
 
+/* Place address */
 .place-address {
   position: absolute;
   bottom: 10px;
   left: 10px;
   right: 10px;
-  font-size: 2vw; /* Scales with viewport width */
+  font-size: 2vw;
   font-weight: bold;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
@@ -50,7 +52,7 @@
   border-radius: 5px;
 }
 
-/* If you use any common rectangle class for other components: */
+/* Rectangle for other components */
 .rectangle {
   width: 100%;
   aspect-ratio: 16 / 8;
@@ -78,6 +80,9 @@
   .place-details-container {
     padding: 1rem;
   }
+  .place-address {
+    font-size: 3vw;
+  }
 }
 
 @media (max-width: 480px) {
@@ -85,12 +90,18 @@
     padding: 0.5rem;
   }
   .place-address {
-    font-size: 3vw; /* Slightly larger at small screens for readability */
+    font-size: 4vw;
   }
 }
 
 .error-message {
   color: red;
+  font-size: 1rem;
+  margin: 10px 0;
+}
+
+.no-data-message {
+  color: #555;
   font-size: 1rem;
   margin: 10px 0;
 }

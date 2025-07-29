@@ -10,11 +10,11 @@ export class DevelopmentGlobals extends Globals {
         attractions: 'http://localhost:8080/api/geoapify/places',
         weather: 'http://localhost:8080/weather',
         iataCodes: 'http://localhost:8080/iata-codes',
-        cacheCities: 'http://localhost:8080/cache/cities',
+        cacheCities: 'http://localhost:8080/cache/cities', // Points to CityCacheController
     };
-    }
+}
 
-    export class ProductionGlobals extends Globals {
+export class ProductionGlobals extends Globals {
     public api = {
         places: '/api/places/search',
         flights: '/flights',
@@ -24,11 +24,11 @@ export class DevelopmentGlobals extends Globals {
         attractions: '/api/geoapify/places',
         weather: '/weather',
         iataCodes: '/iata-codes',
-        cacheCities: '/cache/cities',
+        cacheCities: '/cache/cities', // Points to CityCacheController
     };
-    }
+}
 
-    const globals = process.env.NODE_ENV === 'production'
+const globals = process.env.NODE_ENV === 'production'
     ? new ProductionGlobals()
     : new DevelopmentGlobals();
 

@@ -405,7 +405,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           {advancedParams.flightType==='roundTrip' && (
             <div className={`search-field ${invalidFields.includes('returnDate')?'invalid':''}`}>
               <label>Return Date:</label>
-              <input type="date" name="returnDate" value={advancedParams.returnDate} onChange={handleAdvancedParamsChange} />
+              <input type="date" name="returnDate" value={advancedParams.returnDate} onChange={handleAdvancedParamsChange} min={advancedParams.departDate ? advancedParams.departDate : new Date().toISOString().split('T')[0]} />
             </div>
           )}
           <div className={`search-field ${invalidFields.includes('adults')?'invalid':''}`}>
