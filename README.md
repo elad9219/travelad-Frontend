@@ -114,14 +114,31 @@ Travelad is a full-stack travel planning application that allows users to search
 
 ## Screenshots
 
-- Homepage: <img src="" alt="Homepage">
-- City Search Results: <img src="" alt="City Search Results">
-- Flight Details: <img src="" alt="Flight Details">
-- Hotel Search: <img src="" alt="Hotel Search">
-- Advanced Search: <img src="" alt="Advanced Search">
-- Attractions: <img src="" alt="Attractions">
-- Map: <img src="" alt="Map">
-- Weather: <img src="" alt="Weather">
+- Homepage:
+
+    <img width="1460" height="1201" alt="image" src="https://github.com/user-attachments/assets/d860462a-aa0d-4668-b38f-4b5fe811ee06" />
+
+- Search Bar with History:
+
+   <img width="577" height="370" alt="image" src="https://github.com/user-attachments/assets/4c5fcce2-743d-4ee8-82c3-d22dca2cfea4" />
+   
+- Search Bar with Autocomplete:
+
+   <img width="575" height="321" alt="image" src="https://github.com/user-attachments/assets/257b0f2a-667f-457b-9ae3-096df62c4945" />
+
+- Flight Details:
+
+   <img width="1200" height="571" alt="image" src="https://github.com/user-attachments/assets/e94c380f-349b-4761-b615-83871bdb845c" />
+   
+- Advanced Flight Search:
+
+   <img width="1200" height="605" alt="image" src="https://github.com/user-attachments/assets/66a63c8f-3a63-40bd-8832-e01f98a36a36" />
+
+- Attractions Details:
+
+   <img width="1198" height="599" alt="image" src="https://github.com/user-attachments/assets/b4e25309-879b-47d8-8ffa-f80f44720b6a" />
+
+   
 
 ## Project Structure
 
