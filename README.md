@@ -140,7 +140,7 @@ Travelad is a full-stack travel planning application that allows users to search
 
 -  Hotels Offers Details:
 
-  <img width="1201" height="601" alt="image" src="https://github.com/user-attachments/assets/b8f56944-b1d2-48f1-9c3b-22613e79cfd8" />
+   <img width="1201" height="601" alt="image" src="https://github.com/user-attachments/assets/b8f56944-b1d2-48f1-9c3b-22613e79cfd8" />
 
 
    
