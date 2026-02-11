@@ -1,30 +1,32 @@
 export interface VendorDto {
     name: string;
     price: number;
-  }
+}
   
-  export interface HotelDto {
+export interface HotelDto {
     hotelId: string;
     name: string;
     iataCode?: string;
     countryCode?: string;
     rating?: number;
-    price?: number;
+    price?: number; // הוספנו את השדה הזה
     vendors?: VendorDto[];
     geoCode?: {
       latitude: number;
       longitude: number;
     };
-  }
+    // לצורך תאימות עם הקוד הקיים, נוסיף גם את זה למקרה שהבקאנד שולח שטוח
+    latitude?: number;
+    longitude?: number;
+}
   
-  
-  export interface RoomDto {
+export interface RoomDto {
     bedType?: string;
     beds?: number;
     description?: string;
-  }
+}
   
-  export interface HotelOffersDto {
+export interface HotelOffersDto {
     name?: string;
     city?: string;
     priceCurrency?: string;
@@ -35,5 +37,4 @@ export interface VendorDto {
     room?: RoomDto;
     latitude?: number;
     longitude?: number;
-  }
-  
+}
