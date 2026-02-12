@@ -10,7 +10,6 @@ interface HotelComponentProps {
   onShowHotelOnMap: (query: string) => void;
 }
 
-// Utility to clean up city names from URLs (converts %20 to space, etc.)
 const decodeCityName = (name: string): string => {
   try {
     return decodeURIComponent(name);
@@ -24,7 +23,6 @@ const toTitleCase = (str: string): string => {
   return decoded.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 };
 
-// Original date formatter for consistent display (DD/MM/YYYY)
 const formatDate = (dateStr: string): string => {
   if (!dateStr) return '';
   const date = new Date(dateStr);
@@ -51,6 +49,15 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
     fetchHotels();
   }, [cityName]);
 
+  // Function to calculate number of nights between two dates
+  const calculateNights = (checkIn: string, checkOut: string): number => {
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+    const diffTime = end.getTime() - start.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 1; // Default to 1 night if dates are same or weird
+  };
+
   const fetchHotels = async () => {
       setHotelsLoading(true);
       setHotelsFetchError(null);
@@ -70,8 +77,6 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
     const { name, value } = e.target;
     setSearchParams(prev => {
         const next = { ...prev, [name]: value };
-        
-        // Logical fix: Check-out must be at least 1 day after Check-in
         if (name === 'checkInDate') {
             const minCheckout = new Date(new Date(value).getTime() + 86400000).toISOString().split('T')[0];
             if (next.checkOutDate <= value) {
@@ -85,11 +90,20 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   const handleShowHotelOnMap = (hotel: HotelDto, e: React.MouseEvent) => {
     e.stopPropagation();
     const decodedCity = decodeCityName(cityName);
-    const query = hotel.latitude && hotel.longitude ? `${hotel.latitude},${hotel.longitude}` : `${hotel.name}, ${decodedCity}`;
+    const isValid = (num?: number) => num !== undefined && num !== null && Math.abs(num) > 1;
+
+    let query = "";
+    if (isValid(hotel.latitude) && isValid(hotel.longitude)) {
+        query = `${hotel.latitude},${hotel.longitude}`;
+    } else {
+        query = `${hotel.name}, ${decodedCity}`;
+    }
+    
     onShowHotelOnMap(query);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Calculate the minimum allowed checkout date (Check-in + 1 day)
+  const nights = calculateNights(searchParams.checkInDate, searchParams.checkOutDate);
   const minCheckoutDate = searchParams.checkInDate 
     ? new Date(new Date(searchParams.checkInDate).getTime() + 86400000).toISOString().split('T')[0]
     : tomorrow;
@@ -107,23 +121,11 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
         <div className="advanced-search-form">
           <div className="search-field">
             <label>Check-In:</label>
-            <input 
-                type="date" 
-                name="checkInDate" 
-                min={today} 
-                value={searchParams.checkInDate} 
-                onChange={handleSearchParamsChange} 
-            />
+            <input type="date" name="checkInDate" min={today} value={searchParams.checkInDate} onChange={handleSearchParamsChange} />
           </div>
           <div className="search-field">
             <label>Check-Out:</label>
-            <input 
-                type="date" 
-                name="checkOutDate" 
-                min={minCheckoutDate} 
-                value={searchParams.checkOutDate} 
-                onChange={handleSearchParamsChange} 
-            />
+            <input type="date" name="checkOutDate" min={minCheckoutDate} value={searchParams.checkOutDate} onChange={handleSearchParamsChange} />
           </div>
           <div className="search-field">
             <label>Guests:</label>
@@ -137,34 +139,40 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
       
       {!hotelsLoading && hotels.length > 0 && (
         <div className="hotels-list">
-          {hotels.map((hotel, index) => (
-            <div key={index} className="hotel-item" onClick={() => setExpandedHotelIndex(expandedHotelIndex === index ? null : index)}>
-              <div className="hotel-summary has-offers">
-                <button className="show-on-map-btn" onClick={(e) => handleShowHotelOnMap(hotel, e)}>Show on Map</button>
-                <div className="hotel-name">{toTitleCase(hotel.name)}</div>
-                <div className="hotel-price">
-                    {hotel.price ? `€${hotel.price.toFixed(0)}` : 'N/A'}
+          {hotels.map((hotel, index) => {
+            const pricePerNight = hotel.price || 0;
+            const totalPrice = pricePerNight * nights;
+
+            return (
+              <div key={index} className="hotel-item" onClick={() => setExpandedHotelIndex(expandedHotelIndex === index ? null : index)}>
+                <div className="hotel-summary has-offers">
+                  <button className="show-on-map-btn" onClick={(e) => handleShowHotelOnMap(hotel, e)}>Show on Map</button>
+                  <div className="hotel-name">{toTitleCase(hotel.name)}</div>
+                  <div className="hotel-price">
+                      {totalPrice > 0 ? `€${totalPrice.toFixed(0)}` : 'N/A'}
+                      <div className="price-subtitle">{nights} {nights === 1 ? 'night' : 'nights'} total</div>
+                  </div>
                 </div>
+                {expandedHotelIndex === index && (
+                  <div className="hotel-details">
+                      <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
+                      <p><strong>Check-In:</strong> {formatDate(searchParams.checkInDate)}</p>
+                      <p><strong>Check-Out:</strong> {formatDate(searchParams.checkOutDate)}</p>
+                      <p><strong>Price per Night:</strong> EUR {pricePerNight.toFixed(2)}</p>
+                      <p><strong>Total for {nights} Nights:</strong> EUR {totalPrice.toFixed(2)}</p>
+                      <p><strong>Total Price (Inc. Tax):</strong> EUR {(totalPrice * 1.15).toFixed(2)}</p>
+                      <div style={{marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px'}}>
+                        <p><strong>Room:</strong> Flexible Rate for {searchParams.adults} Guests</p>
+                        <p><strong>Bed Type:</strong> KING/QUEEN</p>
+                      </div>
+                      <button className="book-now-btn" style={{marginTop: '12px', backgroundColor: '#0077cc', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', width: '100%'}}>
+                          Book via Affiliate Link
+                      </button>
+                  </div>
+                )}
               </div>
-              {expandedHotelIndex === index && (
-                <div className="hotel-details">
-                    <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
-                    <p><strong>Check-In:</strong> {formatDate(searchParams.checkInDate)}</p>
-                    <p><strong>Check-Out:</strong> {formatDate(searchParams.checkOutDate)}</p>
-                    <p><strong>Base Price:</strong> EUR {hotel.price ? hotel.price.toFixed(2) : 'N/A'}</p>
-                    <p><strong>Total Price:</strong> EUR {hotel.price ? (hotel.price * 1.15).toFixed(2) : 'N/A'} (Inc. Tax)</p>
-                    <div style={{marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px'}}>
-                      <p><strong>Room:</strong> Flexible Rate, Mock Room Description for {searchParams.adults} Guests</p>
-                      <p><strong>Bed Type:</strong> KING/QUEEN</p>
-                      <p><strong>Beds:</strong> 1</p>
-                    </div>
-                    <button className="book-now-btn" style={{marginTop: '12px', backgroundColor: '#0077cc', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', width: '100%'}}>
-                        Book via Affiliate Link
-                    </button>
-                </div>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
