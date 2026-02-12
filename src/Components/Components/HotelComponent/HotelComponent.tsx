@@ -10,6 +10,7 @@ interface HotelComponentProps {
   onShowHotelOnMap: (query: string) => void;
 }
 
+// Utility to clean up city names from URLs (converts %20 to space, etc.)
 const decodeCityName = (name: string): string => {
   try {
     return decodeURIComponent(name);
@@ -23,7 +24,7 @@ const toTitleCase = (str: string): string => {
   return decoded.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
 };
 
-// Original date formatter from your first version
+// Original date formatter for consistent display (DD/MM/YYYY)
 const formatDate = (dateStr: string): string => {
   if (!dateStr) return '';
   const date = new Date(dateStr);
@@ -79,6 +80,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   const handleShowHotelOnMap = (hotel: HotelDto, e: React.MouseEvent) => {
     e.stopPropagation();
     const decodedCity = decodeCityName(cityName);
+    // Prioritize lat/lon if available, otherwise use hotel name and city
     const query = hotel.latitude && hotel.longitude ? `${hotel.latitude},${hotel.longitude}` : `${hotel.name}, ${decodedCity}`;
     onShowHotelOnMap(query);
   };
@@ -117,7 +119,8 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
           {hotels.map((hotel, index) => (
             <div key={index} className="hotel-item" onClick={() => setExpandedHotelIndex(expandedHotelIndex === index ? null : index)}>
               <div className="hotel-summary has-offers">
-                <button className="show-on-map-btn" onClick={(e) => handleShowHotelOnMap(hotel, e)}>Map</button>
+                {/* Updated button text from 'Map' to 'Show on Map' for consistency */}
+                <button className="show-on-map-btn" onClick={(e) => handleShowHotelOnMap(hotel, e)}>Show on Map</button>
                 <div className="hotel-name">{toTitleCase(hotel.name)}</div>
                 <div className="hotel-price">
                     {hotel.price ? `€${hotel.price.toFixed(0)}` : 'N/A'}
