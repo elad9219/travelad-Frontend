@@ -10,8 +10,25 @@ interface HotelComponentProps {
   onShowHotelOnMap: (query: string) => void;
 }
 
-const toTitleCase = (str: string): string =>
-  str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+const decodeCityName = (name: string): string => {
+  try {
+    return decodeURIComponent(name);
+  } catch (e) {
+    return name;
+  }
+};
+
+const toTitleCase = (str: string): string => {
+  const decoded = decodeCityName(str);
+  return decoded.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};
+
+// Original date formatter from your first version
+const formatDate = (dateStr: string): string => {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+};
 
 const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, onShowHotelOnMap }) => {
   const [hotels, setHotels] = useState<HotelDto[]>([]);
@@ -61,7 +78,8 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
 
   const handleShowHotelOnMap = (hotel: HotelDto, e: React.MouseEvent) => {
     e.stopPropagation();
-    const query = hotel.latitude && hotel.longitude ? `${hotel.latitude},${hotel.longitude}` : `${hotel.name}, ${cityName}`;
+    const decodedCity = decodeCityName(cityName);
+    const query = hotel.latitude && hotel.longitude ? `${hotel.latitude},${hotel.longitude}` : `${hotel.name}, ${decodedCity}`;
     onShowHotelOnMap(query);
   };
 
@@ -107,9 +125,17 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
               </div>
               {expandedHotelIndex === index && (
                 <div className="hotel-details">
-                    <p><strong>Check-in:</strong> {searchParams.checkInDate} | <strong>Check-out:</strong> {searchParams.checkOutDate}</p>
-                    <p><strong>Guests:</strong> {searchParams.adults} | <strong>Status:</strong> Available (Mock Data)</p>
-                    <button className="book-now-btn" style={{marginTop: '10px', backgroundColor: '#007bff', color: 'white', border: 'none', padding: '5px 10px', borderRadius: '4px'}}>
+                    <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
+                    <p><strong>Check-In:</strong> {formatDate(searchParams.checkInDate)}</p>
+                    <p><strong>Check-Out:</strong> {formatDate(searchParams.checkOutDate)}</p>
+                    <p><strong>Base Price:</strong> EUR {hotel.price ? hotel.price.toFixed(2) : 'N/A'}</p>
+                    <p><strong>Total Price:</strong> EUR {hotel.price ? (hotel.price * 1.15).toFixed(2) : 'N/A'} (Inc. Tax)</p>
+                    <div style={{marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px'}}>
+                      <p><strong>Room:</strong> Flexible Rate, Mock Room Description for {searchParams.adults} Guests</p>
+                      <p><strong>Bed Type:</strong> KING/QUEEN</p>
+                      <p><strong>Beds:</strong> 1</p>
+                    </div>
+                    <button className="book-now-btn" style={{marginTop: '12px', backgroundColor: '#0077cc', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', width: '100%'}}>
                         Book via Affiliate Link
                     </button>
                 </div>
