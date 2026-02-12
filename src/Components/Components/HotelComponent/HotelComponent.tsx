@@ -70,8 +70,13 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
     const { name, value } = e.target;
     setSearchParams(prev => {
         const next = { ...prev, [name]: value };
-        if (name === 'checkInDate' && next.checkOutDate <= value) {
-            next.checkOutDate = new Date(new Date(value).getTime() + 86400000).toISOString().split('T')[0];
+        
+        // Logical fix: Check-out must be at least 1 day after Check-in
+        if (name === 'checkInDate') {
+            const minCheckout = new Date(new Date(value).getTime() + 86400000).toISOString().split('T')[0];
+            if (next.checkOutDate <= value) {
+                next.checkOutDate = minCheckout;
+            }
         }
         return next;
     });
@@ -80,10 +85,14 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   const handleShowHotelOnMap = (hotel: HotelDto, e: React.MouseEvent) => {
     e.stopPropagation();
     const decodedCity = decodeCityName(cityName);
-    // Prioritize lat/lon if available, otherwise use hotel name and city
     const query = hotel.latitude && hotel.longitude ? `${hotel.latitude},${hotel.longitude}` : `${hotel.name}, ${decodedCity}`;
     onShowHotelOnMap(query);
   };
+
+  // Calculate the minimum allowed checkout date (Check-in + 1 day)
+  const minCheckoutDate = searchParams.checkInDate 
+    ? new Date(new Date(searchParams.checkInDate).getTime() + 86400000).toISOString().split('T')[0]
+    : tomorrow;
 
   return (
     <div className="hotels-container">
@@ -98,11 +107,23 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
         <div className="advanced-search-form">
           <div className="search-field">
             <label>Check-In:</label>
-            <input type="date" name="checkInDate" min={today} value={searchParams.checkInDate} onChange={handleSearchParamsChange} />
+            <input 
+                type="date" 
+                name="checkInDate" 
+                min={today} 
+                value={searchParams.checkInDate} 
+                onChange={handleSearchParamsChange} 
+            />
           </div>
           <div className="search-field">
             <label>Check-Out:</label>
-            <input type="date" name="checkOutDate" min={searchParams.checkInDate} value={searchParams.checkOutDate} onChange={handleSearchParamsChange} />
+            <input 
+                type="date" 
+                name="checkOutDate" 
+                min={minCheckoutDate} 
+                value={searchParams.checkOutDate} 
+                onChange={handleSearchParamsChange} 
+            />
           </div>
           <div className="search-field">
             <label>Guests:</label>
@@ -119,7 +140,6 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
           {hotels.map((hotel, index) => (
             <div key={index} className="hotel-item" onClick={() => setExpandedHotelIndex(expandedHotelIndex === index ? null : index)}>
               <div className="hotel-summary has-offers">
-                {/* Updated button text from 'Map' to 'Show on Map' for consistency */}
                 <button className="show-on-map-btn" onClick={(e) => handleShowHotelOnMap(hotel, e)}>Show on Map</button>
                 <div className="hotel-name">{toTitleCase(hotel.name)}</div>
                 <div className="hotel-price">
