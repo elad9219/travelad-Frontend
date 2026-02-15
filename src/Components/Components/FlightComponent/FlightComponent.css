@@ -10,10 +10,19 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* התאמה למובייל: ביטול היחס הקבוע למניעת מעיכה */
+@media (max-width: 768px) {
+  .flights-container {
+    aspect-ratio: auto;
+    height: 500px; /* גובה קבוע שמאפשר גלילה נוחה */
+  }
+}
+
 .flights-header {
   width: 100%;
   padding: 8px 0;
   margin-bottom: 10px;
+  position: relative; /* חובה עבור ה-Absolute של הכפתור חיפוש מתקדם */
 }
 
 .flights-title {
@@ -25,7 +34,6 @@
   text-align: center;
 }
 
-/* Flex container for controls below the headline */
 .header-controls {
   display: flex;
   justify-content: space-between;
@@ -33,7 +41,6 @@
   margin-top: 5px;
 }
 
-/* Style for the Direct Flights Only button */
 .direct-flights-btn {
   font-size: clamp(0.8rem, 2vw, 0.9rem);
   background: none;
@@ -43,11 +50,11 @@
   border-radius: 4px;
   cursor: pointer;
   position: relative;
-  padding-left: 20px; /* Space for the checkmark */
+  padding-left: 20px;
 }
 
 .direct-flights-btn.checked::before {
-  content: '✔'; /* Unicode checkmark */
+  content: '✔';
   position: absolute;
   left: 5px;
   top: 50%;
@@ -59,7 +66,6 @@
   background-color: #eef7ff;
 }
 
-/* Restore original Advanced Search button styling */
 .advanced-search-toggle {
   position: absolute;
   right: 10px;
@@ -70,14 +76,6 @@
   border: none;
   color: #0077cc;
   cursor: pointer;
-}
-
-/* Adjust header to accommodate absolute positioning */
-.flights-header {
-  position: relative; /* Ensure header supports absolute positioning */
-  width: 100%;
-  padding: 8px 0;
-  margin-bottom: 10px;
 }
 
 .advanced-search-form {
@@ -337,4 +335,20 @@
 
 .search-field.invalid label {
   color: red;
+}
+
+.loader {
+  margin: 20px auto;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #0077cc;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+}
+
+.error-message, .no-flights-message {
+  text-align: center;
+  margin-top: 20px;
+  color: #666;
 }

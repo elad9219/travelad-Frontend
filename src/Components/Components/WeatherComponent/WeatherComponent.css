@@ -1,6 +1,6 @@
 .weather-container {
   width: 100%;
-  aspect-ratio: 16 / 8; 
+  aspect-ratio: 16 / 8;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -12,10 +12,17 @@
   background-position: center;
   transition: background 0.5s ease;
   color: #ffffff;
-  position: relative; /* Positioning context for absolute children */
+  position: relative;
 }
 
-/* Semi-transparent overlay for better text readability */
+/* התאמה למובייל: ביטול היחס הקבוע כדי למנוע מעיכה */
+@media (max-width: 768px) {
+  .weather-container {
+    aspect-ratio: auto;
+    min-height: 220px; /* גובה מינימלי סביר */
+  }
+}
+
 .weather-container::after {
   content: '';
   position: absolute;
@@ -25,10 +32,10 @@
   bottom: 0;
   background: rgba(0, 0, 0, 0.4);
   border-radius: 10px;
-  z-index: -1;
+  z-index: 0; /* שונה מ -1 כדי שיהיה מעל הרקע אך מתחת לתוכן */
 }
 
-/* Weather conditions */
+/* Weather conditions - Unchanged */
 .weather-container.default { background-color: #f4f4f4; }
 .weather-container.sunny { background-image: url('https://images.pexels.com/photos/3768/sky-sunny-clouds-cloudy.jpg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); }
 .weather-container.cloudy { background-image: url('https://images.pexels.com/photos/414634/pexels-photo-414634.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); }
@@ -53,16 +60,30 @@
 .weather-container.light-rain-shower { background-image: url('https://images.pexels.com/photos/7815649/pexels-photo-7815649.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); }
 .weather-container.moderate-or-heavy-rain-shower { background-image: url('https://images.pexels.com/photos/243971/pexels-photo-243971.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2'); }
 
-
 .weather-info {
   display: flex;
   align-items: center;
   font-size: 2vw; 
   z-index: 1;
   position: absolute; 
-  top: 5%; 
-  left: 15%;
-  margin-left: 0;
+  top: 50%; /* Center vertically */
+  left: 50%; /* Center horizontally */
+  transform: translate(-50%, -50%); /* Perfect centering trick */
+  width: 90%;
+  justify-content: center;
+}
+
+/* התאמה למובייל: פונטים גדולים יותר ומיקום יחסי */
+@media (max-width: 768px) {
+  .weather-info {
+    font-size: 4vw;
+    flex-direction: column; /* אייקון מעל טקסט במובייל */
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    margin-top: 20px;
+  }
 }
 
 .weather-icon img {
@@ -71,31 +92,54 @@
   margin-right: 2.5vw; 
 }
 
+@media (max-width: 768px) {
+  .weather-icon img {
+    width: 60px;
+    height: 60px;
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+}
+
 .weather-details {
   flex-grow: 1;
   text-align: left;
+}
+
+@media (max-width: 768px) {
+  .weather-details {
+    text-align: center;
+  }
 }
 
 .weather-details .temperature {
   font-size: 4.5vw; 
 }
 
+@media (max-width: 768px) {
+  .weather-details .temperature {
+    font-size: 2.5rem; /* קריא יותר במובייל */
+  }
+}
+
 .weather-info h3, .weather-info p {
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  margin: 0.5vw 0;
 }
 
 .weather-info h3 {
   font-size: 1.6vw; 
-  margin-bottom: 0.7vw; 
-  margin-right: 20%; 
 }
 
-.weather-info p {
-  margin: 0.5vw 0; 
-  font-size: 1.3vw; 
+@media (max-width: 768px) {
+  .weather-info h3 {
+    font-size: 1.5rem;
+  }
+  .weather-info p {
+    font-size: 1rem;
+  }
 }
 
-/* Highlight temperature */
 .weather-info p span {
   font-size: 3vw; 
 }
