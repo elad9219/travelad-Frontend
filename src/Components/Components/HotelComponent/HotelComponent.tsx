@@ -39,14 +39,12 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   const today = new Date().toISOString().split('T')[0];
   const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
-  // Current values in the input fields
   const [searchParams, setSearchParams] = useState({ 
       checkInDate: today, 
       checkOutDate: tomorrow, 
       adults: '1' 
   });
 
-  // Values actually used for the current displayed results
   const [appliedSearchParams, setAppliedSearchParams] = useState({ 
       checkInDate: today, 
       checkOutDate: tomorrow, 
@@ -78,7 +76,6 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
             }
         });
         setHotels(response.data);
-        // Sync the applied parameters only after a successful fetch
         setAppliedSearchParams({ ...searchParams });
       } catch (error) {
         setHotelsFetchError('Error loading hotels.');
@@ -89,6 +86,22 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
 
   const handleSearchParamsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    
+    if (name === 'adults') {
+        const cleanValue = value.replace(/\D/g, '');
+        const numValue = parseInt(cleanValue);
+        
+        if (cleanValue === '') {
+            setSearchParams(prev => ({ ...prev, adults: '' }));
+            return;
+        }
+        
+        if (numValue >= 1 && numValue <= 9) {
+            setSearchParams(prev => ({ ...prev, adults: cleanValue }));
+        }
+        return;
+    }
+
     setSearchParams(prev => {
         const next = { ...prev, [name]: value };
         if (name === 'checkInDate') {
@@ -117,7 +130,6 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Use appliedSearchParams for the UI display, NOT the raw searchParams
   const nights = calculateNights(appliedSearchParams.checkInDate, appliedSearchParams.checkOutDate);
   const minCheckoutDate = searchParams.checkInDate 
     ? new Date(new Date(searchParams.checkInDate).getTime() + 86400000).toISOString().split('T')[0]
@@ -143,8 +155,16 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
             <input type="date" name="checkOutDate" min={minCheckoutDate} value={searchParams.checkOutDate} onChange={handleSearchParamsChange} />
           </div>
           <div className="search-field">
-            <label>Guests:</label>
-            <input type="number" name="adults" min="1" value={searchParams.adults} onChange={handleSearchParamsChange} />
+            <label>Guests (1-9):</label>
+            <input 
+                type="number" 
+                name="adults" 
+                min="1" 
+                max="9" 
+                value={searchParams.adults} 
+                onChange={handleSearchParamsChange} 
+                onKeyDown={(e) => ['e', 'E', '+', '-', '.'].includes(e.key) && e.preventDefault()}
+            />
           </div>
           <button className="advanced-search-btn" onClick={fetchHotels}>Search</button>
         </div>
@@ -164,19 +184,20 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
                   <div className="hotel-name">{toTitleCase(hotel.name)}</div>
                   <div className="hotel-price">
                       {totalPrice > 0 ? `€${totalPrice.toFixed(0)}` : 'N/A'}
-                      <div className="price-subtitle">{nights} {nights === 1 ? 'night' : 'nights'} total</div>
+                      <div className="price-subtitle">
+                        {nights} {nights === 1 ? 'night' : 'nights'}, {appliedSearchParams.adults} {parseInt(appliedSearchParams.adults) === 1 ? 'guest' : 'guests'}
+                      </div>
                   </div>
                 </div>
                 {expandedHotelIndex === index && (
                   <div className="hotel-details">
                       <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
-                      <p><strong>Check-In:</strong> {formatDate(appliedSearchParams.checkInDate)}</p>
-                      <p><strong>Check-Out:</strong> {formatDate(appliedSearchParams.checkOutDate)}</p>
-                      <p><strong>Total for {nights} Nights:</strong> EUR {totalPrice.toFixed(2)}</p>
+                      <p><strong>Dates:</strong> {formatDate(appliedSearchParams.checkInDate)} - {formatDate(appliedSearchParams.checkOutDate)} ({nights} nights)</p>
+                      <p><strong>Guests:</strong> {appliedSearchParams.adults}</p>
+                      <p><strong>Total Price:</strong> EUR {totalPrice.toFixed(2)}</p>
                       <p><strong>Total Price (Inc. Tax):</strong> EUR {(totalPrice * 1.15).toFixed(2)}</p>
                       <div style={{marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px'}}>
-                        <p><strong>Room:</strong> Flexible Rate for {appliedSearchParams.adults} Guests</p>
-                        <p><strong>Bed Type:</strong> KING/QUEEN</p>
+                        <p><strong>Room:</strong> Standard/Deluxe for {appliedSearchParams.adults} Guests</p>
                       </div>
                       <button className="book-now-btn" style={{marginTop: '12px', backgroundColor: '#0077cc', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', width: '100%'}}>
                           Book via Affiliate Link
