@@ -203,8 +203,28 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
                       <div style={{marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px'}}>
                         <p><strong>Room:</strong> Standard/Deluxe for {appliedSearchParams.adults} Guests</p>
                       </div>
-                      <button className="book-now-btn" style={{marginTop: '12px', backgroundColor: '#0077cc', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', width: '100%'}}>
-                          Book via Affiliate Link
+                      <button 
+                        className="book-now-btn" 
+                        style={{
+                            marginTop: '12px', 
+                            backgroundColor: '#0077cc', 
+                            color: 'white', 
+                            border: 'none', 
+                            padding: '8px 15px', 
+                            borderRadius: '4px', 
+                            cursor: 'pointer', 
+                            width: '100%',
+                            fontWeight: 'bold'
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const hotelName = encodeURIComponent(hotel.name);
+                          const city = encodeURIComponent(decodeCityName(cityName));
+                          const bookingUrl = `https://www.booking.com/searchresults.html?ss=${hotelName}+${city}`;
+                          window.open(bookingUrl, '_blank');
+                        }}
+                      >
+                          Book on Booking.com
                       </button>
                   </div>
                 )}
