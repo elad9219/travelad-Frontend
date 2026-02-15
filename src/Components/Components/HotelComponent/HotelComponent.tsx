@@ -178,8 +178,12 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
             const totalPrice = hotel.price || 0;
 
             return (
-              <div key={index} className="hotel-item" onClick={() => setExpandedHotelIndex(expandedHotelIndex === index ? null : index)}>
-                <div className="hotel-summary has-offers">
+              <div key={index} className="hotel-item">
+                <div 
+                    className="hotel-summary has-offers" 
+                    onClick={() => setExpandedHotelIndex(expandedHotelIndex === index ? null : index)}
+                    style={{ cursor: 'pointer' }}
+                >
                   <button className="show-on-map-btn" onClick={(e) => handleShowHotelOnMap(hotel, e)}>Show on Map</button>
                   <div className="hotel-name">{toTitleCase(hotel.name)}</div>
                   <div className="hotel-price">
@@ -190,7 +194,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
                   </div>
                 </div>
                 {expandedHotelIndex === index && (
-                  <div className="hotel-details">
+                  <div className="hotel-details" style={{ cursor: 'default' }}>
                       <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
                       <p><strong>Dates:</strong> {formatDate(appliedSearchParams.checkInDate)} - {formatDate(appliedSearchParams.checkOutDate)} ({nights} nights)</p>
                       <p><strong>Guests:</strong> {appliedSearchParams.adults}</p>

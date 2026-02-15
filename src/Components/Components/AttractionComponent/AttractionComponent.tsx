@@ -69,15 +69,19 @@ const AttractionComponent: React.FC<AttractionComponentProps> = ({ city, onShowA
         {attractions.map((attraction, index) => {
           const uniqueKey = getAttractionKey(attraction, index);
           return (
-            <li key={uniqueKey} className="attraction-item" onClick={() => toggleAttraction(uniqueKey)}>
-              <div className="attraction-header">
+            <li key={uniqueKey} className="attraction-item">
+              <div 
+                  className="attraction-header" 
+                  onClick={() => toggleAttraction(uniqueKey)}
+                  style={{ cursor: 'pointer' }}
+              >
                 <span className="attraction-name">{attraction.name || 'Unnamed Attraction'}</span>
                 <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowOnMap(attraction, e); }}>
                   Show on Map
                 </button>
               </div>
               {expandedAttractionKey === uniqueKey && (
-                <div className="attraction-details">
+                <div className="attraction-details" style={{ cursor: 'default' }}>
                   {attraction.description && <p className="attraction-description"><strong>Description:</strong> {attraction.description}</p>}
                   {attraction.address && <p className="attraction-address"><strong>Address:</strong> {attraction.address}</p>}
                   {attraction.phone && <p className="attraction-phone"><strong>Phone:</strong> {attraction.phone}</p>}
