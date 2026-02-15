@@ -39,7 +39,15 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
   const today = new Date().toISOString().split('T')[0];
   const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
 
+  // Current values in the input fields
   const [searchParams, setSearchParams] = useState({ 
+      checkInDate: today, 
+      checkOutDate: tomorrow, 
+      adults: '1' 
+  });
+
+  // Values actually used for the current displayed results
+  const [appliedSearchParams, setAppliedSearchParams] = useState({ 
       checkInDate: today, 
       checkOutDate: tomorrow, 
       adults: '1' 
@@ -70,6 +78,8 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
             }
         });
         setHotels(response.data);
+        // Sync the applied parameters only after a successful fetch
+        setAppliedSearchParams({ ...searchParams });
       } catch (error) {
         setHotelsFetchError('Error loading hotels.');
       } finally {
@@ -107,7 +117,8 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const nights = calculateNights(searchParams.checkInDate, searchParams.checkOutDate);
+  // Use appliedSearchParams for the UI display, NOT the raw searchParams
+  const nights = calculateNights(appliedSearchParams.checkInDate, appliedSearchParams.checkOutDate);
   const minCheckoutDate = searchParams.checkInDate 
     ? new Date(new Date(searchParams.checkInDate).getTime() + 86400000).toISOString().split('T')[0]
     : tomorrow;
@@ -159,12 +170,12 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
                 {expandedHotelIndex === index && (
                   <div className="hotel-details">
                       <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
-                      <p><strong>Check-In:</strong> {formatDate(searchParams.checkInDate)}</p>
-                      <p><strong>Check-Out:</strong> {formatDate(searchParams.checkOutDate)}</p>
+                      <p><strong>Check-In:</strong> {formatDate(appliedSearchParams.checkInDate)}</p>
+                      <p><strong>Check-Out:</strong> {formatDate(appliedSearchParams.checkOutDate)}</p>
                       <p><strong>Total for {nights} Nights:</strong> EUR {totalPrice.toFixed(2)}</p>
                       <p><strong>Total Price (Inc. Tax):</strong> EUR {(totalPrice * 1.15).toFixed(2)}</p>
                       <div style={{marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px'}}>
-                        <p><strong>Room:</strong> Flexible Rate for {searchParams.adults} Guests</p>
+                        <p><strong>Room:</strong> Flexible Rate for {appliedSearchParams.adults} Guests</p>
                         <p><strong>Bed Type:</strong> KING/QUEEN</p>
                       </div>
                       <button className="book-now-btn" style={{marginTop: '12px', backgroundColor: '#0077cc', color: 'white', border: 'none', padding: '8px 15px', borderRadius: '4px', cursor: 'pointer', width: '100%'}}>
