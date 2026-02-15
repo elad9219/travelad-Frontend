@@ -49,13 +49,12 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
     fetchHotels();
   }, [cityName]);
 
-  // Function to calculate number of nights between two dates
   const calculateNights = (checkIn: string, checkOut: string): number => {
     const start = new Date(checkIn);
     const end = new Date(checkOut);
     const diffTime = end.getTime() - start.getTime();
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 1; // Default to 1 night if dates are same or weird
+    return diffDays > 0 ? diffDays : 1;
   };
 
   const fetchHotels = async () => {
@@ -63,7 +62,12 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
       setHotelsFetchError(null);
       try {
         const response = await axios.get<HotelDto[]>(`${globals.api.hotels}`, {
-            params: { cityName: encodeURIComponent(cityName), ...searchParams }
+            params: { 
+                cityName: encodeURIComponent(cityName), 
+                checkInDate: searchParams.checkInDate,
+                checkOutDate: searchParams.checkOutDate,
+                adults: searchParams.adults
+            }
         });
         setHotels(response.data);
       } catch (error) {
@@ -140,8 +144,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
       {!hotelsLoading && hotels.length > 0 && (
         <div className="hotels-list">
           {hotels.map((hotel, index) => {
-            const pricePerNight = hotel.price || 0;
-            const totalPrice = pricePerNight * nights;
+            const totalPrice = hotel.price || 0;
 
             return (
               <div key={index} className="hotel-item" onClick={() => setExpandedHotelIndex(expandedHotelIndex === index ? null : index)}>
@@ -158,7 +161,6 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
                       <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
                       <p><strong>Check-In:</strong> {formatDate(searchParams.checkInDate)}</p>
                       <p><strong>Check-Out:</strong> {formatDate(searchParams.checkOutDate)}</p>
-                      <p><strong>Price per Night:</strong> EUR {pricePerNight.toFixed(2)}</p>
                       <p><strong>Total for {nights} Nights:</strong> EUR {totalPrice.toFixed(2)}</p>
                       <p><strong>Total Price (Inc. Tax):</strong> EUR {(totalPrice * 1.15).toFixed(2)}</p>
                       <div style={{marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px'}}>
