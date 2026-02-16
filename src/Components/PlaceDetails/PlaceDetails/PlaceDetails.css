@@ -6,44 +6,76 @@
   background-color: #f5f5f5;
 }
 
-/* Content grid with two columns */
-.content-grid {
-  display: flex;
-  gap: 20px;
+/* Grid Layout System */
+.main-grid {
+  display: grid;
   width: 97%;
-  max-width: 100%;
+  max-width: 1400px; /* Optional constraint for ultra-wide screens */
   margin: 0 auto;
-  flex-wrap: wrap;
-}
-
-.left-column,
-.right-column {
-  flex: 1;
-  min-width: 300px;
-  display: flex;
-  flex-direction: column;
   gap: 20px;
+  /* Default Mobile Layout (1 Column) - The order matches the HTML structure by default */
+  grid-template-columns: 1fr;
 }
 
-/* Place image */
+/* Desktop Layout (2 Columns) - Recreating your original Left/Right split */
+@media (min-width: 769px) {
+  .main-grid {
+    grid-template-columns: 1fr 1fr; /* Two equal columns */
+    grid-template-areas:
+      "image map"
+      "weather flights"
+      "hotels attractions";
+  }
+
+  /* Assigning components to their grid areas */
+  .place-image-container { grid-area: image; }
+  .place-map-container { grid-area: map; }
+  .weather-component-container { grid-area: weather; }
+  .flights-component-container { grid-area: flights; }
+  .hotels-component-container { grid-area: hotels; }
+  .attractions-component-container { grid-area: attractions; }
+}
+
+/* Mobile Layout Overrides - Ensuring Specific Order */
+@media (max-width: 768px) {
+  .main-grid {
+    /* Explicitly ordering for mobile if HTML order differs, but our HTML is already sorted */
+    display: flex; /* Flex is easier for simple stacking */
+    flex-direction: column;
+  }
+  
+  /* Ensuring everything takes full width on mobile */
+  .grid-item {
+    width: 100%;
+  }
+}
+
+
+/* Component Specific Styles */
 .place-image {
   width: 100%;
-  aspect-ratio: 16 / 8; /* Adjusted for better image display */
+  aspect-ratio: 16 / 8;
   background-size: cover;
   background-position: center;
   position: relative;
   border-radius: 10px;
   overflow: hidden;
-  background-color: #ddd; /* Fallback background */
+  background-color: #ddd;
 }
 
-/* Place address */
+/* Mobile adjustment for image */
+@media (max-width: 768px) {
+    .place-image {
+        aspect-ratio: 16 / 9; /* Slightly taller on mobile looks better */
+    }
+}
+
 .place-address {
   position: absolute;
   bottom: 10px;
   left: 10px;
   right: 10px;
-  font-size: 2vw;
+  font-size: 1.5rem; /* Better default size */
   font-weight: bold;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
@@ -52,45 +84,12 @@
   border-radius: 5px;
 }
 
-/* Rectangle for other components */
-.rectangle {
-  width: 100%;
-  aspect-ratio: 16 / 8;
-  background-color: #f9f9f9;
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  overflow-y: auto;
-  box-sizing: border-box;
-  padding: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Media queries for responsiveness */
-@media (max-width: 1024px) {
-  .content-grid {
-    flex-direction: column;
-  }
-  .left-column,
-  .right-column {
-    width: 100%;
-  }
-}
-
 @media (max-width: 768px) {
-  .place-details-container {
-    padding: 1rem;
-  }
-  .place-address {
-    font-size: 3vw;
-  }
-}
-
-@media (max-width: 480px) {
   .place-details-container {
     padding: 0.5rem;
   }
   .place-address {
-    font-size: 4vw;
+    font-size: 1.2rem;
   }
 }
 

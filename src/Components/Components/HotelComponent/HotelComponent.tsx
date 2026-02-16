@@ -1,277 +1,237 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import './HotelComponent.css';
-import { HotelDto, HotelOffersDto } from '../../../modal/Hotel';
+import './HotelComponent.css'; 
+import { HotelDto } from '../../../modal/Hotel';
 import globals from '../../../utils/globals';
 
 interface HotelComponentProps {
   cityName: string;
-  countryName: string; 
+  countryName: string;
   onShowHotelOnMap: (query: string) => void;
 }
 
-function isHotelDto(hotel: HotelDto | HotelOffersDto): hotel is HotelDto {
-  return (hotel as HotelDto).hotelId !== undefined;
-}
+const decodeCityName = (name: string): string => {
+  try {
+    return decodeURIComponent(name);
+  } catch (e) {
+    return name;
+  }
+};
 
-const BATCH_SIZE = 50;
-
-const toTitleCase = (str: string): string =>
-  str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+const toTitleCase = (str: string): string => {
+  const decoded = decodeCityName(str);
+  return decoded.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};
 
 const formatDate = (dateStr: string): string => {
+  if (!dateStr) return '';
   const date = new Date(dateStr);
   return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
 };
 
 const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, onShowHotelOnMap }) => {
   const [hotels, setHotels] = useState<HotelDto[]>([]);
-  const [hotelOffers, setHotelOffers] = useState<HotelOffersDto[]>([]);
   const [hotelsLoading, setHotelsLoading] = useState(false);
   const [hotelsFetchError, setHotelsFetchError] = useState<string | null>(null);
   const [expandedHotelIndex, setExpandedHotelIndex] = useState<number | null>(null);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
-  const [searchParams, setSearchParams] = useState({ checkInDate: '', checkOutDate: '', adults: '1' });
-  const [isFetchingOffers, setIsFetchingOffers] = useState(false);
-  const [advancedSearchPerformed, setAdvancedSearchPerformed] = useState(false);
+  
+  const today = new Date().toISOString().split('T')[0];
+  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+
+  const [searchParams, setSearchParams] = useState({ 
+      checkInDate: today, 
+      checkOutDate: tomorrow, 
+      adults: '1' 
+  });
+
+  const [appliedSearchParams, setAppliedSearchParams] = useState({ 
+      checkInDate: today, 
+      checkOutDate: tomorrow, 
+      adults: '1' 
+  });
 
   useEffect(() => {
-    const fetchHotels = async () => {
+    fetchHotels();
+  }, [cityName]);
+
+  const calculateNights = (checkIn: string, checkOut: string): number => {
+    const start = new Date(checkIn);
+    const end = new Date(checkOut);
+    const diffTime = end.getTime() - start.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays > 0 ? diffDays : 1;
+  };
+
+  const fetchHotels = async () => {
       setHotelsLoading(true);
       setHotelsFetchError(null);
       try {
-        const response = await axios.get<HotelDto[]>(`${globals.api.hotels}?cityName=${encodeURIComponent(cityName)}`);
+        const response = await axios.get<HotelDto[]>(`${globals.api.hotels}`, {
+            params: { 
+                cityName: encodeURIComponent(cityName), 
+                checkInDate: searchParams.checkInDate,
+                checkOutDate: searchParams.checkOutDate,
+                adults: searchParams.adults
+            }
+        });
         setHotels(response.data);
-        setHotelOffers([]);
-        setAdvancedSearchPerformed(false);
+        setAppliedSearchParams({ ...searchParams });
       } catch (error) {
-        console.error('Error fetching hotels:', error);
-        setHotelsFetchError('Error loading hotels. Please try again later.');
-        setHotels([]);
+        setHotelsFetchError('Error loading hotels.');
       } finally {
         setHotelsLoading(false);
       }
-    };
-    if (cityName) fetchHotels();
-  }, [cityName]);
-
-  useEffect(() => {
-    if (showAdvancedSearch) {
-      setSearchParams({ checkInDate: '', checkOutDate: '', adults: '1' });
-    }
-  }, [showAdvancedSearch]);
+  };
 
   const handleSearchParamsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setSearchParams(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleHotelAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const numValue = parseInt(value, 10);
-    if (value === '' || (Number.isInteger(numValue) && numValue >= 1 && numValue <= 4)) {
-      setSearchParams(prev => ({ ...prev, adults: value }));
-    } else {
-      setSearchParams(prev => ({ ...prev, adults: numValue < 1 ? '1' : '4' }));
+    
+    if (name === 'adults') {
+        const cleanValue = value.replace(/\D/g, '');
+        const numValue = parseInt(cleanValue);
+        
+        if (cleanValue === '') {
+            setSearchParams(prev => ({ ...prev, adults: '' }));
+            return;
+        }
+        
+        if (numValue >= 1 && numValue <= 9) {
+            setSearchParams(prev => ({ ...prev, adults: cleanValue }));
+        }
+        return;
     }
+
+    setSearchParams(prev => {
+        const next = { ...prev, [name]: value };
+        if (name === 'checkInDate') {
+            const minCheckout = new Date(new Date(value).getTime() + 86400000).toISOString().split('T')[0];
+            if (next.checkOutDate <= value) {
+                next.checkOutDate = minCheckout;
+            }
+        }
+        return next;
+    });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowedKeys = ['1', '2', '3', '4', 'ArrowUp', 'ArrowDown', 'Backspace', 'Tab'];
-    if (!allowedKeys.includes(e.key)) {
-      e.preventDefault();
-    }
-  };
-
-  const handleBlur = () => {
-    const numValue = parseInt(searchParams.adults, 10);
-    if (isNaN(numValue) || numValue < 1) {
-      setSearchParams(prev => ({ ...prev, adults: '1' }));
-    } else if (numValue > 4) {
-      setSearchParams(prev => ({ ...prev, adults: '4' }));
-    }
-  };
-
-  const fetchHotelOffersInBatches = async () => {
-    setIsFetchingOffers(true);
-    setHotelOffers([]);
-    setHotelsFetchError(null);
-    setShowAdvancedSearch(false);
-    setAdvancedSearchPerformed(true);
-    try {
-      const hotelIds = hotels.map(hotel => hotel.hotelId);
-      for (let i = 0; i < hotelIds.length; i += BATCH_SIZE) {
-        const batch = hotelIds.slice(i, i + BATCH_SIZE).join(',');
-        const result = await axios.get<HotelOffersDto[]>(`${globals.api.hotelOffers}`, {
-          params: {
-            hotelIds: batch,
-            checkInDate: searchParams.checkInDate,
-            checkOutDate: searchParams.checkOutDate,
-            adults: searchParams.adults ? parseInt(searchParams.adults, 10) : 1
-          }
-        });
-        setHotelOffers(prev => [...prev, ...result.data]);
-      }
-    } catch (error) {
-      console.error('Error performing advanced search:', error);
-      setHotelsFetchError('Error loading hotel offers. Please try again later.');
-      setHotelOffers([]);
-    } finally {
-      setIsFetchingOffers(false);
-    }
-  };
-
-  const toggleHotelDetails = (index: number) => {
-    setExpandedHotelIndex(expandedHotelIndex === index ? null : index);
-  };
-
-  const handleShowHotelOnMap = (hotel: HotelDto | HotelOffersDto, e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleShowHotelOnMap = (hotel: HotelDto, e: React.MouseEvent) => {
     e.stopPropagation();
-    let mapQuery = "";
-    if (isHotelDto(hotel) && hotel.geoCode && hotel.geoCode.latitude !== 0 && hotel.geoCode.longitude !== 0) {
-      mapQuery = `${hotel.geoCode.latitude},${hotel.geoCode.longitude}`;
+    const decodedCity = decodeCityName(cityName);
+    const isValid = (num?: number) => num !== undefined && num !== null && Math.abs(num) > 1;
+
+    let query = "";
+    if (isValid(hotel.latitude) && isValid(hotel.longitude)) {
+        query = `${hotel.latitude},${hotel.longitude}`;
     } else {
-      mapQuery = `${hotel.name}, ${cityName}, ${countryName}`;
+        query = `${hotel.name}, ${decodedCity}`;
     }
-    onShowHotelOnMap(mapQuery);
-    const mapContainer = document.getElementById('map-container');
-    if (mapContainer) {
-      mapContainer.scrollIntoView({ behavior: 'smooth' });
-    } else {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    
+    onShowHotelOnMap(query);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const renderHotelDetails = (offer: HotelOffersDto) => (
-    <div className="hotel-details">
-      {offer.city && <p><strong>City:</strong> {offer.city}</p>}
-      {offer.checkInDate && <p><strong>Check-In:</strong> {formatDate(offer.checkInDate)}</p>}
-      {offer.checkOutDate && <p><strong>Check-Out:</strong> {formatDate(offer.checkOutDate)}</p>}
-      {offer.basePrice && offer.priceCurrency && (
-        <p><strong>Base Price:</strong> {offer.priceCurrency} {offer.basePrice}</p>
-      )}
-      {offer.totalPrice && offer.priceCurrency && (
-        <p><strong>Total Price:</strong> {offer.priceCurrency} {offer.totalPrice}</p>
-      )}
-      {offer.room && (
-        <>
-          {offer.room.description && <p><strong>Room:</strong> {offer.room.description}</p>}
-          {offer.room.bedType && <p><strong>Bed Type:</strong> {offer.room.bedType}</p>}
-          {(offer.room.beds || offer.room.beds === 0) && <p><strong>Beds:</strong> {offer.room.beds}</p>}
-        </>
-      )}
-      <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowHotelOnMap(offer, e); }}>
-        Show on Map
-      </button>
-    </div>
-  );
-
-  const renderHotels = () => {
-    if (hotelsFetchError) {
-      return <p className="error-message">{hotelsFetchError}</p>;
-    }
-    if (advancedSearchPerformed && hotelOffers.length === 0) {
-      return <p className="no-offers-message">No hotel offers found for the selected criteria.</p>;
-    }
-    const hotelList = hotelOffers.length > 0 ? hotelOffers : hotels;
-    if (!Array.isArray(hotelList)) {
-      return <p className="error-message">Error: Invalid data format for hotels.</p>;
-    }
-    return (
-      <div className="hotels-list">
-        {hotelList.map((hotel, index) => {
-          const key = hotelOffers.length > 0 ? index : (isHotelDto(hotel) ? hotel.hotelId : index);
-          const offer = hotelOffers.length > 0 ? hotel as HotelOffersDto : null;
-          return (
-            <div key={key} className="hotel-item" onClick={() => toggleHotelDetails(index)}>
-              <div className={`hotel-summary ${hotelOffers.length > 0 ? 'has-offers' : ''}`}>
-                <div className="hotel-name">
-                  {hotel.name ? toTitleCase(hotel.name) : 'Unknown Hotel'}
-                </div>
-                {hotelOffers.length > 0 ? (
-                  <>
-                    <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowHotelOnMap(offer!, e); }}>
-                      Show on Map
-                    </button>
-                    {offer && offer.totalPrice && offer.priceCurrency && (
-                      <div className="hotel-price">{offer.priceCurrency} {offer.totalPrice}</div>
-                    )}
-                  </>
-                ) : (
-                  <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowHotelOnMap(hotel, e); }}>
-                    Show on Map
-                  </button>
-                )}
-              </div>
-              {expandedHotelIndex === index && (
-                offer ? renderHotelDetails(offer) : (
-                  <div className="hotel-details">
-                    {isHotelDto(hotel) && hotel.iataCode && <p><strong>City:</strong> {hotel.iataCode}</p>}
-                    {isHotelDto(hotel) && hotel.countryCode && <p><strong>Country:</strong> {hotel.countryCode}</p>}
-                  </div>
-                )
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
+  const nights = calculateNights(appliedSearchParams.checkInDate, appliedSearchParams.checkOutDate);
+  const minCheckoutDate = searchParams.checkInDate 
+    ? new Date(new Date(searchParams.checkInDate).getTime() + 86400000).toISOString().split('T')[0]
+    : tomorrow;
 
   return (
     <div className="hotels-container">
       <div className="hotels-header">
-        <h2 className="hotels-title">🏨 Hotels</h2>
+        <h2 className="hotels-title">🏨 Hotels in {toTitleCase(cityName)}</h2>
         <button className="advanced-search-toggle" onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}>
-          Advanced Search
+          {showAdvancedSearch ? 'Close Search' : 'Advanced Search'}
         </button>
       </div>
+
       {showAdvancedSearch && (
         <div className="advanced-search-form">
           <div className="search-field">
             <label>Check-In:</label>
-            <input
-              type="date"
-              name="checkInDate"
-              value={searchParams.checkInDate}
-              onChange={handleSearchParamsChange}
-              min={new Date().toISOString().split('T')[0]}
-              max={searchParams.checkOutDate ? new Date(new Date(searchParams.checkOutDate).getTime() - 86400000).toISOString().split('T')[0] : undefined}
-            />
+            <input type="date" name="checkInDate" min={today} value={searchParams.checkInDate} onChange={handleSearchParamsChange} />
           </div>
           <div className="search-field">
             <label>Check-Out:</label>
-            <input
-              type="date"
-              name="checkOutDate"
-              value={searchParams.checkOutDate}
-              onChange={handleSearchParamsChange}
-              min={searchParams.checkInDate ? new Date(new Date(searchParams.checkInDate).getTime() + 86400000).toISOString().split('T')[0] : new Date().toISOString().split('T')[0]}
-            />
+            <input type="date" name="checkOutDate" min={minCheckoutDate} value={searchParams.checkOutDate} onChange={handleSearchParamsChange} />
           </div>
           <div className="search-field">
-            <label>Adults:</label>
-            <input
-              type="number"
-              name="adults"
-              value={searchParams.adults}
-              onChange={handleHotelAdultsChange}
-              onKeyDown={handleKeyDown}
-              onBlur={handleBlur}
-              style={{ maxWidth: '80px' }}
-              min="1"
-              max="4"
-              step="1"
+            <label>Guests (1-9):</label>
+            <input 
+                type="number" 
+                name="adults" 
+                min="1" 
+                max="9" 
+                value={searchParams.adults} 
+                onChange={handleSearchParamsChange} 
+                onKeyDown={(e) => ['e', 'E', '+', '-', '.'].includes(e.key) && e.preventDefault()}
             />
           </div>
-          <button className="advanced-search-btn" onClick={fetchHotelOffersInBatches}>Search</button>
+          <button className="advanced-search-btn" onClick={fetchHotels}>Search</button>
         </div>
       )}
-      {hotelsLoading && <div className="loader">Loading hotels...</div>}
-      {isFetchingOffers ? (
-        <div className="loader">Loading offers...</div>
-      ) : (
-        renderHotels()
+
+      {hotelsLoading && <div className="loader">Loading...</div>}
+      
+      {!hotelsLoading && hotels.length > 0 && (
+        <div className="hotels-list">
+          {hotels.map((hotel, index) => {
+            const totalPrice = hotel.price || 0;
+
+            return (
+              <div key={index} className="hotel-item">
+                <div 
+                    className="hotel-summary has-offers" 
+                    onClick={() => setExpandedHotelIndex(expandedHotelIndex === index ? null : index)}
+                    style={{ cursor: 'pointer' }}
+                >
+                  <button className="show-on-map-btn" onClick={(e) => handleShowHotelOnMap(hotel, e)}>Show on Map</button>
+                  <div className="hotel-name">{toTitleCase(hotel.name)}</div>
+                  <div className="hotel-price">
+                      {totalPrice > 0 ? `€${totalPrice.toFixed(0)}` : 'N/A'}
+                      <div className="price-subtitle">
+                        {nights} {nights === 1 ? 'night' : 'nights'}, {appliedSearchParams.adults} {parseInt(appliedSearchParams.adults) === 1 ? 'guest' : 'guests'}
+                      </div>
+                  </div>
+                </div>
+                {expandedHotelIndex === index && (
+                  <div className="hotel-details" style={{ cursor: 'default' }}>
+                      <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
+                      <p><strong>Dates:</strong> {formatDate(appliedSearchParams.checkInDate)} - {formatDate(appliedSearchParams.checkOutDate)} ({nights} nights)</p>
+                      <p><strong>Guests:</strong> {appliedSearchParams.adults}</p>
+                      <p><strong>Total Price:</strong> EUR {totalPrice.toFixed(2)}</p>
+                      <p><strong>Total Price (Inc. Tax):</strong> EUR {(totalPrice * 1.15).toFixed(2)}</p>
+                      <div style={{marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px'}}>
+                        <p><strong>Room:</strong> Standard/Deluxe for {appliedSearchParams.adults} Guests</p>
+                      </div>
+                      <button 
+                        className="book-now-btn" 
+                        style={{
+                            marginTop: '12px', 
+                            backgroundColor: '#0077cc', 
+                            color: 'white', 
+                            border: 'none', 
+                            padding: '8px 15px', 
+                            borderRadius: '4px', 
+                            cursor: 'pointer', 
+                            width: '100%',
+                            fontWeight: 'bold'
+                        }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const hotelName = encodeURIComponent(hotel.name);
+                          const city = encodeURIComponent(decodeCityName(cityName));
+                          const bookingUrl = `https://www.booking.com/searchresults.html?ss=${hotelName}+${city}`;
+                          window.open(bookingUrl, '_blank');
+                        }}
+                      >
+                          Book on Booking.com
+                      </button>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
     </div>
   );

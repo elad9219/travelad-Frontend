@@ -5,6 +5,8 @@ import './FlightComponent.css';
 import { AdvancedSearchParams, Flight, FlightSegment, IataMapping } from '../../../modal/Flight';
 import globals from '../../../utils/globals';
 
+// ... (כל פונקציות העזר נשארות אותו דבר, חסכתי מקום כאן כדי לא להעמיס, תעתיק את הכל כרגיל, השינוי הוא רק ב-renderFlightItem למטה)
+
 // Format a date-time string.
 const formatDateTime = (dateTime: string): { date: string; time: string } => {
   const dateObj = new Date(dateTime);
@@ -308,11 +310,16 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     return <div className="flight-price">{flight.price ? `€${flight.price.toFixed(2)}` : 'N/A'}</div>;
   };
 
+  // --------------- שינוי עיקרי כאן: ה-onClick עבר ל-summary ----------------
   const renderFlightItem = (flight: Flight, idx: number): JSX.Element => {
     const isRound = !!flight.returnSegments?.length;
     return (
-      <div key={idx} className={`flight-item ${isRound?'return-flight':''}`} onClick={()=>toggleDetails(idx)}>
-        <div className="flight-summary">
+      <div key={idx} className={`flight-item ${isRound?'return-flight':''}`}>
+        <div 
+            className="flight-summary" 
+            onClick={()=>toggleDetails(idx)}
+            style={{ cursor: 'pointer' }}
+        >
           <div className="flight-summary-details">
             {isRound
               ? <>
@@ -325,7 +332,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           {renderPrice(flight)}
         </div>
         {expandedIndex===idx && (
-          <div className="flight-details">
+          <div className="flight-details" style={{ cursor: 'default' }}>
             {isRound
               ? <>
                   {renderLegDetails(flight.outboundSegments!, 'Outbound')}
