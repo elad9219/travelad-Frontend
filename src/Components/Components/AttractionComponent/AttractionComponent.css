@@ -118,3 +118,15 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* --- תוספת למובייל בלבד (בלי לגעת בעיצוב המחשב) --- */
+@media (max-width: 768px) {
+  .attractions-container {
+    /* ביטול היחס של המחשב */
+    aspect-ratio: unset !important;
+    /* גובה קבוע וארוך יותר לרשימה נוחה */
+    height: 500px !important;
+    /* הבטחת גלילה */
+    overflow-y: auto !important;
+  }
+}

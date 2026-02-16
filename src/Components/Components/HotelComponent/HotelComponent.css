@@ -187,3 +187,15 @@
   text-align: center;
   margin-top: 10px;
 }
+
+/* --- תוספת למובייל בלבד (בלי לגעת בעיצוב המחשב) --- */
+@media (max-width: 768px) {
+  .hotels-container {
+    /* ביטול היחס של המחשב */
+    aspect-ratio: unset !important;
+    /* גובה קבוע וארוך יותר לרשימה נוחה */
+    height: 500px !important; 
+    /* הבטחת גלילה */
+    overflow-y: auto !important;
+  }
+}
