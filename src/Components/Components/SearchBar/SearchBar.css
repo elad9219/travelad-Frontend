@@ -103,6 +103,12 @@
   background-color: #f0f0f0;
 }
 
+/* --- Added style for keyboard navigation --- */
+.recent-cities li.active {
+  background-color: #e0f0ff;
+  outline: 2px solid #007bff;
+}
+
 .remove-btn {
   background: none;
   border: none;

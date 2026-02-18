@@ -22,6 +22,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
   const [filteredCities, setFilteredCities] = useState<string[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Keyboard navigation state
+  const [activeIndex, setActiveIndex] = useState(-1);
 
   const [userId] = useState<string>(() => {
     let savedUserId = localStorage.getItem('userId');
@@ -60,6 +63,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     const input = e.target.value;
     setPlaceName(input);
     setError(null);
+    setActiveIndex(-1); // Reset keyboard index on type
+    
     if (input.trim()) {
       const filtered = cities
         .filter((city: CityData) => city.name.toLowerCase().startsWith(input.toLowerCase()))
@@ -67,6 +72,26 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
       setFilteredCities(removeDuplicates(filtered.slice(0, 8)));
     } else {
       setFilteredCities(removeDuplicates(recentCities.slice(0, 8)));
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setActiveIndex(prev => (prev < filteredCities.length - 1 ? prev + 1 : prev));
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setActiveIndex(prev => (prev > 0 ? prev - 1 : -1));
+    } else if (e.key === 'Enter') {
+      if (activeIndex >= 0 && filteredCities[activeIndex]) {
+        e.preventDefault();
+        handleCityClick(filteredCities[activeIndex]);
+      } else {
+        // Normal form submission handled by onSubmit
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+      setActiveIndex(-1);
     }
   };
 
@@ -80,7 +105,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
       });
       onSearch(placeName);
 
-      // Save to cache even if API call fails
       try {
         await axios.post(globals.api.cacheCities, null, {
           params: { userId, city: placeName },
@@ -99,8 +123,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     } catch (searchError: any) {
       setError(`Unable to fetch details for ${placeName}. Showing limited information.`);
       console.error('Search error:', searchError);
-      onSearch(placeName); // Proceed with search to show fallback data
-      // Save to cache despite error
+      onSearch(placeName);
       try {
         await axios.post(globals.api.cacheCities, null, {
           params: { userId, city: placeName },
@@ -122,7 +145,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
   const handleCityClick = async (city: string) => {
     setPlaceName(city);
     try {
-      const placeResponse = await axios.get(globals.api.places, {
+      await axios.get(globals.api.places, {
         params: { city, userId },
       });
       onSearch(city);
@@ -145,8 +168,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
     } catch (err) {
       console.error('Error fetching place details:', err);
       setError(`Unable to fetch details for ${city}. Showing limited information.`);
-      onSearch(city); // Proceed with search to show fallback data
-      // Save to cache despite error
+      onSearch(city);
       try {
         await axios.post(globals.api.cacheCities, null, {
           params: { userId, city },
@@ -195,6 +217,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
           type="text"
           value={placeName}
           onChange={handleInputChange}
+          onKeyDown={handleKeyDown} // Trigger navigation
           onFocus={() => setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           placeholder="Enter a city name"
@@ -209,7 +232,11 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
         <div className="recent-cities">
           <ul>
             {filteredCities.map((city, index) => (
-              <li key={`${city}-${index}`} onClick={() => handleCityClick(city)}>
+              <li 
+                key={`${city}-${index}`} 
+                onClick={() => handleCityClick(city)}
+                className={index === activeIndex ? 'active' : ''} // Apply active class
+              >
                 <span>{city}</span>
                 <button
                   onClick={(e) => {
