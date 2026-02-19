@@ -15,7 +15,7 @@
   position: relative;
 }
 
-/* Mobile adjustments - Remains unchanged as requested */
+/* Mobile adjustments (Portrait) */
 @media (max-width: 768px) {
   .weather-container {
     aspect-ratio: unset;
@@ -70,7 +70,6 @@
   justify-content: center;
   z-index: 1;
   position: absolute;
-  /* Shifting the whole group up from 50% to 42% for better balance */
   top: 45%; 
   left: 50%;
   transform: translate(-50%, -50%);
@@ -89,10 +88,59 @@
   }
 }
 
+/* --- התיקון המדויק למצב לרוחב (Landscape) --- */
+@media (max-height: 480px) and (orientation: landscape) {
+  .weather-container {
+    min-height: 160px; /* צמצום גובה מינימלי למניעת חיתוך */
+    padding: 10px;
+  }
+
+  .weather-info {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    flex-direction: row; 
+    justify-content: center; 
+    gap: 15px; /* רווח קטן וטבעי יותר */
+    width: auto; /* שהרוחב ייקבע לפי התוכן ולא יתפרס סתם */
+    margin: 0;
+  }
+
+  .weather-icon img {
+    width: 45px; 
+    height: 45px;
+    margin-bottom: 0;
+  }
+
+  .weather-details {
+    align-items: flex-start;
+    text-align: left;
+    gap: 0; 
+  }
+
+  .weather-details .temperature {
+    font-size: 1.5rem; /* הקטנה נוספת של הפונט */
+    line-height: 1;
+    margin-bottom: 2px;
+  }
+
+  .weather-info h3 {
+    font-size: 0.9rem;
+    margin: 0 0 2px 0;
+  }
+
+  .weather-info p:not(.temperature) {
+    font-size: 0.65rem; /* פונט קטן מאוד למניעת חריגה */
+    margin: 0;
+    line-height: 1;
+    white-space: nowrap; 
+  }
+}
+
 .weather-icon img {
   width: 5vw;
   height: 5vw;
-  /* Reduced margin to pull the writing closer to the icon and higher up */
   margin-bottom: 5px; 
 }
 
@@ -121,14 +169,14 @@
 
 .weather-info h3 {
   font-size: 1.5rem;
-  margin: 2px 0; /* Reduced margin for tighter vertical grouping */
+  margin: 2px 0; 
   order: 2;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
 }
 
 .weather-info p:not(.temperature) {
   font-size: 0.9rem;
-  margin: 1px 0; /* Reduced margin */
+  margin: 1px 0; 
   order: 3;
   text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
 }
