@@ -3,6 +3,7 @@ import axios from 'axios';
 import './AttractionComponent.css';
 import { Attraction } from '../../../modal/Attraction';
 import globals from '../../../utils/globals';
+import SkeletonCard from '../SkeletonCard/SkeletonCard'; // ייבוא השלד
 
 interface AttractionComponentProps {
   city: string;
@@ -62,41 +63,52 @@ const AttractionComponent: React.FC<AttractionComponentProps> = ({ city, onShowA
           <span role="img" aria-label="attractions">🎡</span> Attractions
         </h2>
       </div>
-      {loading && <div className="loader">Loading attractions...</div>}
+      
+      {loading && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', padding: '10px' }}>
+          {[...Array(4)].map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
+      )}
+
       {error && <p className="error-message">{error}</p>}
       {(!loading && attractions.length === 0) && <p className="no-attractions-message">No attractions found.</p>}
-      <ul className="attractions-list">
-        {attractions.map((attraction, index) => {
-          const uniqueKey = getAttractionKey(attraction, index);
-          return (
-            <li key={uniqueKey} className="attraction-item">
-              <div 
-                  className="attraction-header" 
-                  onClick={() => toggleAttraction(uniqueKey)}
-                  style={{ cursor: 'pointer' }}
-              >
-                <span className="attraction-name">{attraction.name || 'Unnamed Attraction'}</span>
-                <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowOnMap(attraction, e); }}>
-                  Show on Map
-                </button>
-              </div>
-              {expandedAttractionKey === uniqueKey && (
-                <div className="attraction-details" style={{ cursor: 'default' }}>
-                  {attraction.description && <p className="attraction-description"><strong>Description:</strong> {attraction.description}</p>}
-                  {attraction.address && <p className="attraction-address"><strong>Address:</strong> {attraction.address}</p>}
-                  {attraction.phone && <p className="attraction-phone"><strong>Phone:</strong> {attraction.phone}</p>}
-                  {attraction.website && (
-                    <p className="attraction-website">
-                      <strong>Website:</strong> <a href={attraction.website} target="_blank" rel="noopener noreferrer">{attraction.website}</a>
-                    </p>
-                  )}
-                  {attraction.openingHours && <p className="attraction-hours"><strong>Hours:</strong> {attraction.openingHours}</p>}
+      
+      {!loading && attractions.length > 0 && (
+        <ul className="attractions-list">
+          {attractions.map((attraction, index) => {
+            const uniqueKey = getAttractionKey(attraction, index);
+            return (
+              <li key={uniqueKey} className="attraction-item">
+                <div 
+                    className="attraction-header" 
+                    onClick={() => toggleAttraction(uniqueKey)}
+                    style={{ cursor: 'pointer' }}
+                >
+                  <span className="attraction-name">{attraction.name || 'Unnamed Attraction'}</span>
+                  <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowOnMap(attraction, e); }}>
+                    Show on Map
+                  </button>
                 </div>
-              )}
-            </li>
-          );
-        })}
-      </ul>
+                {expandedAttractionKey === uniqueKey && (
+                  <div className="attraction-details" style={{ cursor: 'default' }}>
+                    {attraction.description && <p className="attraction-description"><strong>Description:</strong> {attraction.description}</p>}
+                    {attraction.address && <p className="attraction-address"><strong>Address:</strong> {attraction.address}</p>}
+                    {attraction.phone && <p className="attraction-phone"><strong>Phone:</strong> {attraction.phone}</p>}
+                    {attraction.website && (
+                      <p className="attraction-website">
+                        <strong>Website:</strong> <a href={attraction.website} target="_blank" rel="noopener noreferrer">{attraction.website}</a>
+                      </p>
+                    )}
+                    {attraction.openingHours && <p className="attraction-hours"><strong>Hours:</strong> {attraction.openingHours}</p>}
+                  </div>
+                )}
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 };

@@ -46,7 +46,7 @@
 class Globals {}
 
 export class DevelopmentGlobals extends Globals {
-    private static ip = "192.168.1.19"; 
+    private static ip = "192.168.1.21"; 
 
     public api = {
         places: "http://" + DevelopmentGlobals.ip + ":8080/api/places/search",

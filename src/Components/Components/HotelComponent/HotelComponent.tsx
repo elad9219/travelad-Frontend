@@ -3,6 +3,7 @@ import axios from 'axios';
 import './HotelComponent.css'; 
 import { HotelDto } from '../../../modal/Hotel';
 import globals from '../../../utils/globals';
+import SkeletonCard from '../SkeletonCard/SkeletonCard'; // ייבוא השלד
 
 interface HotelComponentProps {
   cityName: string;
@@ -170,7 +171,13 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
         </div>
       )}
 
-      {hotelsLoading && <div className="loader">Loading...</div>}
+      {hotelsLoading && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', padding: '10px' }}>
+          {[...Array(4)].map((_, index) => (
+            <SkeletonCard key={index} />
+          ))}
+        </div>
+      )}
       
       {!hotelsLoading && hotels.length > 0 && (
         <div className="hotels-list">

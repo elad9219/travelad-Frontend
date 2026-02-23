@@ -1,0 +1,70 @@
+.skeleton-card {
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 300px;
+    /* Prevents the card from squishing */
+    flex: 1 1 calc(25% - 20px);
+    max-width: calc(25% - 20px);
+    box-sizing: border-box;
+}
+
+/* Mobile adjustments to match your existing cards */
+@media (max-width: 768px) {
+    .skeleton-card {
+        flex: 1 1 100%;
+        max-width: 100%;
+    }
+}
+
+.skeleton-image {
+    width: 100%;
+    height: 200px;
+    background-color: #e0e0e0;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+}
+
+.skeleton-title {
+    width: 70%;
+    height: 24px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-text {
+    width: 100%;
+    height: 16px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.skeleton-text.short {
+    width: 40%;
+}
+
+/* The pulse animation that creates the loading effect */
+@keyframes pulse {
+    0% {
+        background-color: #e0e0e0;
+    }
+    50% {
+        background-color: #f0f0f0;
+    }
+    100% {
+        background-color: #e0e0e0;
+    }
+}
