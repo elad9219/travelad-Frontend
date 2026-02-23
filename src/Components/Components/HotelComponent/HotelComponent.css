@@ -1,10 +1,11 @@
+/* המלבן הראשי חזר לעיצוב המקורי ושומר על הסימטריה */
 .hotels-container {
   width: 100%;
-  aspect-ratio: 16 / 8;
+  aspect-ratio: 16 / 8; /* החזרתי את זה! */
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 10px;
-  overflow-y: auto;
+  overflow-y: auto; /* הוספת גלילה פנימית כדי שהדשבורד לא יישבר */
   box-sizing: border-box;
   padding: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -13,17 +14,17 @@
 .hotels-header {
   position: relative;
   width: 100%;
-  padding: 8px 0; /* Matches Flights */
+  padding: 8px 0;
   text-align: center;
-  margin-bottom: 10px; /* Matches Flights */
+  margin-bottom: 10px; 
 }
 
 .hotels-title {
-  font-size: clamp(1rem, 2vw, 1.2rem); /* Matches Flights */
+  font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: bold;
   color: #333;
-  margin: 0; /* Matches Flights */
-  padding: 0; /* Matches Flights */
+  margin: 0;
+  padding: 0;
 }
 
 .advanced-search-toggle {
@@ -86,116 +87,180 @@
   background-color: #005fa3;
 }
 
-.hotels-list {
-  flex-grow: 1;
+/* --- הגריד: עכשיו 2 טורים במחשב במקום כרטיסייה אחת ארוכה --- */
+.hotels-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* שני מלונות בשורה */
+  gap: 15px;
+  padding: 5px;
+  align-items: start;
+}
+
+/* --- עיצוב כרטיסיית המלון החדשה --- */
+.hotel-card {
+  background-color: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 0;
-  overflow-y: auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
 }
 
-.hotel-item {
-  background-color: #fff;
-  padding: 8px 12px;
-  border: 1px solid #ddd;
+.hotel-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.hotel-image-container {
+  position: relative;
+  width: 100%;
+  height: 120px; /* הקטנתי את התמונה כדי שיכנסו יפה למלבן הראשי */
+}
+
+.hotel-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* הדירוג עבר ללמעלה ימינה - הרבה יותר בולט לעין */
+.hotel-rating {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(255, 255, 255, 0.95);
+  color: #333;
+  padding: 4px 8px;
   border-radius: 6px;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.hotel-item:hover {
-  transform: scale(1.01);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
-.hotel-summary {
-  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  font-size: 0.8rem;
   font-weight: bold;
-  color: #555;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.hotel-card-content {
+  padding: 12px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: auto;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.hotel-card-header {
+  margin-bottom: 8px;
 }
 
 .hotel-name {
-  flex: 1;
-  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+  line-height: 1.2;
 }
 
-.show-on-map-btn {
-  background-color: #0077cc;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
-  cursor: pointer;
-  font-size: clamp(0.8rem, 2vw, 0.8rem);
-}
-
-/* When hotel offers are displayed, move button to left */
-.hotel-summary.has-offers {
+/* שורת המחיר והכפתור מסודרת מחדש - מחיר בימין, כפתור בשמאל */
+.hotel-card-price-row {
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
-}
-
-.hotel-summary.has-offers .show-on-map-btn {
-  order: -1; /* Moves button to the left */
-  margin-right: 10px;
-}
-
-.hotel-summary.has-offers .hotel-name {
-  order: 0; /* Keeps name in the center */
-  flex: 1;
-}
-
-.hotel-summary.has-offers .hotel-price {
-  order: 1; /* Keeps price on the right */
-  margin-left: 10px;
-  color: #000; /* Changed to black */
-}
-
-.show-on-map-btn:hover {
-  background-color: #005fa3;
-}
-
-.hotel-details {
-  margin-top: 6px;
-  font-size: clamp(0.8rem, 2vw, 0.85rem);
-  color: #555;
-  border-top: 1px solid #eee;
-  padding-top: 6px;
+  align-items: flex-end;
+  margin-top: auto;
 }
 
 .hotel-price {
-  font-size: clamp(0.95rem, 2vw, 0.95rem);
-  color: #000; /* Changed to black */
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.price-subtitle {
+  font-size: 0.7rem;
+  font-weight: normal;
+  color: #666;
+  margin-top: 2px;
+}
+
+.show-on-map-btn {
+  background-color: #f0f7ff;
+  color: #0077cc;
+  border: 1px solid #cce4ff;
+  border-radius: 6px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.show-on-map-btn:hover {
+  background-color: #0077cc;
+  color: white;
+}
+
+/* פרטים מורחבים */
+.hotel-details {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: #444;
+  border-top: 1px solid #eee;
+  padding-top: 12px;
+  animation: slideDown 0.3s ease-out;
+}
+
+.hotel-details p {
+  margin: 4px 0;
+}
+
+.hotel-details-separator {
+  margin-top: 8px;
+  border-top: 1px dashed #ddd;
+  padding-top: 8px;
+  color: #666;
+}
+
+/* עיצוב מחודש ובולט לכפתור בוקינג (שנראה כמו כפתור אמיתי של בוקינג) */
+.book-now-btn {
+  margin-top: 12px;
+  background-color: #003580; /* הצבע הרשמי של בוקינג */
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: bold;
+  font-size: 0.95rem;
+  transition: background-color 0.2s;
+}
+
+.book-now-btn:hover {
+  background-color: #00224f;
 }
 
 .error-message {
   font-size: clamp(0.8rem, 2vw, 0.9rem);
-  color: #d32f2f; /* Red for errors */
+  color: #d32f2f; 
   text-align: center;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
-.no-offers-message {
-  font-size: clamp(0.8rem, 2vw, 0.9rem);
-  color: #666;
-  text-align: center;
-  margin-top: 10px;
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- תוספת למובייל בלבד (בלי לגעת בעיצוב המחשב) --- */
+/* --- תוספת למובייל --- */
 @media (max-width: 768px) {
   .hotels-container {
-    /* ביטול היחס של המחשב */
     aspect-ratio: unset !important;
-    /* גובה קבוע וארוך יותר לרשימה נוחה */
     height: 500px !important; 
-    /* הבטחת גלילה */
     overflow-y: auto !important;
+  }
+  
+  .hotels-grid {
+    grid-template-columns: 1fr; /* חזרה לטור אחד במובייל */
   }
 }

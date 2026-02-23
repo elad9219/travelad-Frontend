@@ -3,7 +3,7 @@ import axios from 'axios';
 import './HotelComponent.css'; 
 import { HotelDto } from '../../../modal/Hotel';
 import globals from '../../../utils/globals';
-import SkeletonCard from '../SkeletonCard/SkeletonCard'; // ייבוא השלד
+import SkeletonCard from '../SkeletonCard/SkeletonCard';
 
 interface HotelComponentProps {
   cityName: string;
@@ -28,6 +28,20 @@ const formatDate = (dateStr: string): string => {
   if (!dateStr) return '';
   const date = new Date(dateStr);
   return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+};
+
+const mockHotelImages = [
+  "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "https://images.pexels.com/photos/262048/pexels-photo-262048.jpeg?auto=compress&cs=tinysrgb&w=800",
+  "https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=800"
+];
+
+const getMockRating = (index: number) => {
+  const ratings = [8.5, 9.2, 7.8, 8.9, 9.5, 8.1];
+  return ratings[index % ratings.length];
 };
 
 const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, onShowHotelOnMap }) => {
@@ -171,8 +185,10 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
         </div>
       )}
 
+      {hotelsFetchError && <div className="error-message">{hotelsFetchError}</div>}
+
       {hotelsLoading && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', padding: '10px' }}>
+        <div className="hotels-grid">
           {[...Array(4)].map((_, index) => (
             <SkeletonCard key={index} />
           ))}
@@ -180,61 +196,61 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
       )}
       
       {!hotelsLoading && hotels.length > 0 && (
-        <div className="hotels-list">
+        <div className="hotels-grid">
           {hotels.map((hotel, index) => {
             const totalPrice = hotel.price || 0;
+            const rating = getMockRating(index);
+            const imageUrl = mockHotelImages[index % mockHotelImages.length];
+            const isExpanded = expandedHotelIndex === index;
 
             return (
-              <div key={index} className="hotel-item">
-                <div 
-                    className="hotel-summary has-offers" 
-                    onClick={() => setExpandedHotelIndex(expandedHotelIndex === index ? null : index)}
-                    style={{ cursor: 'pointer' }}
-                >
-                  <button className="show-on-map-btn" onClick={(e) => handleShowHotelOnMap(hotel, e)}>Show on Map</button>
-                  <div className="hotel-name">{toTitleCase(hotel.name)}</div>
-                  <div className="hotel-price">
-                      {totalPrice > 0 ? `€${totalPrice.toFixed(0)}` : 'N/A'}
-                      <div className="price-subtitle">
-                        {nights} {nights === 1 ? 'night' : 'nights'}, {appliedSearchParams.adults} {parseInt(appliedSearchParams.adults) === 1 ? 'guest' : 'guests'}
-                      </div>
-                  </div>
+              <div key={index} className={`hotel-card ${isExpanded ? 'expanded' : ''}`} onClick={() => setExpandedHotelIndex(isExpanded ? null : index)}>
+                <div className="hotel-image-container">
+                  <img src={imageUrl} alt={hotel.name} className="hotel-image" />
+                  {/* Rating moved to top right */}
+                  <div className="hotel-rating">⭐ {rating}</div>
                 </div>
-                {expandedHotelIndex === index && (
-                  <div className="hotel-details" style={{ cursor: 'default' }}>
-                      <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
-                      <p><strong>Dates:</strong> {formatDate(appliedSearchParams.checkInDate)} - {formatDate(appliedSearchParams.checkOutDate)} ({nights} nights)</p>
-                      <p><strong>Guests:</strong> {appliedSearchParams.adults}</p>
-                      <p><strong>Total Price:</strong> EUR {totalPrice.toFixed(2)}</p>
-                      <p><strong>Total Price (Inc. Tax):</strong> EUR {(totalPrice * 1.15).toFixed(2)}</p>
-                      <div style={{marginTop: '8px', borderTop: '1px solid #eee', paddingTop: '8px'}}>
-                        <p><strong>Room:</strong> Standard/Deluxe for {appliedSearchParams.adults} Guests</p>
-                      </div>
-                      <button 
-                        className="book-now-btn" 
-                        style={{
-                            marginTop: '12px', 
-                            backgroundColor: '#0077cc', 
-                            color: 'white', 
-                            border: 'none', 
-                            padding: '8px 15px', 
-                            borderRadius: '4px', 
-                            cursor: 'pointer', 
-                            width: '100%',
-                            fontWeight: 'bold'
-                        }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const hotelName = encodeURIComponent(hotel.name);
-                          const city = encodeURIComponent(decodeCityName(cityName));
-                          const bookingUrl = `https://www.booking.com/searchresults.html?ss=${hotelName}+${city}`;
-                          window.open(bookingUrl, '_blank');
-                        }}
-                      >
-                          Book on Booking.com
-                      </button>
+                
+                <div className="hotel-card-content">
+                  <div className="hotel-card-header">
+                    <h3 className="hotel-name">{toTitleCase(hotel.name)}</h3>
                   </div>
-                )}
+                  
+                  <div className="hotel-card-price-row">
+                    <button className="show-on-map-btn" onClick={(e) => handleShowHotelOnMap(hotel, e)}>Show on Map</button>
+                    <div className="hotel-price">
+                        {totalPrice > 0 ? `€${totalPrice.toFixed(0)}` : 'N/A'}
+                        <span className="price-subtitle">
+                          {nights} {nights === 1 ? 'night' : 'nights'}
+                        </span>
+                    </div>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="hotel-details" onClick={(e) => e.stopPropagation()}>
+                        <p><strong>City:</strong> {decodeCityName(cityName).toUpperCase()}</p>
+                        <p><strong>Dates:</strong> {formatDate(appliedSearchParams.checkInDate)} - {formatDate(appliedSearchParams.checkOutDate)}</p>
+                        <p><strong>Guests:</strong> {appliedSearchParams.adults}</p>
+                        <p><strong>Total Price:</strong> EUR {totalPrice.toFixed(2)}</p>
+                        <p><strong>Total (Inc. Tax):</strong> EUR {(totalPrice * 1.15).toFixed(2)}</p>
+                        <div className="hotel-details-separator">
+                          <p>Standard/Deluxe Room</p>
+                        </div>
+                        <button 
+                          className="book-now-btn" 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const hotelNameEncoded = encodeURIComponent(hotel.name);
+                            const cityEncoded = encodeURIComponent(decodeCityName(cityName));
+                            const bookingUrl = `https://www.booking.com/searchresults.html?ss=${hotelNameEncoded}+${cityEncoded}`;
+                            window.open(bookingUrl, '_blank');
+                          }}
+                        >
+                            Book on Booking.com
+                        </button>
+                    </div>
+                  )}
+                </div>
               </div>
             );
           })}
