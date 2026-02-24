@@ -1,31 +1,23 @@
-export interface VendorDto {
-    name: string;
-    price: number;
-}
-  
+// Flattened and cleaned up to match the backend structure perfectly
 export interface HotelDto {
     hotelId: string;
     name: string;
     iataCode?: string;
     countryCode?: string;
-    rating?: number;
-    price?: number; // הוספנו את השדה הזה
-    vendors?: VendorDto[];
-    geoCode?: {
-      latitude: number;
-      longitude: number;
-    };
-    // לצורך תאימות עם הקוד הקיים, נוסיף גם את זה למקרה שהבקאנד שולח שטוח
     latitude?: number;
     longitude?: number;
+    price?: number;
+    imageUrl?: string; // השדה החדש לתמונה הדינמית
+    rating?: number;   // הדירוג שמגיע מהבקאנד
 }
-  
+
+// Kept for future use if we want to display specific room details
 export interface RoomDto {
     bedType?: string;
     beds?: number;
     description?: string;
 }
-  
+
 export interface HotelOffersDto {
     name?: string;
     city?: string;

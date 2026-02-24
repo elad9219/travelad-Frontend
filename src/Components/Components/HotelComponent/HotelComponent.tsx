@@ -30,20 +30,6 @@ const formatDate = (dateStr: string): string => {
   return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
 };
 
-const mockHotelImages = [
-  "https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg?auto=compress&cs=tinysrgb&w=800",
-  "https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=800",
-  "https://images.pexels.com/photos/271624/pexels-photo-271624.jpeg?auto=compress&cs=tinysrgb&w=800",
-  "https://images.pexels.com/photos/1134176/pexels-photo-1134176.jpeg?auto=compress&cs=tinysrgb&w=800",
-  "https://images.pexels.com/photos/262048/pexels-photo-262048.jpeg?auto=compress&cs=tinysrgb&w=800",
-  "https://images.pexels.com/photos/2034335/pexels-photo-2034335.jpeg?auto=compress&cs=tinysrgb&w=800"
-];
-
-const getMockRating = (index: number) => {
-  const ratings = [8.5, 9.2, 7.8, 8.9, 9.5, 8.1];
-  return ratings[index % ratings.length];
-};
-
 const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, onShowHotelOnMap }) => {
   const [hotels, setHotels] = useState<HotelDto[]>([]);
   const [hotelsLoading, setHotelsLoading] = useState(false);
@@ -199,15 +185,16 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, countryName, 
         <div className="hotels-grid">
           {hotels.map((hotel, index) => {
             const totalPrice = hotel.price || 0;
-            const rating = getMockRating(index);
-            const imageUrl = mockHotelImages[index % mockHotelImages.length];
             const isExpanded = expandedHotelIndex === index;
+            
+            // שאיבת הנתונים האמיתיים מהבקאנד במקום המערכים שהיו כאן!
+            const rating = hotel.rating ? hotel.rating.toFixed(1) : '8.0';
+            const imageUrl = hotel.imageUrl || 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg';
 
             return (
               <div key={index} className={`hotel-card ${isExpanded ? 'expanded' : ''}`} onClick={() => setExpandedHotelIndex(isExpanded ? null : index)}>
                 <div className="hotel-image-container">
                   <img src={imageUrl} alt={hotel.name} className="hotel-image" />
-                  {/* Rating moved to top right */}
                   <div className="hotel-rating">⭐ {rating}</div>
                 </div>
                 
