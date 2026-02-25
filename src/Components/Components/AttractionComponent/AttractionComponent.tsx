@@ -3,7 +3,7 @@ import axios from 'axios';
 import './AttractionComponent.css';
 import { Attraction } from '../../../modal/Attraction';
 import globals from '../../../utils/globals';
-import SkeletonCard from '../SkeletonCard/SkeletonCard'; // ייבוא השלד
+import SkeletonCard from '../SkeletonCard/SkeletonCard';
 
 interface AttractionComponentProps {
   city: string;
@@ -60,54 +60,78 @@ const AttractionComponent: React.FC<AttractionComponentProps> = ({ city, onShowA
     <div className="attractions-container">
       <div className="attractions-header">
         <h2 className="attractions-title">
-          <span role="img" aria-label="attractions">🎡</span> Attractions
+          <span role="img" aria-label="attractions">🎡</span> Attractions in {city}
         </h2>
       </div>
+
+      {error && <p className="error-message">{error}</p>}
       
       {loading && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', justifyContent: 'center', padding: '10px' }}>
+        <div className="attractions-grid">
           {[...Array(4)].map((_, index) => (
             <SkeletonCard key={index} />
           ))}
         </div>
       )}
 
-      {error && <p className="error-message">{error}</p>}
-      {(!loading && attractions.length === 0) && <p className="no-attractions-message">No attractions found.</p>}
+      {(!loading && attractions.length === 0) && !error && (
+        <p className="no-attractions-message">No attractions found for this city.</p>
+      )}
       
       {!loading && attractions.length > 0 && (
-        <ul className="attractions-list">
+        <div className="attractions-grid">
           {attractions.map((attraction, index) => {
             const uniqueKey = getAttractionKey(attraction, index);
+            const isExpanded = expandedAttractionKey === uniqueKey;
+            
+            // Using the image URL provided by the backend (Wikipedia or Mock)
+            const imageUrl = attraction.imageUrl || `https://picsum.photos/seed/attr_${index}/800/600`;
+
             return (
-              <li key={uniqueKey} className="attraction-item">
-                <div 
-                    className="attraction-header" 
-                    onClick={() => toggleAttraction(uniqueKey)}
-                    style={{ cursor: 'pointer' }}
-                >
-                  <span className="attraction-name">{attraction.name || 'Unnamed Attraction'}</span>
-                  <button className="show-on-map-btn" onClick={(e) => { e.stopPropagation(); handleShowOnMap(attraction, e); }}>
-                    Show on Map
-                  </button>
+              <div key={uniqueKey} className={`attraction-card ${isExpanded ? 'expanded' : ''}`} onClick={() => toggleAttraction(uniqueKey)}>
+                <div className="attraction-image-container">
+                  <img 
+                    src={imageUrl} 
+                    alt={attraction.name || 'Attraction'} 
+                    className="attraction-image"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://picsum.photos/seed/attr_fallback_${index}/800/600`;
+                    }}
+                  />
                 </div>
-                {expandedAttractionKey === uniqueKey && (
-                  <div className="attraction-details" style={{ cursor: 'default' }}>
-                    {attraction.description && <p className="attraction-description"><strong>Description:</strong> {attraction.description}</p>}
-                    {attraction.address && <p className="attraction-address"><strong>Address:</strong> {attraction.address}</p>}
-                    {attraction.phone && <p className="attraction-phone"><strong>Phone:</strong> {attraction.phone}</p>}
-                    {attraction.website && (
-                      <p className="attraction-website">
-                        <strong>Website:</strong> <a href={attraction.website} target="_blank" rel="noopener noreferrer">{attraction.website}</a>
-                      </p>
-                    )}
-                    {attraction.openingHours && <p className="attraction-hours"><strong>Hours:</strong> {attraction.openingHours}</p>}
+                
+                <div className="attraction-card-content">
+                  <div className="attraction-card-header">
+                    <h3 className="attraction-name">{attraction.name || 'Unnamed Attraction'}</h3>
                   </div>
-                )}
-              </li>
+                  
+                  <div className="attraction-card-actions">
+                    <button className="show-on-map-btn" onClick={(e) => handleShowOnMap(attraction, e)}>
+                      Show on Map
+                    </button>
+                  </div>
+
+                  {isExpanded && (
+                    <div className="attraction-details" onClick={(e) => e.stopPropagation()}>
+                      {attraction.description && <p><strong>Description:</strong> {attraction.description}</p>}
+                      {attraction.address && <p><strong>Address:</strong> {attraction.address}</p>}
+                      {attraction.phone && <p><strong>Phone:</strong> {attraction.phone}</p>}
+                      {attraction.openingHours && <p><strong>Hours:</strong> {attraction.openingHours}</p>}
+                      {attraction.website && (
+                        <div className="attraction-details-separator">
+                          <a href={attraction.website} target="_blank" rel="noopener noreferrer" className="website-link">
+                            Visit Official Website
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
             );
           })}
-        </ul>
+        </div>
       )}
     </div>
   );

@@ -8,4 +8,5 @@ export class Attraction {
     phone?: string;
     website?:string;
     openingHours?: string; 
+    imageUrl?: string; // Added image field
 }

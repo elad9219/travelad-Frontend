@@ -1,6 +1,7 @@
+/* Container stays exactly 16:8 to match the rest of the site */
 .attractions-container {
   width: 100%;
-  aspect-ratio: 16 / 8; /* Maintains the 16:9 ratio */
+  aspect-ratio: 16 / 8;
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 10px;
@@ -13,120 +14,180 @@
 .attractions-header {
   position: relative;
   width: 100%;
-  padding: 8px 0; /* Unchanged to keep headline position */
+  padding: 8px 0;
   text-align: center;
-  margin-bottom: clamp(10px, 2vw, 20px); /* Increased and made relative */
+  margin-bottom: 15px;
 }
 
 .attractions-title {
-  font-size: clamp(1rem, 2vw, 1.2rem); /* Unchanged */
+  font-size: clamp(1rem, 2vw, 1.2rem);
   font-weight: bold;
   color: #333;
-  margin: 0; /* Unchanged */
-  padding: 0; /* Unchanged */
-}
-
-.attractions-list {
-  list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
-.attraction-item {
-  padding: 12px;
-  border-bottom: 1px solid #eee;
+/* --- GRID LAYOUT --- */
+.attractions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  padding: 5px;
+  align-items: start; /* Prevents cards from stretching when one expands */
+}
+
+/* --- ATTRACTION CARD DESIGN --- */
+.attraction-card {
+  background-color: #fff;
+  border: 1px solid #eaeaea;
+  border-radius: 8px;
+  overflow: hidden;
   cursor: pointer;
-}
-
-.attraction-item:hover {
-  background-color: #eef;
-}
-
-.attraction-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.attraction-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+}
+
+.attraction-image-container {
+  position: relative;
+  width: 100%;
+  height: 120px;
+}
+
+.attraction-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.attraction-tag {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background-color: rgba(0, 119, 204, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: bold;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.attraction-card-content {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.attraction-card-header {
+  margin-bottom: 12px;
 }
 
 .attraction-name {
   font-size: 1rem;
-  font-weight: bold;
-  color: #333;
-  flex-grow: 1;
+  font-weight: 700;
+  color: #222;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.attraction-card-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: auto;
 }
 
 .show-on-map-btn {
-  background-color: #0077cc;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
+  background-color: #f0f7ff;
+  color: #0077cc;
+  border: 1px solid #cce4ff;
+  border-radius: 6px;
+  padding: 6px 12px;
   cursor: pointer;
-  font-size: 0.8rem;
-  margin-left: 10px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  transition: all 0.2s;
 }
 
 .show-on-map-btn:hover {
-  background-color: #005fa3;
+  background-color: #0077cc;
+  color: white;
 }
 
+/* Expanded Details */
 .attraction-details {
-  margin-top: 8px;
-  padding: 8px;
-  background-color: #fff;
-  border-left: 2px solid #0077cc;
+  margin-top: 15px;
+  font-size: 0.85rem;
+  color: #444;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+  animation: slideDown 0.3s ease-out;
 }
 
 .attraction-details p {
-  margin-bottom: 8px;
-  font-size: 0.9rem;
-  color: #555;
+  margin: 6px 0;
+  line-height: 1.4;
   word-wrap: break-word;
-  overflow-wrap: break-word;
+}
+
+.attraction-details-separator {
+  margin-top: 12px;
+  border-top: 1px dashed #ddd;
+  padding-top: 12px;
+  text-align: center;
+}
+
+.website-link {
+  display: inline-block;
+  background-color: #0077cc;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.website-link:hover {
+  background-color: #005fa3;
 }
 
 .error-message {
   text-align: center;
-  color: red;
+  color: #d32f2f;
   font-size: 1rem;
+  margin-top: 20px;
 }
 
 .no-attractions-message {
   text-align: center;
   font-size: 1rem;
   color: #666;
+  margin-top: 20px;
 }
 
-.loader {
-  text-align: center;
-  margin-top: 10px;
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-.loader::after {
-  content: "";
-  display: block;
-  width: 30px;
-  height: 30px;
-  margin: 10px auto;
-  border-radius: 50%;
-  border: 4px solid #ccc;
-  border-top: 4px solid #0077cc;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-/* --- תוספת למובייל בלבד (בלי לגעת בעיצוב המחשב) --- */
+/* --- MOBILE RESPONSIVE --- */
 @media (max-width: 768px) {
   .attractions-container {
-    /* ביטול היחס של המחשב */
     aspect-ratio: unset !important;
-    /* גובה קבוע וארוך יותר לרשימה נוחה */
     height: 500px !important;
-    /* הבטחת גלילה */
-    overflow-y: auto !important;
+  }
+  
+  .attractions-grid {
+    grid-template-columns: 1fr;
   }
 }
