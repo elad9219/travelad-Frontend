@@ -83,22 +83,18 @@ const AttractionComponent: React.FC<AttractionComponentProps> = ({ city, onShowA
           {attractions.map((attraction, index) => {
             const uniqueKey = getAttractionKey(attraction, index);
             const isExpanded = expandedAttractionKey === uniqueKey;
-            
-            // Using the image URL provided by the backend (Wikipedia or Mock)
-            const imageUrl = attraction.imageUrl || `https://picsum.photos/seed/attr_${index}/800/600`;
 
             return (
               <div key={uniqueKey} className={`attraction-card ${isExpanded ? 'expanded' : ''}`} onClick={() => toggleAttraction(uniqueKey)}>
                 <div className="attraction-image-container">
-                  <img 
-                    src={imageUrl} 
-                    alt={attraction.name || 'Attraction'} 
-                    className="attraction-image"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = `https://picsum.photos/seed/attr_fallback_${index}/800/600`;
-                    }}
-                  />
+                  {/* מציג תמונה רק אם יש URL. אחרת מציג חללית אפורה נקייה */}
+                  {attraction.imageUrl ? (
+                    <img src={attraction.imageUrl} alt={attraction.name || 'Attraction'} className="attraction-image" />
+                  ) : (
+                    <div className="no-image-placeholder">
+                      <span className="no-image-icon">📷</span>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="attraction-card-content">
