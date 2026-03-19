@@ -63,6 +63,35 @@
   transform: scale(1.05);
 }
 
+/* --- Popular Cities Chips Styles --- */
+.popular-cities-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.popular-city-btn {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #333;
+  border: 1px solid transparent;
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.popular-city-btn:hover {
+  background-color: #007bff;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 .recent-cities {
   position: absolute;
   top: 95%;

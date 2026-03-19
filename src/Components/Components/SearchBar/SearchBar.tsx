@@ -26,6 +26,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
   // Keyboard navigation state
   const [activeIndex, setActiveIndex] = useState(-1);
 
+  // Popular cities array for the suggestion buttons
+  const popularCities = ['London', 'Paris', 'New York', 'Tokyo', 'Rome'];
+
   const [userId] = useState<string>(() => {
     let savedUserId = localStorage.getItem('userId');
     if (!savedUserId) {
@@ -217,7 +220,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
           type="text"
           value={placeName}
           onChange={handleInputChange}
-          onKeyDown={handleKeyDown} // Trigger navigation
+          onKeyDown={handleKeyDown} 
           onFocus={() => setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
           placeholder="Enter a city name"
@@ -227,7 +230,23 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
           Search
         </button>
       </form>
+
+      {/* Popular Cities Buttons */}
+      <div className="popular-cities-container">
+        {popularCities.map((city) => (
+          <button
+            key={city}
+            type="button"
+            className="popular-city-btn"
+            onClick={() => handleCityClick(city)}
+          >
+            Explore {city}
+          </button>
+        ))}
+      </div>
+
       {error && <p className="error-message">{error}</p>}
+      
       {showSuggestions && filteredCities.length > 0 && (
         <div className="recent-cities">
           <ul>
@@ -235,7 +254,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
               <li 
                 key={`${city}-${index}`} 
                 onClick={() => handleCityClick(city)}
-                className={index === activeIndex ? 'active' : ''} // Apply active class
+                className={index === activeIndex ? 'active' : ''} 
               >
                 <span>{city}</span>
                 <button
