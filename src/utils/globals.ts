@@ -10,21 +10,23 @@ export class DevelopmentGlobals extends Globals {
         attractions: 'http://localhost:8080/api/geoapify/places',
         weather: 'http://localhost:8080/weather',
         iataCodes: 'http://localhost:8080/iata-codes',
-        cacheCities: 'http://localhost:8080/cache/cities', // Points to CityCacheController
+        cacheCities: 'http://localhost:8080/cache/cities',
     };
 }
 
 export class ProductionGlobals extends Globals {
+    private static backendUrl = "https://travelad-backend-xxxx.onrender.com";
+
     public api = {
-        places: '/api/places/search',
-        flights: '/flights',
-        advancedFlights: '/flights/advancedFlightSearch',
-        hotels: '/hotels/by-city-name',
-        hotelOffers: '/hotels/offers',
-        attractions: '/api/geoapify/places',
-        weather: '/weather',
-        iataCodes: '/iata-codes',
-        cacheCities: '/cache/cities', // Points to CityCacheController
+        places: ProductionGlobals.backendUrl + '/api/places/search',
+        flights: ProductionGlobals.backendUrl + '/flights',
+        advancedFlights: ProductionGlobals.backendUrl + '/flights/advancedFlightSearch',
+        hotels: ProductionGlobals.backendUrl + '/hotels/by-city-name',
+        hotelOffers: ProductionGlobals.backendUrl + '/hotels/offers',
+        attractions: ProductionGlobals.backendUrl + '/api/geoapify/places',
+        weather: ProductionGlobals.backendUrl + '/weather',
+        iataCodes: ProductionGlobals.backendUrl + '/iata-codes',
+        cacheCities: ProductionGlobals.backendUrl + '/cache/cities',
     };
 }
 
