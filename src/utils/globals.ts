@@ -15,7 +15,7 @@ export class DevelopmentGlobals extends Globals {
 }
 
 export class ProductionGlobals extends Globals {
-    private static backendUrl = "https://travelad-backend-xxxx.onrender.com";
+    private static backendUrl = "https://travelad-backend.onrender.com/";
 
     public api = {
         places: ProductionGlobals.backendUrl + '/api/places/search',
