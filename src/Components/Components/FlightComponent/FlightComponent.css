@@ -10,11 +10,12 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* התאמה למובייל: ביטול היחס הקבוע למניעת מעיכה */
+/* Mobile Adjustments */
 @media (max-width: 768px) {
   .flights-container {
-    aspect-ratio: auto;
-    height: 500px; /* גובה קבוע שמאפשר גלילה נוחה */
+    aspect-ratio: unset;
+    height: auto; 
+    min-height: 400px; /* Prevents the boxy/square look */
   }
 }
 
@@ -22,7 +23,7 @@
   width: 100%;
   padding: 8px 0;
   margin-bottom: 10px;
-  position: relative; /* חובה עבור ה-Absolute של הכפתור חיפוש מתקדם */
+  position: relative; 
 }
 
 .flights-title {
@@ -70,7 +71,7 @@
   position: absolute;
   right: 10px;
   top: 50%;
-  transform: translateY(30%);
+  transform: translateY(-50%);
   font-size: clamp(0.8rem, 2vw, 0.9rem);
   background: none;
   border: none;
@@ -130,11 +131,15 @@
   background-color: #005fa3;
 }
 
+/* Flight Item Container */
 .flight-item {
-  padding: 6px 8px;
-  margin: 8px 0;
+  padding: 10px 15px; 
+  margin: 8px auto; 
+  max-width: 850px; 
+  width: 100%; 
+  box-sizing: border-box; 
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
   background-color: #fff;
   cursor: pointer;
   transition: box-shadow 0.3s ease;
@@ -143,14 +148,14 @@
 }
 
 .flight-item:hover {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .flight-summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  font-size: clamp(0.85rem, 2vw, 1rem);
   color: #555;
 }
 
@@ -160,11 +165,23 @@
   flex: 1;
 }
 
+/* Grid Layout for Summary Row */
 .summary-row {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  /* Changed to 1.5fr 1fr 1fr for perfect centering of the middle column */
+  grid-template-columns: 1.5fr 1fr 1fr; 
   align-items: center;
-  margin: 2px 0;
+  margin: 6px 0;
+  gap: 10px;
+  width: 100%;
+}
+
+/* Mobile specific grid adjustments (keeps horizontal layout intact) */
+@media (max-width: 768px) {
+  .summary-row {
+    grid-template-columns: 1.5fr 1fr 1fr; /* Keep it horizontal! */
+    gap: 5px; /* Reduce gap to fit iPhone screen */
+  }
 }
 
 .summary-left {
@@ -173,13 +190,24 @@
   align-items: center;
 }
 
+/* Enlarged Logo Container */
 .carrier-logo-container {
-  margin-right: 10px;
+  margin-right: 15px;
+  width: 90px; /* Increased from 80px */
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .carrier-logo-container {
+    margin-right: 5px;
+    width: 50px; /* Smaller for mobile */
+  }
 }
 
 .carrier-logo {
-  width: 100px;
-  height: 50px;
+  width: 100%;
+  max-height: 55px; /* Increased from 40px for better visibility */
   object-fit: contain;
 }
 
@@ -192,84 +220,103 @@
 .route {
   display: flex;
   align-items: center;
-  font-size: clamp(1rem, 2vw, 1rem);
+  font-size: clamp(0.9rem, 2vw, 1.15rem); 
   font-weight: bold;
   justify-content: center;
-  width: 100%;
+  color: #222;
+  text-align: center;
 }
 
 .arrow {
-  margin: 0 10px;
-  font-size: clamp(1.2rem, 2vw, 1.2rem);
+  margin: 0 8px;
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: #888;
 }
 
 .details-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  flex-direction: column; 
+  align-items: center;    
+  margin-top: 2px;
 }
 
 .duration {
-  font-size: clamp(0.8rem, 2vw, 0.8rem);
+  font-size: clamp(0.7rem, 1.5vw, 0.85rem);
   color: #666;
   margin-bottom: 2px;
-  margin-left: 0;
 }
 
 .stops {
-  font-size: clamp(0.8rem, 2vw, 0.8rem);
-  color: #666;
-  margin-left: 0;
+  font-size: clamp(0.7rem, 1.5vw, 0.85rem);
 }
 
 .direct-flight {
-  color: green;
+  color: #00875a;
   font-weight: bold;
-  margin-left: 0;
 }
 
 .with-stops {
-  color: red;
+  color: #d32f2f;
   font-weight: bold;
 }
 
 .summary-center {
-  flex: 1;
-  text-align: center;
-  font-size: clamp(0.9rem, 2vw, 0.9rem);
-  color: #666;
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: center;
 }
 
-.flight-price {
-  text-align: right;
-  font-size: clamp(1rem, 2vw, 1.1rem);
+.flight-time {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   font-weight: bold;
   color: #333;
 }
 
+.flight-date { 
+  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+  color: #666;
+  white-space: nowrap; 
+}
+
+.flight-price {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end; 
+  justify-content: center;
+}
+
+.price-value, .flight-price {
+  font-size: clamp(1.1rem, 3vw, 1.5rem); 
+  font-weight: 800;
+  color: #222; 
+}
+
 .price-per-person {
-  font-size: clamp(1rem, 2vw, 1.1rem);
+  font-size: clamp(0.95rem, 2.5vw, 1.4rem);
   font-weight: bold;
   color: #333;
 }
 
 .per-person {
-  font-size: clamp(0.8rem, 2vw, 0.8rem);
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
   font-weight: normal;
+  color: #666;
 }
 
 .total-price {
-  font-size: clamp(0.8rem, 2vw, 0.8rem);
-  color: #666;
-  font-weight: lighter;
+  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+  color: #888;
+  font-weight: normal;
+  margin-top: 2px;
 }
 
 .flight-details {
-  margin-top: 8px;
-  font-size: clamp(0.8rem, 2vw, 0.85rem);
+  margin-top: 10px;
+  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
   color: #555;
   border-top: 1px solid #eee;
-  padding-top: 8px;
+  padding-top: 10px;
 }
 
 .leg-details {
@@ -278,7 +325,7 @@
 
 .leg-details h4 {
   margin: 4px 0;
-  font-size: clamp(1rem, 2vw, 1rem);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
   color: #333;
 }
 
@@ -293,18 +340,13 @@
 }
 
 .segment-duration {
-  font-size: clamp(0.8rem, 2vw, 0.8rem);
+  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
   color: #666;
-  margin-top: -10px;
-}
-
-.flight-time {
-  font-size: clamp(0.9rem, 2vw, 0.9rem);
-  font-weight: bold;
+  margin-top: -8px;
 }
 
 .iata-tooltip {
-  border-bottom: 1px dotted #000;
+  border-bottom: 1px dotted #999;
   cursor: help;
   font-weight: bold;
 }
@@ -315,7 +357,7 @@
   align-items: center;
   gap: 10px;
   margin-top: 5px;
-  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
 }
 
 .sort-controls label {
