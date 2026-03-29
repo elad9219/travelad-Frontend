@@ -1,11 +1,11 @@
-/* המלבן הראשי חזר לעיצוב המקורי ושומר על הסימטריה */
+/* Main container styles */
 .hotels-container {
   width: 100%;
-  aspect-ratio: 16 / 8; /* החזרתי את זה! */
+  aspect-ratio: 16 / 8; 
   background-color: #f9f9f9;
   border: 1px solid #ddd;
   border-radius: 10px;
-  overflow-y: auto; /* הוספת גלילה פנימית כדי שהדשבורד לא יישבר */
+  overflow-y: auto; 
   box-sizing: border-box;
   padding: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -87,16 +87,25 @@
   background-color: #005fa3;
 }
 
-/* --- הגריד: עכשיו 2 טורים במחשב במקום כרטיסייה אחת ארוכה --- */
+/* Explicit control over grid columns instead of auto-fill */
 .hotels-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* שני מלונות בשורה */
+  /* Default for Laptops/MacBooks: Exactly 2 cards per row */
+  grid-template-columns: repeat(2, 1fr);
   gap: 15px;
   padding: 5px;
-  align-items: start;
+  align-items: start; 
 }
 
-/* --- עיצוב כרטיסיית המלון החדשה --- */
+/* For ultra-wide screens (e.g., 27-inch monitor) */
+@media (min-width: 1600px) {
+  .hotels-grid {
+    /* Exactly 3 cards per row, nicely spaced */
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Hotel Card styling */
 .hotel-card {
   background-color: #fff;
   border: 1px solid #eaeaea;
@@ -114,19 +123,22 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.12);
 }
 
+/* Fixed height to keep the rectangular MacBook look */
 .hotel-image-container {
   position: relative;
   width: 100%;
-  height: 120px; /* הקטנתי את התמונה כדי שיכנסו יפה למלבן הראשי */
+  height: 140px; 
+  overflow: hidden;
 }
 
+/* Uniform image sizing with cover to prevent distortion */
 .hotel-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
-/* הדירוג עבר ללמעלה ימינה - הרבה יותר בולט לעין */
 .hotel-rating {
   position: absolute;
   top: 8px;
@@ -159,7 +171,6 @@
   line-height: 1.2;
 }
 
-/* שורת המחיר והכפתור מסודרת מחדש - מחיר בימין, כפתור בשמאל */
 .hotel-card-price-row {
   display: flex;
   justify-content: space-between;
@@ -200,7 +211,7 @@
   color: white;
 }
 
-/* פרטים מורחבים */
+/* Expanded Details */
 .hotel-details {
   margin-top: 12px;
   font-size: 0.85rem;
@@ -221,10 +232,9 @@
   color: #666;
 }
 
-/* עיצוב מחודש ובולט לכפתור בוקינג (שנראה כמו כפתור אמיתי של בוקינג) */
 .book-now-btn {
   margin-top: 12px;
-  background-color: #003580; /* הצבע הרשמי של בוקינג */
+  background-color: #003580; 
   color: white;
   border: none;
   padding: 10px 15px;
@@ -252,7 +262,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- תוספת למובייל --- */
+/* Mobile Adjustments */
 @media (max-width: 768px) {
   .hotels-container {
     aspect-ratio: unset !important;
@@ -261,6 +271,6 @@
   }
   
   .hotels-grid {
-    grid-template-columns: 1fr; /* חזרה לטור אחד במובייל */
+    grid-template-columns: 1fr; /* Exactly 1 card per row */
   }
 }
