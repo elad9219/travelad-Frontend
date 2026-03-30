@@ -15,7 +15,7 @@
   .flights-container {
     aspect-ratio: unset;
     height: auto; 
-    min-height: 400px; /* Prevents the boxy/square look */
+    min-height: 400px;
   }
 }
 
@@ -165,10 +165,9 @@
   flex: 1;
 }
 
-/* Grid Layout for Summary Row */
+/* Grid Layout for Summary Row - Base is for Desktop Monitor (Untouched!) */
 .summary-row {
   display: grid;
-  /* Changed to 1.5fr 1fr 1fr for perfect centering of the middle column */
   grid-template-columns: 1.5fr 1fr 1fr; 
   align-items: center;
   margin: 6px 0;
@@ -176,11 +175,20 @@
   width: 100%;
 }
 
-/* Mobile specific grid adjustments (keeps horizontal layout intact) */
+/* --- MacBook specific adjustment: Pushing strongly to the right --- */
+@media (min-width: 769px) and (max-width: 1200px) {
+  .summary-row {
+    /* 1.85fr makes the left column take almost double the space, pushing the center exactly where you want it */
+    grid-template-columns: 1.85fr 1fr 1fr; 
+  }
+}
+
+/* --- Mobile specific adjustments --- */
 @media (max-width: 768px) {
   .summary-row {
-    grid-template-columns: 1.5fr 1fr 1fr; /* Keep it horizontal! */
-    gap: 5px; /* Reduce gap to fit iPhone screen */
+    /* 1.7fr pushes the center to the right on iPhone */
+    grid-template-columns: 1.7fr 1.1fr 1fr; 
+    gap: 5px; 
   }
 }
 
@@ -193,22 +201,28 @@
 /* Enlarged Logo Container */
 .carrier-logo-container {
   margin-right: 15px;
-  width: 90px; /* Increased from 80px */
+  width: 90px; 
   display: flex;
   justify-content: center;
 }
 
 @media (max-width: 768px) {
   .carrier-logo-container {
-    margin-right: 5px;
-    width: 50px; /* Smaller for mobile */
+    margin-right: 10px; /* Safe distance from text on iPhone */
+    width: 40px; 
   }
 }
 
 .carrier-logo {
   width: 100%;
-  max-height: 55px; /* Increased from 40px for better visibility */
+  max-height: 55px; 
   object-fit: contain;
+}
+
+@media (max-width: 768px) {
+  .carrier-logo {
+    max-height: 35px;
+  }
 }
 
 .route-container {
@@ -260,23 +274,29 @@
   font-weight: bold;
 }
 
+/* --- THE CENTER FIX --- */
 .summary-center {
   display: flex;
   flex-direction: column; 
   align-items: center;
   justify-content: center;
+  
+  /* Applying the date font rules DIRECTLY to the container because the date lacks a class */
+  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+  color: #666;
+  white-space: nowrap; /* Forces the entire block to never wrap */
+}
+
+@media (max-width: 768px) {
+  .summary-center {
+    font-size: 0.65rem; /* Shrinks the raw date text specifically for iPhone */
+  }
 }
 
 .flight-time {
   font-size: clamp(0.9rem, 2vw, 1.1rem);
   font-weight: bold;
   color: #333;
-}
-
-.flight-date { 
-  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
-  color: #666;
-  white-space: nowrap; 
 }
 
 .flight-price {
