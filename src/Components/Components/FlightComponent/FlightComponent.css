@@ -149,7 +149,7 @@
 
 @media (max-width: 768px) {
   .flight-item {
-    padding: 8px 6px; /* חוסך עוד טיפה מקום באייפון */
+    padding: 8px 6px; 
   }
 }
 
@@ -171,7 +171,7 @@
   flex: 1;
 }
 
-/* --- הגדרת הבסיס למחשב נייח (Desktop) - לא נגעתי! --- */
+/* --- Base Layout for Desktop Monitors (Screens wider than 1450px) - Untouched! --- */
 .summary-row {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr; 
@@ -181,19 +181,19 @@
   width: 100%;
 }
 
-/* --- תיקון למקבוק: אוטומטי בהתאם לרוחב היעדים והמחיר --- */
-@media (min-width: 769px) and (max-width: 1200px) {
+/* --- MacBook specific adjustment (Screens from 769px up to 1450px) --- */
+@media (min-width: 769px) and (max-width: 1450px) {
   .summary-row {
-    grid-template-columns: auto 1fr auto;
-    gap: 15px; /* מרווח ביטחון מינימלי בין החלקים */
+    grid-template-columns: auto 1fr auto; /* אותה נוסחה שעבדה באייפון */
+    gap: 15px; 
   }
 }
 
-/* --- תיקון לאייפון: אוטומטי בהתאם לרוחב היעדים והמחיר --- */
+/* --- iPhone specific layout (Screens up to 768px) - Untouched! --- */
 @media (max-width: 768px) {
   .summary-row {
     grid-template-columns: auto 1fr auto;
-    gap: 8px; /* מרווח ביטחון שמונע מגע בכל מחיר */
+    gap: 8px; 
   }
 }
 
@@ -213,7 +213,7 @@
 
 @media (max-width: 768px) {
   .carrier-logo-container {
-    margin-right: 8px; /* מרווח מאוזן ללוגו */
+    margin-right: 8px; 
     width: 38px; 
   }
 }
@@ -315,7 +315,6 @@
 @media (max-width: 768px) {
   .flight-date {
     font-size: 0.65rem;
-    /* הפקודות שנועלות את התאריך לשורה אחת באייפון! */
     white-space: nowrap !important;
     display: block; 
   }
