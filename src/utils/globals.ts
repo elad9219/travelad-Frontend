@@ -20,7 +20,7 @@ export class DevelopmentGlobals extends Globals {
 
 export class ProductionGlobals extends Globals {
     // Replace this string with your actual runmydocker backend URL
-    private static backendUrl = "https://YOUR-RUNMYDOCKER-URL.com"; 
+    private static backendUrl = "https://traveladd.runmydocker-app.com/"; 
 
     public api = {
         places: `${ProductionGlobals.backendUrl}/api/places/search`,
