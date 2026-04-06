@@ -1,150 +1,63 @@
-# Travelad - Travel Planning Platform
+# **Travelad \- Comprehensive Travel Planning Platform**
 
-Travelad is a full-stack travel planning application that allows users to search for cities worldwide, view detailed information including maps, weather, flights, hotels, and attractions, and access a personalized search history. Built from scratch with Java 11 and Spring Boot for the backend, React TypeScript for the frontend, and deployed using Docker.
+Travelad is a robust, full-stack travel planning application that provides users with an all-in-one interactive dashboard. Users can search for any city worldwide and instantly receive a consolidated view of maps, weather, flights, hotels, and local attractions.
 
-## Quick Links
+Built with an emphasis on resilient architecture, the platform features a multi-layered caching system, dynamic fallback mechanisms for missing data, and a custom data aggregation engine.
 
-- **Live Demo**: [https://traveladd.runmydocker-app.com/](https://traveladd.runmydocker-app.com/)
-- **API Documentation (Swagger)**: [https://traveladd.runmydocker-app.com/swagger-ui.html](https://traveladd.runmydocker-app.com/swagger-ui.html)
-- **Backend Repository**: [https://github.com/elad9219/travelad-backend](https://github.com/elad9219/travelad-backend)
-- **Frontend Repository**: [https://github.com/elad9219/travelad-frontend](https://github.com/elad9219/travelad-frontend)
+## **Quick Links**
 
-## Table of Contents
+* **Live Demo**:  [https://travelad.vercel.app/](https://travelad.vercel.app/)  
+* **API Documentation (Swagger)**:  [https://traveladd.runmydocker-app.com/swagger-ui.html](https://traveladd.runmydocker-app.com/swagger-ui.html)  
+* **Backend Repository**:  [https://github.com/elad9219/travelad-backend](https://github.com/elad9219/travelad-backend)  
+* **Frontend Repository**:  [https://github.com/elad9219/travelad-frontend](https://github.com/elad9219/travelad-frontend)
 
-- [Features](#features)
-- [Technologies](#technologies)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Screenshots](#screenshots)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
+## **Table of Contents**
 
-## Features
+* [Features](https://www.google.com/search?q=%23features)  
+* [Architecture & Technical Highlights](https://www.google.com/search?q=%23architecture--technical-highlights)  
+* [Technologies](https://www.google.com/search?q=%23technologies)  
+* [Project Structure](https://www.google.com/search?q=%23project-structure)  
+* [Screenshots](https://www.google.com/search?q=%23screenshots)  
+* [Installation & Local Setup](https://www.google.com/search?q=%23installation--local-setup)  
+* [Contact](https://www.google.com/search?q=%23contact)
 
-- **City Search**: Search any city with autocomplete based on past searches.
-- **Personalized Search History**: View and remove the last 8 searched cities (stored in Redis per user).
-- **Six Information Tiles**: Image, map, weather, flights, hotels, and attractions.
-- **Advanced Search**: Customize flights (origin, dates, passengers) and hotels (pricing, parameters).
-- **IATA Code Conversion**: Converts city names to IATA codes using a JSON file.
-- **Carrier Logos**: Displays airline logos from GitHub.
-- **Tooltip Details**: Shows full names on IATA code hover.
-- **Database Optimization**: Uses PostgreSQL for static data and Redis for history.
+## **Features**
 
-## Technologies
+* **Interactive 6-Tile Dashboard**: A seamless Single Page Application (SPA) displaying synchronized data for Flights, Hotels, Attractions, Weather, Maps, and Place Details.  
+* **Smart City Search**: Global city search with intelligent autocomplete based on extensive IATA/City code mappings.  
+* **Personalized Search History**: Automatically tracks and displays recently searched destinations.  
+* **Resilient UI/UX**: Graceful degradation and custom placeholder components (Fallbacks) ensure a clean UI even when external APIs return partial or missing media.
 
-- **Backend**: Java 11, Spring Boot, Maven
-- **Frontend**: React, TypeScript
-- **Databases**: PostgreSQL, Redis
-- **APIs**: Google Places, Amadeus, Geoapify, WeatherAPI
-- **Containerization**: Docker
-- **Documentation**: Swagger
-- **Version Control**: Git, GitHub
+## **Architecture & Technical Highlights**
 
-## Installation
+* **Custom Aggregation Engine (Attractions)**: Combines coordinate-based boundary searches via Geoapify API with media enrichment from the Wikipedia API. Includes a custom Regex filter to ensure only relevant Latin-character articles are queried, preventing data pollution.  
+* **Mock Data Engine**: A highly structured local simulation engine for Flights and Hotels, designed to exactly mirror real-world GDS (Global Distribution System) responses. Built as a scalable foundation for future integration with live Affiliate APIs (e.g., Viator, GetYourGuide).  
+* **Self-Healing Multi-Layer Cache**: Utilizes Redis for high-speed volatile caching and PostgreSQL for persistent data storage. The backend autonomously re-fetches data from external APIs if database records are found incomplete or missing.  
+* **Error Handling**: Comprehensive global exception handling (@ControllerAdvice) preventing terminal flooding during external API timeouts (e.g., 504 Gateway errors).
 
-### Prerequisites
+## **Technologies**
 
-- Java 11
-- Docker
-- Git
+### **Backend**
 
-### Backend Setup
+* **Java 11** & **Spring Boot**  
+* **PostgreSQL** (Relational Database)  
+* **Redis** (In-Memory Data Store / Cache)  
+* **Spring Data JPA** & **Hibernate**  
+* **Swagger / SpringFox** (API Documentation)
 
-1. Clone the backend:
+### **Frontend**
 
-   ```bash
-   git clone https://github.com/elad9219/travelad-backend.git
-   cd travelad-backend
-   ```
+* **React.js** with **TypeScript**  
+* **Axios** (HTTP Client)  
+* **CSS3** (Responsive Grid/Flexbox Layouts)
 
-2. Configure environment variables (e.g., in .env):
+### **DevOps & External Services**
 
-   ```bash
-   google.places.api.key=${GOOGLE_PLACES_API_KEY}
-   amadeus.api.key=${AMADEUS_API_KEY}
-   amadeus.api.secret=${AMADEUS_API_SECRET}
-   geoapify.api.key=${GEOAPIFY_API_KEY}
-   weatherapi.api.key=${WEATHERAPI_API_KEY}
-   spring.redis.host=localhost
-   spring.redis.port=6379
-   spring.datasource.url=jdbc:postgresql://localhost:5432/travelad
-   ```
-
-3. Build and run:
-   ```bash
-   mvn clean install
-   mvn spring-boot:run
-   ```
-
-### Frontend Setup
-
-1. Clone the frontend:
-   ```bash
-   git clone https://github.com/elad9219/travelad-frontend.git
-   cd travelad-frontend
-   ```
-2. Install and run:
-
-   ```bash
-   npm install
-   npm start
-   ```
-
-### Docker Setup
-
-1. Build the image:
-   ```bash
-   cd travelad-backend
-   docker build --platform linux/amd64 -t elad9219/travelad-jul:002 .
-   ```
-2. Run the container:
-   ```bash
-   docker run --platform linux/amd64 -p 8080:8080 elad9219/travelad-jul:002
-   ```
-3. Access at http://localhost:8080.
-
-## Usage
-
-- Search a city (e.g., "Paris") to see 6 tiles.
-- Manage history by removing cities.
-- Use advanced search for flights and hotels.
-- View flight details (e.g., TLV → LCA).
-
-## Screenshots
-
-- Homepage:
-
-    <img width="1460" height="1201" alt="image" src="https://github.com/user-attachments/assets/d860462a-aa0d-4668-b38f-4b5fe811ee06" />
-
-- Search Bar with History:
-
-   <img width="577" height="370" alt="image" src="https://github.com/user-attachments/assets/4c5fcce2-743d-4ee8-82c3-d22dca2cfea4" />
-   
-- Search Bar with Autocomplete:
-
-   <img width="575" height="321" alt="image" src="https://github.com/user-attachments/assets/257b0f2a-667f-457b-9ae3-096df62c4945" />
-
-- Flight Details:
-
-   <img width="1200" height="571" alt="image" src="https://github.com/user-attachments/assets/e94c380f-349b-4761-b615-83871bdb845c" />
-   
-- Advanced Flight Search:
-
-   <img width="1200" height="605" alt="image" src="https://github.com/user-attachments/assets/66a63c8f-3a63-40bd-8832-e01f98a36a36" />
-
-- Attractions Details:
-
-   <img width="1198" height="599" alt="image" src="https://github.com/user-attachments/assets/b4e25309-879b-47d8-8ffa-f80f44720b6a" />
-
--  Hotels Offers Details:
-
-   <img width="1201" height="601" alt="image" src="https://github.com/user-attachments/assets/b8f56944-b1d2-48f1-9c3b-22613e79cfd8" />
-
-
-
-   
+* **Docker** (Containerization & Deployment)  
+* **Google Places API** & **Google Maps**  
+* **Geoapify API** (Geocoding & Places)  
+* **WeatherAPI**  
+* **Wikipedia API** (Media Enrichment)
 
 ## Project Structure
 
@@ -152,51 +65,202 @@ Travelad is a full-stack travel planning application that allows users to search
 
 ```
 travelad-backend/
-├── src/
-│   ├── main/
-│   │   ├── java/com/travelad/
-│   │   │   ├── config/
-│   │   │   ├── controller/
-│   │   │   ├── model/
-│   │   │   ├── repository/
-│   │   │   ├── service/
-│   │   │   ├── util/
-│   │   ├── resources/
-│   │   │   ├── static/
-│   │   │   ├── application.properties
 ├── pom.xml
 ├── Dockerfile
+└── src/
+    └── main/
+        ├── java/com/example/travelad/
+        │   ├── TraveladApplication.java
+        │   ├── advice/
+        │   │   ├── ApiAdvice.java
+        │   │   └── ErrorDetail.java
+        │   ├── beans/
+        │   │   ├── Airline.java
+        │   │   ├── AirlineCacheStatus.java
+        │   │   ├── Attraction.java
+        │   │   ├── AttractionCacheStatus.java
+        │   │   ├── GooglePlaces.java
+        │   │   ├── Hotel.java
+        │   │   ├── HotelCacheStatus.java
+        │   │   └── IataCodeEntry.java
+        │   ├── config/
+        │   │   ├── AppConfig.java
+        │   │   ├── AsyncConfig.java
+        │   │   ├── CORS.java
+        │   │   ├── RedisConfig.java
+        │   │   └── SwaggerConfig.java
+        │   ├── controller/
+        │   │   ├── AttractionsController.java
+        │   │   ├── CityCacheController.java
+        │   │   ├── FlightsController.java
+        │   │   ├── GooglePlacesController.java
+        │   │   ├── HotelsController.java
+        │   │   ├── IataCodesController.java
+        │   │   └── WeatherController.java
+        │   ├── dto/
+        │   │   ├── AttractionDto.java
+        │   │   ├── FlightOfferDto.java
+        │   │   ├── FlightSegmentDto.java
+        │   │   ├── HotelDto.java
+        │   │   ├── HotelOffersDto.java
+        │   │   ├── LocationDto.java
+        │   │   ├── RoomDto.java
+        │   │   └── WeatherDto.java
+        │   ├── exceptions/
+        │   │   ├── ExternalApiException.java
+        │   │   ├── GlobalExceptionHandler.java
+        │   │   └── InvalidInputException.java
+        │   ├── repositories/
+        │   │   ├── AirlineCacheStatusRepository.java
+        │   │   ├── AirlineRepository.java
+        │   │   ├── AttractionCacheStatusRepository.java
+        │   │   ├── AttractionRepository.java
+        │   │   ├── GooglePlacesRepository.java
+        │   │   ├── HotelCacheStatusRepository.java
+        │   │   └── HotelRepository.java
+        │   ├── service/
+        │   │   ├── AircraftMapping.java
+        │   │   ├── AirlineService.java
+        │   │   ├── AsyncAirlineCacheService.java
+        │   │   ├── AsyncHotelCacheService.java
+        │   │   ├── AttractionsService.java
+        │   │   ├── CityCacheService.java
+        │   │   ├── FlightsService.java
+        │   │   ├── GooglePlacesService.java
+        │   │   ├── HotelsService.java
+        │   │   └── WeatherService.java
+        │   └── utils/
+        │       ├── AirlineServiceStatic.java
+        │       ├── IataCodeUtils.java
+        │       ├── InputValidator.java
+        │       ├── MockFlightUtils.java
+        │       └── MockHotelUtils.java
+        └── resources/
+            └── application.properties.example
 ```
+
+
 
 ### Frontend (`elad9219/travelad-frontend`)
 
 ```
 travelad-frontend/
-├── src/
-│   ├── components/
-│   ├── utils/
-│   │   ├── globals.ts
-│   ├── App.tsx
-├── public/
 ├── package.json
 ├── tsconfig.json
+├── clean-cities.ts
+├── public/
+│   ├── index.html
+│   └── manifest.json
+└── src/
+    ├── App.tsx
+    ├── App.css
+    ├── index.tsx
+    ├── index.css
+    ├── Components/
+    │   ├── Components/
+    │   │   ├── AttractionComponent/
+    │   │   │   ├── AttractionComponent.tsx
+    │   │   │   └── AttractionComponent.css
+    │   │   ├── FlightComponent/
+    │   │   │   ├── FlightComponent.tsx
+    │   │   │   └── FlightComponent.css
+    │   │   ├── HotelComponent/
+    │   │   │   ├── HotelComponent.tsx
+    │   │   │   └── HotelComponent.css
+    │   │   ├── MapComponent/
+    │   │   │   ├── MapComponent.tsx
+    │   │   │   └── MapComponent.css
+    │   │   ├── SearchBar/
+    │   │   │   ├── SearchBar.tsx
+    │   │   │   └── SearchBar.css
+    │   │   └── WeatherComponent/
+    │   │       ├── WeatherComponent.tsx
+    │   │       └── WeatherComponent.css
+    │   └── PlaceDetails/
+    │       └── PlaceDetails/
+    │           ├── PlaceDetails.tsx
+    │           └── PlaceDetails.css
+    ├── modal/
+    │   ├── Attraction.ts
+    │   ├── City.ts
+    │   ├── Flight.ts
+    │   ├── Hotel.ts
+    │   ├── LocationDto.ts
+    │   └── Weather.ts
+    └── utils/
+        └── globals.ts
 ```
 
-## Contributing
 
-1. Fork the repository.
-2. Create a branch: git checkout -b feature-name.
-3. Commit: git commit -m 'Add feature'.
-4. Push: git push origin feature-name.
-5. Open a pull request.
 
-## License
+## **Screenshots**
 
-MIT License - see LICENSE file.
+### **Homepage**
 
-## Contact
+<img width="1374" height="1185" alt="image" src="https://github.com/user-attachments/assets/38366063-ccb5-40d1-9d50-e3edcc0f572d" />
 
-- **Author**: Elad Tennenboim
-- **GitHub**: [elad9219](https://github.com/elad9219)
-- **Email**: elad9219@gmail.com
-- **LinkedIn**: https://www.linkedin.com/in/elad-tennenboim/
+
+### **Flights Advanced Search**
+
+<img width="1232" height="622" alt="image" src="https://github.com/user-attachments/assets/b6fdc2ae-4c09-4cf2-8acc-6fab6d9efc44" />
+
+
+### **Flight Details**
+
+<img width="1229" height="620" alt="image" src="https://github.com/user-attachments/assets/69086a19-9fba-4e45-946b-c336c80fbe22" />
+
+
+### **Hotels Advanced Search and Details**
+
+<img width="1218" height="618" alt="image" src="https://github.com/user-attachments/assets/6f126897-c647-4324-96bc-2bc3b8b06461" />
+
+
+### **Attraction Details**
+
+<img width="1217" height="604" alt="image" src="https://github.com/user-attachments/assets/5c0995f8-b320-48bc-b4cc-2aa916b2f51c" />
+
+
+### **Image, Map, Weather and Flights**
+
+<img width="2559" height="1270" alt="image" src="https://github.com/user-attachments/assets/9c82c82a-8f3c-4f86-8452-a7cd68b281a6" />
+
+
+
+
+## **Installation & Local Setup**
+
+### **Prerequisites**
+
+* Java 11  
+* Node.js (v14+)  
+* Docker (optional, for Redis/PostgreSQL local containers)  
+* Maven
+
+### **Running the Backend**
+
+1. Clone the repository:  
+   git clone \[https://github.com/elad9219/travelad-backend.git\](https://github.com/elad9219/travelad-backend.git)
+
+2. Navigate to the project directory and configure your application.properties with your local database credentials and API keys.  
+3. Build and run:  
+   mvn clean install  
+   mvn spring-boot:run
+
+### **Running the Frontend**
+
+1. Clone the repository:  
+   git clone \[https://github.com/elad9219/travelad-frontend.git\](https://github.com/elad9219/travelad-frontend.git)
+
+2. Navigate to the directory and install dependencies:  
+   npm install
+
+3. Start the development server:  
+   npm start
+
+## **Contact**
+
+**Elad Tennenboim**
+
+* GitHub: [elad9219](https://www.google.com/search?q=https://github.com/elad9219)  
+* LinkedIn: [Elad Tennenboim](https://www.linkedin.com/in/elad-tennenboim/)  
+* Email: elad9219@gmail.com
