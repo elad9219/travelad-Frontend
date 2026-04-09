@@ -35,7 +35,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
   const wakeUpTimer = useRef<NodeJS.Timeout | null>(null);
 
   // Popular cities array for the suggestion buttons
-  const popularCities = ['London', 'Paris', 'New York', 'Tokyo', 'Rome'];
+  const popularCities = ['London', 'Paris', 'New York', 'Cape Town', 'Rome'];
 
   const [userId] = useState<string>(() => {
     let savedUserId = localStorage.getItem('userId');
@@ -276,7 +276,8 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, updateCities }) => {
           
           {isWakingUp && (
             <div className="waking-up-message">
-              ⏳ Using a free server tier. The backend is waking up, this may take up to 40 seconds...
+              ⏳ Initializing free server tier. The backend needs about <b>10 seconds</b> to wake up for the <b>first search</b>. 
+            After that, everything will be <b>instant</b>!
             </div>
           )}
         </div>

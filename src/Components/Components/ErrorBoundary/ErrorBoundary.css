@@ -1,3 +1,30 @@
-.ErrorBoundary {
-	
+/* Center the error message on the screen and give it a clean look */
+.error-boundary {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Style the main error heading */
+.error-boundary h2 {
+    font-size: 2rem;
+    color: #d9534f;
+    margin-bottom: 15px;
+}
+
+/* Style the technical error details */
+.error-boundary p {
+    font-size: 1rem;
+    color: #666;
+    background: #eee;
+    padding: 15px;
+    border-radius: 5px;
+    max-width: 80%;
+    word-wrap: break-word;
 }
