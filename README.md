@@ -6,7 +6,8 @@ Built with an emphasis on resilient architecture, the platform features a multi-
 
 ## **Quick Links**
 
-* **Live Demo**:  [https://travelad.vercel.app/](https://travelad.vercel.app/)  
+* **Live Demo**:  [https://travelad.vercel.app/](https://travelad.vercel.app/)
+* **System Architecture & Demo (Video)**:  [https://www.youtube.com/watch?v=bHFkiX9EYZc](https://www.youtube.com/watch?v=bHFkiX9EYZc)    
 * **API Documentation (Swagger)**:  [https://traveladd.runmydocker-app.com/swagger-ui.html](https://traveladd.runmydocker-app.com/swagger-ui.html)  
 * **Backend Repository**:  [https://github.com/elad9219/travelad-backend](https://github.com/elad9219/travelad-backend)  
 * **Frontend Repository**:  [https://github.com/elad9219/travelad-frontend](https://github.com/elad9219/travelad-frontend)
