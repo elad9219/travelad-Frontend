@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import SearchBar from '../../Components/SearchBar/SearchBar';
 import MapComponent from '../../Components/MapComponent/MapComponent';
@@ -11,35 +11,75 @@ import axios from 'axios';
 import './PlaceDetails.css';
 import globals from '../../../utils/globals';
 import { City } from '../../../modal/City';
+import { v4 as uuidv4 } from 'uuid';
 
 const PlaceDetails: React.FC = () => {
-  // Use React Router hooks to manage the URL state
   const { cityName } = useParams<{ cityName: string }>();
   const navigate = useNavigate();
 
   const [places, setPlaces] = useState<City[]>([]);
   const [placesLoading, setPlacesLoading] = useState(false);
   const [placesError, setPlacesError] = useState('');
-  const [recentCities, setRecentCities] = useState<string[]>([]);
   const [searchPerformed, setSearchPerformed] = useState(false);
   const [mapQuery, setMapQuery] = useState<string>('');
   const [cache, setCache] = useState<Map<string, City>>(new Map());
 
-  // Listen for changes in the URL and trigger search automatically
+  // Loading and Waking up states
+  const [isWakingUp, setIsWakingUp] = useState(false);
+  const wakeUpTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const [userId] = useState<string>(() => {
+    let savedUserId = localStorage.getItem('userId');
+    if (!savedUserId) {
+      savedUserId = uuidv4();
+      localStorage.setItem('userId', savedUserId);
+    }
+    return savedUserId;
+  });
+
+  // Clean up timer on unmount
+  useEffect(() => {
+    return () => {
+      if (wakeUpTimer.current) clearTimeout(wakeUpTimer.current);
+    };
+  }, []);
+
+  // Trigger search when the URL changes
   useEffect(() => {
     if (cityName) {
       const decodedCity = decodeURIComponent(cityName);
       performSearch(decodedCity);
+    } else {
+      // If user navigates to root "/", reset the view
+      setSearchPerformed(false);
+      setPlaces([]);
     }
   }, [cityName]);
 
-  // Extracted the core search logic into its own function
+  // Helper function to fetch data with automatic retries for Cold Starts
+  const fetchWithRetry = async (url: string, params: any, retries = 4, delay = 6000): Promise<any> => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await axios.get(url, { params });
+      } catch (err: any) {
+        console.warn(`Attempt ${i + 1} failed. Retrying...`);
+        // If it's the last attempt, throw the error
+        if (i === retries - 1) throw err;
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+    // Fallback to satisfy TypeScript compiler that a value is always returned or thrown
+    throw new Error('Unreachable state');
+  };
+
   const performSearch = async (city: string) => {
     setSearchPerformed(true);
     setPlacesLoading(true);
     setPlacesError('');
+    setIsWakingUp(false);
     setPlaces([]);
 
+    // Check frontend cache first
     if (cache.has(city.toLowerCase())) {
       const cachedPlace = cache.get(city.toLowerCase())!;
       setPlaces([cachedPlace]);
@@ -48,10 +88,16 @@ const PlaceDetails: React.FC = () => {
       return;
     }
 
+    // If search takes longer than 3 seconds, show the "waking up" message
+    wakeUpTimer.current = setTimeout(() => {
+        setIsWakingUp(true);
+    }, 3000);
+
     try {
-      const response = await axios.get(globals.api.places, {
-        params: { city },
-      });
+      const response = await fetchWithRetry(globals.api.places, { city, userId });
+
+      if (wakeUpTimer.current) clearTimeout(wakeUpTimer.current);
+      setIsWakingUp(false);
 
       const place: City = {
         ...response.data,
@@ -60,12 +106,22 @@ const PlaceDetails: React.FC = () => {
           : 'https://via.placeholder.com/150',
         address: response.data.address || response.data.name || city,
       };
+      
       setPlaces([place]);
       setMapQuery(city);
       setCache(new Map(cache.set(city.toLowerCase(), place)));
+
+      // Silent call to update the backend cache for the user's history
+      axios.post(globals.api.cacheCities, null, { params: { userId, city } }).catch(() => {});
+
     } catch (err: any) {
       console.error('Error fetching place details:', err);
-      setPlacesError('Unable to fetch place details. Showing limited information.');
+      if (wakeUpTimer.current) clearTimeout(wakeUpTimer.current);
+      setIsWakingUp(false);
+
+      setPlacesError(`Unable to fetch details for ${city}. Server might be unreachable.`);
+      
+      // Fallback place setup
       const fallbackPlace: City = {
         name: city,
         address: city,
@@ -83,9 +139,8 @@ const PlaceDetails: React.FC = () => {
     }
   };
 
-  // Called when the user submits a search from the SearchBar
   const handleSearchSubmit = (city: string) => {
-    // Navigate to the new URL. This will trigger the useEffect above.
+    // Navigate to the new URL. The useEffect will detect this and trigger performSearch.
     navigate(`/${encodeURIComponent(city)}`);
   };
 
@@ -99,12 +154,23 @@ const PlaceDetails: React.FC = () => {
 
   return (
     <div className="place-details-container">
-      {/* Pass handleSearchSubmit to SearchBar so it updates the URL instead of searching directly */}
-      <SearchBar onSearch={handleSearchSubmit} updateCities={setRecentCities} />
+      <SearchBar onSearch={handleSearchSubmit} />
 
-      {placesLoading && <Loader />}
+      {/* Loading & Waking up message now handled by PlaceDetails */}
+      {placesLoading && (
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', marginTop: '20px' }}>
+          <Loader />
+          {isWakingUp && (
+            <div className="waking-up-message" style={{ color: '#721c24', backgroundColor: '#f8d7da', padding: '10px 20px', borderRadius: '5px', border: '1px solid #f5c6cb' }}>
+              ⏳ Initializing free server tier. The backend needs about <b>10 seconds</b> to wake up for the <b>first search</b>. 
+              After that, everything will be <b>instant</b>!
+            </div>
+          )}
+        </div>
+      )}
+
       {searchPerformed && placesError && (
-        <p className="error-message">{placesError}</p>
+        <p className="error-message" style={{marginTop: '20px', fontSize: '1.1rem'}}>{placesError}</p>
       )}
 
       {searchPerformed && !placesLoading && places.length > 0 && places[0].placeId !== 'unknown_' + places[0].name && (
@@ -158,7 +224,7 @@ const PlaceDetails: React.FC = () => {
       )}
 
       {searchPerformed && !placesLoading && places.length > 0 && places[0].placeId === 'unknown_' + places[0].name && (
-        <p className="no-data-message">No data available for {places[0].name}. Please try another city.</p>
+        <p className="no-data-message" style={{marginTop: '20px'}}>No data available for {places[0].name}. Please try another city.</p>
       )}
     </div>
   );
