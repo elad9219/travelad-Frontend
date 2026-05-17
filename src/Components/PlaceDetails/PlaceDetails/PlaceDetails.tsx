@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import SearchBar from '../../Components/SearchBar/SearchBar';
 import MapComponent from '../../Components/MapComponent/MapComponent';
 import WeatherComponent from '../../Components/WeatherComponent/WeatherComponent';
@@ -12,6 +13,10 @@ import globals from '../../../utils/globals';
 import { City } from '../../../modal/City';
 
 const PlaceDetails: React.FC = () => {
+  // Use React Router hooks to manage the URL state
+  const { cityName } = useParams<{ cityName: string }>();
+  const navigate = useNavigate();
+
   const [places, setPlaces] = useState<City[]>([]);
   const [placesLoading, setPlacesLoading] = useState(false);
   const [placesError, setPlacesError] = useState('');
@@ -20,7 +25,16 @@ const PlaceDetails: React.FC = () => {
   const [mapQuery, setMapQuery] = useState<string>('');
   const [cache, setCache] = useState<Map<string, City>>(new Map());
 
-  const handleSearch = async (city: string) => {
+  // Listen for changes in the URL and trigger search automatically
+  useEffect(() => {
+    if (cityName) {
+      const decodedCity = decodeURIComponent(cityName);
+      performSearch(decodedCity);
+    }
+  }, [cityName]);
+
+  // Extracted the core search logic into its own function
+  const performSearch = async (city: string) => {
     setSearchPerformed(true);
     setPlacesLoading(true);
     setPlacesError('');
@@ -69,6 +83,12 @@ const PlaceDetails: React.FC = () => {
     }
   };
 
+  // Called when the user submits a search from the SearchBar
+  const handleSearchSubmit = (city: string) => {
+    // Navigate to the new URL. This will trigger the useEffect above.
+    navigate(`/${encodeURIComponent(city)}`);
+  };
+
   const handleShowAttractionOnMap = (query: string) => {
     setMapQuery(query);
   };
@@ -79,7 +99,8 @@ const PlaceDetails: React.FC = () => {
 
   return (
     <div className="place-details-container">
-      <SearchBar onSearch={handleSearch} updateCities={setRecentCities} />
+      {/* Pass handleSearchSubmit to SearchBar so it updates the URL instead of searching directly */}
+      <SearchBar onSearch={handleSearchSubmit} updateCities={setRecentCities} />
 
       {placesLoading && <Loader />}
       {searchPerformed && placesError && (
