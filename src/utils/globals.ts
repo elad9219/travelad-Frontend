@@ -20,7 +20,7 @@ export class DevelopmentGlobals extends Globals {
 
 export class ProductionGlobals extends Globals {
     // Removed the trailing slash to prevent double-slashes in the API routes
-    private static backendUrl = "https://traveladd.runmydocker-app.com"; 
+    private static backendUrl = "https://travelad.runmydocker-app.com"; 
 
     public api = {
         places: `${ProductionGlobals.backendUrl}/api/places/search`,
