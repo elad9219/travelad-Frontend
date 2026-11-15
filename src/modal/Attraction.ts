@@ -6,7 +6,13 @@ export class Attraction {
     description?: string;
     address?: string;
     phone?: string;
-    website?:string;
-    openingHours?: string; 
-    imageUrl?: string; // Added image field
+    website?: string;
+    openingHours?: string;
+    imageUrl?: string;
+    latitude?: number;
+    longitude?: number;
+    imagePageUrl?: string;
+    imageAttribution?: string;
+    imageLicense?: string;
+    selectionVersion?: number;
 }
