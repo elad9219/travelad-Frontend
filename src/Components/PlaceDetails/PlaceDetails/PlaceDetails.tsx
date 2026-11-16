@@ -12,219 +12,218 @@ import './PlaceDetails.css';
 import globals from '../../../utils/globals';
 import { City } from '../../../modal/City';
 import { v4 as uuidv4 } from 'uuid';
+import {
+  warmBackend,
+  waitForBackend,
+} from '../../../utils/backendReadiness';
 
 const PlaceDetails: React.FC = () => {
   const { cityName } = useParams<{ cityName: string }>();
   const navigate = useNavigate();
 
-  const [places, setPlaces] = useState<City[]>([]);
-  const [placesLoading, setPlacesLoading] = useState(false);
-  const [placesError, setPlacesError] = useState('');
-  const [searchPerformed, setSearchPerformed] = useState(false);
-  const [mapQuery, setMapQuery] = useState<string>('');
-  const [cache, setCache] = useState<Map<string, City>>(new Map());
-
-  // Loading and Waking up states
-  const [isWakingUp, setIsWakingUp] = useState(false);
-  const wakeUpTimer = useRef<NodeJS.Timeout | null>(null);
+  const [place, setPlace] = useState<City | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [slowSearch, setSlowSearch] = useState(false);
+  const [waitingForBackend, setWaitingForBackend] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  const [mapQuery, setMapQuery] = useState('');
+  const cache = useRef(new Map<string, City>());
 
   const [userId] = useState<string>(() => {
-    let savedUserId = localStorage.getItem('userId');
-    if (!savedUserId) {
-      savedUserId = uuidv4();
-      localStorage.setItem('userId', savedUserId);
-    }
-    return savedUserId;
+    const savedUserId = localStorage.getItem('userId');
+    if (savedUserId) return savedUserId;
+
+    const newUserId = uuidv4();
+    localStorage.setItem('userId', newUserId);
+    return newUserId;
   });
 
-  // Clean up timer on unmount
   useEffect(() => {
-    return () => {
-      if (wakeUpTimer.current) clearTimeout(wakeUpTimer.current);
-    };
+    // A failed background probe stays silent until the user needs the server.
+    warmBackend().catch(() => {});
   }, []);
 
-  // Trigger search when the URL changes
   useEffect(() => {
-    if (cityName) {
-      const decodedCity = decodeURIComponent(cityName);
-      performSearch(decodedCity);
-    } else {
-      // If user navigates to root "/", reset the view
-      setSearchPerformed(false);
-      setPlaces([]);
-    }
-  }, [cityName]);
+    // React Router already decodes route parameters.
+    const city = cityName?.trim() || '';
+    const cacheKey = city.toLowerCase();
+    let active = true;
+    const controller = new AbortController();
+    let slowTimer: ReturnType<typeof setTimeout> | undefined;
 
-  // Helper function to fetch data with automatic retries for Cold Starts
-  const fetchWithRetry = async (url: string, params: any, retries = 4, delay = 6000): Promise<any> => {
-    for (let i = 0; i < retries; i++) {
-      try {
-        return await axios.get(url, { params });
-      } catch (err: any) {
-        console.warn(`Attempt ${i + 1} failed. Retrying...`);
-        // If it's the last attempt, throw the error
-        if (i === retries - 1) throw err;
-        await new Promise(resolve => setTimeout(resolve, delay));
-      }
-    }
-    // Fallback to satisfy TypeScript compiler that a value is always returned or thrown
-    throw new Error('Unreachable state');
-  };
+    setPlace(null);
+    setError('');
+    setSlowSearch(false);
+    setMapQuery(city);
+    setLoading(Boolean(city));
+    setWaitingForBackend(Boolean(city));
 
-  const performSearch = async (city: string) => {
-    setSearchPerformed(true);
-    setPlacesLoading(true);
-    setPlacesError('');
-    setIsWakingUp(false);
-    setPlaces([]);
+    if (!city) return () => controller.abort();
 
-    // Check frontend cache first
-    if (cache.has(city.toLowerCase())) {
-      const cachedPlace = cache.get(city.toLowerCase())!;
-      setPlaces([cachedPlace]);
-      setMapQuery(city);
-      setPlacesLoading(false);
-      return;
+    const cached = cache.current.get(cacheKey);
+    if (cached) {
+      setPlace(cached);
+      setLoading(false);
+      setWaitingForBackend(false);
+      return () => controller.abort();
     }
 
-    // If search takes longer than 3 seconds, show the "waking up" message
-    wakeUpTimer.current = setTimeout(() => {
-        setIsWakingUp(true);
+    slowTimer = setTimeout(() => {
+      if (active) setSlowSearch(true);
     }, 3000);
 
-    try {
-      const response = await fetchWithRetry(globals.api.places, { city, userId });
+    // Defer dispatch so Strict Mode's discarded effect does not send a search.
+    // Search also writes history on the server, so never replay it automatically.
+    Promise.resolve().then(async () => {
+      if (!active) return;
 
-      if (wakeUpTimer.current) clearTimeout(wakeUpTimer.current);
-      setIsWakingUp(false);
+      try {
+        await waitForBackend(controller.signal);
+        if (!active) return;
 
-      const place: City = {
-        ...response.data,
-        icon: response.data.icon && response.data.icon !== ''
-          ? response.data.icon
-          : 'https://via.placeholder.com/150',
-        address: response.data.address || response.data.name || city,
-      };
-      
-      setPlaces([place]);
-      setMapQuery(city);
-      setCache(new Map(cache.set(city.toLowerCase(), place)));
+        setWaitingForBackend(false);
 
-      // Silent call to update the backend cache for the user's history
-      axios.post(globals.api.cacheCities, null, { params: { userId, city } }).catch(() => {});
+        const response = await axios.get<City>(globals.api.places, {
+          params: { city, userId },
+          signal: controller.signal,
+          timeout: 60000,
+        });
 
-    } catch (err: any) {
-      console.error('Error fetching place details:', err);
-      if (wakeUpTimer.current) clearTimeout(wakeUpTimer.current);
-      setIsWakingUp(false);
+        if (!active) return;
 
-      setPlacesError(`Unable to fetch details for ${city}. Server might be unreachable.`);
-      
-      // Fallback place setup
-      const fallbackPlace: City = {
-        name: city,
-        address: city,
-        icon: 'https://via.placeholder.com/150',
-        latitude: 0.0,
-        longitude: 0.0,
-        placeId: 'unknown_' + city,
-        country: '',
-      };
-      setPlaces([fallbackPlace]);
-      setMapQuery(city);
-      setCache(new Map(cache.set(city.toLowerCase(), fallbackPlace)));
-    } finally {
-      setPlacesLoading(false);
+        const data = response.data;
+        if (
+          !data ||
+          typeof data.placeId !== 'string' ||
+          !data.placeId.trim() ||
+          data.placeId.startsWith('unknown_') ||
+          typeof data.name !== 'string' ||
+          !data.name.trim()
+        ) {
+          throw new Error('Place details are unavailable');
+        }
+
+        const result: City = {
+          ...data,
+          address: data.address || data.name,
+        };
+
+        // Keep only successful results and bound the in-memory cache.
+        if (cache.current.size >= 20) {
+          const oldestKey = cache.current.keys().next().value;
+          if (oldestKey !== undefined) cache.current.delete(oldestKey);
+        }
+
+        cache.current.set(cacheKey, result);
+        setPlace(result);
+      } catch {
+        if (active) {
+          setError(
+            `Unable to load details for ${city}. Please try again or choose another city.`
+          );
+        }
+      } finally {
+        if (active) {
+          clearTimeout(slowTimer);
+          setSlowSearch(false);
+          setLoading(false);
+          setWaitingForBackend(false);
+        }
+      }
+    });
+
+    return () => {
+      active = false;
+      clearTimeout(slowTimer);
+      controller.abort();
+    };
+  }, [cityName, userId, attempt]);
+
+  const handleSearchSubmit = (value: string) => {
+    const city = value.trim();
+    if (!city) return;
+
+    if (city === cityName?.trim()) {
+      setAttempt(previous => previous + 1);
+    } else {
+      navigate(`/${encodeURIComponent(city)}`);
     }
-  };
-
-  const handleSearchSubmit = (city: string) => {
-    // Navigate to the new URL. The useEffect will detect this and trigger performSearch.
-    navigate(`/${encodeURIComponent(city)}`);
-  };
-
-  const handleShowAttractionOnMap = (query: string) => {
-    setMapQuery(query);
-  };
-
-  const handleShowHotelOnMap = (query: string) => {
-    setMapQuery(query);
   };
 
   return (
     <div className="place-details-container">
       <SearchBar onSearch={handleSearchSubmit} />
 
-      {/* Loading & Waking up message now handled by PlaceDetails */}
-      {placesLoading && (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', marginTop: '20px' }}>
+      {loading && (
+        <div role="status" style={{ marginTop: '20px' }}>
           <Loader />
-          {isWakingUp && (
-            <div className="waking-up-message" style={{ color: '#721c24', backgroundColor: '#f8d7da', padding: '10px 20px', borderRadius: '5px', border: '1px solid #f5c6cb' }}>
-              ⏳ Initializing free server tier. The backend needs about <b>10 seconds</b> to wake up for the <b>first search</b>. 
-              After that, everything will be <b>instant</b>!
-            </div>
-          )}
+          <p>
+            {slowSearch && waitingForBackend
+              ? 'Waiting for the demo server to become available. This may take up to a minute.'
+              : slowSearch
+                ? 'This search is taking longer than usual. Please wait.'
+                : 'Loading place details...'}
+          </p>
         </div>
       )}
 
-      {searchPerformed && placesError && (
-        <p className="error-message" style={{marginTop: '20px', fontSize: '1.1rem'}}>{placesError}</p>
+      {error && (
+        <div role="alert" style={{ marginTop: '20px' }}>
+          <p className="error-message">{error}</p>
+          <button
+            type="button"
+            onClick={() => setAttempt(previous => previous + 1)}
+          >
+            Try again
+          </button>
+        </div>
       )}
 
-      {searchPerformed && !placesLoading && places.length > 0 && places[0].placeId !== 'unknown_' + places[0].name && (
+      {!loading && place && (
         <div className="main-grid">
-            {/* 1. Image Component */}
-            <div className="grid-item place-image-container">
-                <div
-                className="place-image"
-                style={{
-                    backgroundImage: `url(${places[0]?.icon || 'https://via.placeholder.com/150'})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                }}
-                >
-                    <div className="place-address">{places[0]?.address || places[0]?.name || 'Unknown address'}</div>
-                </div>
+          <div className="grid-item place-image-container">
+            <div
+              className="place-image"
+              style={{
+                backgroundImage: place.icon ? `url(${place.icon})` : undefined,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }}
+            >
+              <div className="place-address">
+                {place.address || place.name || 'Unknown address'}
+              </div>
             </div>
+          </div>
 
-            {/* 2. Map Component */}
-            <div className="grid-item place-map-container">
-                <MapComponent query={mapQuery} />
-            </div>
+          <div className="grid-item place-map-container">
+            <MapComponent query={mapQuery} />
+          </div>
 
-            {/* 3. Weather Component */}
-            <div className="grid-item weather-component-container">
-                <WeatherComponent city={places[0]?.name || places[0]?.address || ''} />
-            </div>
+          <div className="grid-item weather-component-container">
+            <WeatherComponent city={place.name || place.address || ''} />
+          </div>
 
-            {/* 4. Flights Component */}
-            <div className="grid-item flights-component-container">
-                <FlightsComponent city={places[0]?.name || ''} />
-            </div>
+          <div className="grid-item flights-component-container">
+            <FlightsComponent city={place.name || ''} />
+          </div>
 
-            {/* 5. Hotels Component */}
-            <div className="grid-item hotels-component-container">
-                <HotelComponent
-                    cityName={places[0]?.name || ''}
-                    countryName={places[0]?.country || ''}
-                    onShowHotelOnMap={handleShowHotelOnMap}
-                />
-            </div>
+          <div className="grid-item hotels-component-container">
+            <HotelComponent
+              cityName={place.name || ''}
+              countryName={place.country || ''}
+              onShowHotelOnMap={setMapQuery}
+            />
+          </div>
 
-             {/* 6. Attractions Component */}
-            <div className="grid-item attractions-component-container">
-                 <AttractionComponent
-                    city={places[0]?.name || ''}
-                    onShowAttractionOnMap={handleShowAttractionOnMap}
-                />
-            </div>
+          <div className="grid-item attractions-component-container">
+            <AttractionComponent
+              city={place.name || ''}
+              onShowAttractionOnMap={setMapQuery}
+            />
+          </div>
         </div>
-      )}
-
-      {searchPerformed && !placesLoading && places.length > 0 && places[0].placeId === 'unknown_' + places[0].name && (
-        <p className="no-data-message" style={{marginTop: '20px'}}>No data available for {places[0].name}. Please try another city.</p>
       )}
     </div>
   );
