@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useState } from 'react';
 import axios from 'axios';
 import './HotelComponent.css';
 import { HotelDto } from '../../../modal/Hotel';
@@ -11,163 +11,188 @@ interface HotelComponentProps {
   onShowHotelOnMap: (query: string) => void;
 }
 
-const toTitleCase = (str: string): string => {
-  return str
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+interface SearchParams {
+  checkInDate: string;
+  checkOutDate: string;
+  adults: string;
+}
+
+interface HotelSearch {
+  city: string;
+  params: SearchParams;
+  advanced: boolean;
+}
+
+const toTitleCase = (value: string): string =>
+  value.toLowerCase().split(' ').map(word =>
+    word.charAt(0).toUpperCase() + word.slice(1)
+  ).join(' ');
+
+const localDate = (date = new Date()): string =>
+  `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+const validDate = (value: string): boolean => {
+  if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return Number.isFinite(parsed.getTime()) && parsed.toISOString().slice(0, 10) === value;
 };
 
-const formatDate = (dateStr: string): string => {
-  if (!dateStr) return '';
-
-  const date = new Date(dateStr);
-  return `${date.getDate().toString().padStart(2, '0')}/${(
-    date.getMonth() + 1
-  ).toString().padStart(2, '0')}/${date.getFullYear()}`;
+const nextDay = (value: string): string => {
+  if (!validDate(value)) return '';
+  const date = new Date(`${value}T00:00:00Z`);
+  date.setUTCDate(date.getUTCDate() + 1);
+  return date.toISOString().slice(0, 10);
 };
 
-const HotelComponent: React.FC<HotelComponentProps> = ({
-  cityName,
-  countryName,
-  onShowHotelOnMap,
-}) => {
+const defaultParams = (): SearchParams => {
+  const today = localDate();
+  return { checkInDate: today, checkOutDate: nextDay(today), adults: '1' };
+};
+
+const formatDate = (value: string): string => value.split('-').reverse().join('/');
+
+const readHotels = (data: unknown): HotelDto[] => {
+  if (!Array.isArray(data) || !data.every(hotel =>
+    hotel && typeof hotel.name === 'string' && hotel.name.trim() &&
+    typeof hotel.hotelId === 'string' &&
+    ['price', 'rating'].every(field => hotel[field] == null ||
+      (typeof hotel[field] === 'number' && Number.isFinite(hotel[field]) && hotel[field] >= 0)) &&
+    ['latitude', 'longitude'].every(field => hotel[field] == null ||
+      (typeof hotel[field] === 'number' && Number.isFinite(hotel[field]))) &&
+    (hotel.imageUrl == null || typeof hotel.imageUrl === 'string')
+  )) throw new Error('Invalid hotel response');
+  return data;
+};
+
+const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, onShowHotelOnMap }) => {
   const [hotels, setHotels] = useState<HotelDto[]>([]);
   const [hotelsLoading, setHotelsLoading] = useState(false);
-  const [hotelsFetchError, setHotelsFetchError] = useState<string | null>(null);
+  const [hotelsFetchError, setHotelsFetchError] = useState('');
   const [expandedHotelIndex, setExpandedHotelIndex] = useState<number | null>(null);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [searchParams, setSearchParams] = useState<SearchParams>(defaultParams);
+  const [appliedSearchParams, setAppliedSearchParams] = useState<SearchParams>(defaultParams);
+  const [invalidFields, setInvalidFields] = useState<string[]>([]);
+  const requestId = useRef(0);
+  const requestController = useRef<AbortController | null>(null);
+  const lastSearch = useRef<HotelSearch | null>(null);
+  const formId = useId();
 
-  const today = new Date().toISOString().split('T')[0];
-  const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  const fetchHotels = useCallback((search: HotelSearch) => {
+    const id = ++requestId.current;
+    requestController.current?.abort();
+    const controller = new AbortController();
+    requestController.current = controller;
+    lastSearch.current = search;
+    setHotelsLoading(true);
+    setHotelsFetchError('');
+    setHotels([]);
+    setExpandedHotelIndex(null);
 
-  const [searchParams, setSearchParams] = useState({
-    checkInDate: today,
-    checkOutDate: tomorrow,
-    adults: '1',
-  });
-
-  const [appliedSearchParams, setAppliedSearchParams] = useState({
-    checkInDate: today,
-    checkOutDate: tomorrow,
-    adults: '1',
-  });
+    // Discarded Strict Mode effects do not dispatch requests.
+    Promise.resolve().then(async () => {
+      if (id !== requestId.current) return;
+      try {
+        const response = await axios.get<unknown>(globals.api.hotels, {
+          params: { cityName: search.city, ...search.params },
+          signal: controller.signal,
+          timeout: 30000,
+        });
+        if (id !== requestId.current) return;
+        setHotels(readHotels(response.data));
+        setAppliedSearchParams({ ...search.params });
+      } catch (failure: any) {
+        if (id !== requestId.current) return;
+        // The old public backend uses HTTP 404 for an empty hotel search.
+        if (failure?.response?.status === 404) {
+          setHotels([]);
+        } else {
+          setHotelsFetchError(failure?.response?.status === 400
+            ? 'Check the dates and number of guests, then try again.'
+            : 'Unable to load hotels. Please try again.');
+          if (search.advanced) setShowAdvancedSearch(true);
+        }
+      } finally {
+        if (id === requestId.current) setHotelsLoading(false);
+      }
+    });
+  }, []);
 
   useEffect(() => {
-    fetchHotels();
-  }, [cityName]);
-
-  const calculateNights = (checkIn: string, checkOut: string): number => {
-    const start = new Date(checkIn);
-    const end = new Date(checkOut);
-    const diffTime = end.getTime() - start.getTime();
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays > 0 ? diffDays : 1;
-  };
-
-  const fetchHotels = async () => {
-    setHotelsLoading(true);
-    setHotelsFetchError(null);
-
-    try {
-      const response = await axios.get<HotelDto[]>(globals.api.hotels, {
-        params: {
-          cityName: cityName,
-          checkInDate: searchParams.checkInDate,
-          checkOutDate: searchParams.checkOutDate,
-          adults: searchParams.adults,
-        },
-      });
-
-      setHotels(response.data);
-      setAppliedSearchParams({ ...searchParams });
-    } catch (error) {
-      setHotelsFetchError('Error loading hotels.');
-    } finally {
+    const defaults = defaultParams();
+    setSearchParams(defaults);
+    setInvalidFields([]);
+    setShowAdvancedSearch(false);
+    if (cityName.trim()) {
+      fetchHotels({ city: cityName.trim(), params: defaults, advanced: false });
+    } else {
+      lastSearch.current = null;
+      setHotels([]);
       setHotelsLoading(false);
+      setHotelsFetchError('');
+      setExpandedHotelIndex(null);
     }
-  };
+    return () => {
+      requestId.current += 1;
+      requestController.current?.abort();
+    };
+  }, [cityName, fetchHotels]);
 
-  const handleSearchParamsChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const { name, value } = e.target;
-
-    if (name === 'adults') {
-      const cleanValue = value.replace(/\D/g, '');
-      const numValue = parseInt(cleanValue);
-
-      if (cleanValue === '') {
-        setSearchParams(prev => ({ ...prev, adults: '' }));
-        return;
+  const handleSearchParamsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    if (name === 'adults' && value !== '' && !/^[1-9]$/.test(value)) return;
+    setInvalidFields(previous => previous.filter(field => field !== name));
+    setSearchParams(previous => {
+      const next = { ...previous, [name]: value };
+      if (name === 'checkInDate' && validDate(value) && next.checkOutDate <= value) {
+        next.checkOutDate = nextDay(value);
       }
-
-      if (numValue >= 1 && numValue <= 9) {
-        setSearchParams(prev => ({ ...prev, adults: cleanValue }));
-      }
-      return;
-    }
-
-    setSearchParams(prev => {
-      const next = { ...prev, [name]: value };
-
-      if (name === 'checkInDate') {
-        const minCheckout = new Date(
-          new Date(value).getTime() + 86400000
-        ).toISOString().split('T')[0];
-
-        if (next.checkOutDate <= value) {
-          next.checkOutDate = minCheckout;
-        }
-      }
-
       return next;
     });
   };
 
-  const handleShowHotelOnMap = (
-    hotel: HotelDto,
-    e: React.MouseEvent
-  ) => {
-    e.stopPropagation();
-
-    const decodedCity = cityName;
-    const isValid = (num?: number) =>
-      num !== undefined && num !== null && Math.abs(num) > 1;
-
-    let query = '';
-
-    if (isValid(hotel.latitude) && isValid(hotel.longitude)) {
-      query = `${hotel.latitude},${hotel.longitude}`;
-    } else {
-      query = `${hotel.name}, ${decodedCity}`;
+  const handleAdvancedSearch = () => {
+    const invalid: string[] = [];
+    if (!validDate(searchParams.checkInDate) || searchParams.checkInDate < localDate()) {
+      invalid.push('checkInDate');
     }
+    if (!validDate(searchParams.checkOutDate) || searchParams.checkOutDate <= searchParams.checkInDate) {
+      invalid.push('checkOutDate');
+    }
+    if (!/^[1-9]$/.test(searchParams.adults)) invalid.push('adults');
+    setInvalidFields(invalid);
+    if (invalid.length || !cityName.trim()) return;
+    fetchHotels({ city: cityName.trim(), params: { ...searchParams }, advanced: true });
+  };
 
+  const toggleDetails = (index: number) => {
+    setExpandedHotelIndex(previous => previous === index ? null : index);
+  };
+
+  const handleShowHotelOnMap = (hotel: HotelDto, event: React.MouseEvent) => {
+    event.stopPropagation();
+    const isValid = (value?: number) => value != null && Math.abs(value) > 1;
+    const query = isValid(hotel.latitude) && isValid(hotel.longitude)
+      ? `${hotel.latitude},${hotel.longitude}`
+      : `${hotel.name}, ${cityName}`;
     onShowHotelOnMap(query);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const nights = calculateNights(
-    appliedSearchParams.checkInDate,
-    appliedSearchParams.checkOutDate
-  );
-
-  const minCheckoutDate = searchParams.checkInDate
-    ? new Date(
-        new Date(searchParams.checkInDate).getTime() + 86400000
-      ).toISOString().split('T')[0]
-    : tomorrow;
+  const nights = Math.max(1, Math.round((
+    Date.parse(`${appliedSearchParams.checkOutDate}T00:00:00Z`) -
+    Date.parse(`${appliedSearchParams.checkInDate}T00:00:00Z`)
+  ) / 86400000));
+  const minCheckoutDate = nextDay(searchParams.checkInDate) || nextDay(localDate());
 
   return (
     <div className="hotels-container">
       <div className="hotels-header">
-        <h2 className="hotels-title">
-          🏨 Hotels in {toTitleCase(cityName)}
-        </h2>
+        <h2 className="hotels-title">🏨 Hotels in {toTitleCase(cityName)}</h2>
         <button
           className="advanced-search-toggle"
-          onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+          aria-expanded={showAdvancedSearch}
+          onClick={() => setShowAdvancedSearch(previous => !previous)}
         >
           {showAdvancedSearch ? 'Close Search' : 'Advanced Search'}
         </button>
@@ -176,62 +201,60 @@ const HotelComponent: React.FC<HotelComponentProps> = ({
       {showAdvancedSearch && (
         <div className="advanced-search-form">
           <div className="search-field">
-            <label>Check-In:</label>
+            <label htmlFor={`${formId}-checkInDate`}>Check-In:</label>
             <input
-              type="date"
-              name="checkInDate"
-              min={today}
-              value={searchParams.checkInDate}
+              type="date" id={`${formId}-checkInDate`} name="checkInDate"
+              min={localDate()} value={searchParams.checkInDate}
+              aria-invalid={invalidFields.includes('checkInDate')}
               onChange={handleSearchParamsChange}
             />
           </div>
-
           <div className="search-field">
-            <label>Check-Out:</label>
+            <label htmlFor={`${formId}-checkOutDate`}>Check-Out:</label>
             <input
-              type="date"
-              name="checkOutDate"
-              min={minCheckoutDate}
-              value={searchParams.checkOutDate}
+              type="date" id={`${formId}-checkOutDate`} name="checkOutDate"
+              min={minCheckoutDate} value={searchParams.checkOutDate}
+              aria-invalid={invalidFields.includes('checkOutDate')}
               onChange={handleSearchParamsChange}
             />
           </div>
-
           <div className="search-field">
-            <label>Guests (1-9):</label>
+            <label htmlFor={`${formId}-adults`}>Guests (1-9):</label>
             <input
-              type="number"
-              name="adults"
-              min="1"
-              max="9"
-              value={searchParams.adults}
+              type="number" id={`${formId}-adults`} name="adults" min="1" max="9"
+              value={searchParams.adults} aria-invalid={invalidFields.includes('adults')}
               onChange={handleSearchParamsChange}
-              onKeyDown={e =>
-                ['e', 'E', '+', '-', '.'].includes(e.key) &&
-                e.preventDefault()
-              }
+              onKeyDown={event => {
+                if (['e', 'E', '+', '-', '.'].includes(event.key) && !event.ctrlKey && !event.metaKey) {
+                  event.preventDefault();
+                }
+              }}
             />
           </div>
-
-          <button
-            className="advanced-search-btn"
-            onClick={fetchHotels}
-          >
-            Search
-          </button>
+          <button className="advanced-search-btn" onClick={handleAdvancedSearch}>Search</button>
+          {invalidFields.length > 0 && (
+            <p role="alert">Enter valid dates and between 1 and 9 guests. Check-out must follow check-in.</p>
+          )}
         </div>
       )}
 
       {hotelsFetchError && (
-        <div className="error-message">{hotelsFetchError}</div>
+        <div role="alert" className="error-message">
+          <p>{hotelsFetchError}</p>
+          <button type="button" onClick={() => lastSearch.current && fetchHotels(lastSearch.current)}>
+            Try again
+          </button>
+        </div>
       )}
 
       {hotelsLoading && (
-        <div className="hotels-grid">
-          {[...Array(4)].map((_, index) => (
-            <SkeletonCard key={index} />
-          ))}
+        <div className="hotels-grid" role="status" aria-label="Loading hotels">
+          {[...Array(4)].map((_, index) => <SkeletonCard key={index} />)}
         </div>
+      )}
+
+      {!hotelsLoading && !hotelsFetchError && cityName.trim() && hotels.length === 0 && (
+        <p>No hotels found.</p>
       )}
 
       {!hotelsLoading && hotels.length > 0 && (
@@ -239,101 +262,54 @@ const HotelComponent: React.FC<HotelComponentProps> = ({
           {hotels.map((hotel, index) => {
             const totalPrice = hotel.price || 0;
             const isExpanded = expandedHotelIndex === index;
-
-            // Display the demo hotel values returned by the backend.
-            const rating = hotel.rating
-              ? hotel.rating.toFixed(1)
-              : '8.0';
-
-            const imageUrl = hotel.imageUrl ||
-              'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg';
-
+            const rating = hotel.rating ? hotel.rating.toFixed(1) : '8.0';
+            const imageUrl = hotel.imageUrl || 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg';
             return (
               <div
-                key={index}
+                key={`${hotel.hotelId}-${index}`}
                 className={`hotel-card ${isExpanded ? 'expanded' : ''}`}
-                onClick={() =>
-                  setExpandedHotelIndex(isExpanded ? null : index)
-                }
+                onClick={() => toggleDetails(index)}
               >
                 <div className="hotel-image-container">
-                  <img
-                    src={imageUrl}
-                    alt={hotel.name}
-                    className="hotel-image"
-                  />
+                  <img src={imageUrl} alt={hotel.name} className="hotel-image" />
                   <div className="hotel-rating">⭐ {rating}</div>
                 </div>
-
                 <div className="hotel-card-content">
                   <div className="hotel-card-header">
                     <h3 className="hotel-name">
-                      {toTitleCase(hotel.name)}
+                      <button
+                        type="button" aria-label={`Details for ${hotel.name}`}
+                        aria-expanded={isExpanded} aria-controls={`${formId}-details-${index}`}
+                        style={{ background: 'none', border: 0, padding: 0, color: 'inherit', font: 'inherit', textAlign: 'inherit', cursor: 'pointer' }}
+                        onClick={event => { event.stopPropagation(); toggleDetails(index); }}
+                      >
+                        {toTitleCase(hotel.name)}
+                      </button>
                     </h3>
                   </div>
-
                   <div className="hotel-card-price-row">
-                    <button
-                      className="show-on-map-btn"
-                      onClick={e => handleShowHotelOnMap(hotel, e)}
-                    >
+                    <button className="show-on-map-btn" onClick={event => handleShowHotelOnMap(hotel, event)}>
                       Show on Map
                     </button>
-
                     <div className="hotel-price">
-                      {totalPrice > 0
-                        ? `€${totalPrice.toFixed(0)}`
-                        : 'N/A'}
-                      <span className="price-subtitle">
-                        {nights} {nights === 1 ? 'night' : 'nights'}
-                      </span>
+                      {totalPrice > 0 ? `€${totalPrice.toFixed(0)}` : 'N/A'}
+                      <span className="price-subtitle">{nights} {nights === 1 ? 'night' : 'nights'}</span>
                     </div>
                   </div>
-
                   {isExpanded && (
-                    <div
-                      className="hotel-details"
-                      onClick={e => e.stopPropagation()}
-                    >
-                      <p>
-                        <strong>City:</strong> {cityName.toUpperCase()}
-                      </p>
-                      <p>
-                        <strong>Dates:</strong>{' '}
-                        {formatDate(appliedSearchParams.checkInDate)}
-                        {' - '}
-                        {formatDate(appliedSearchParams.checkOutDate)}
-                      </p>
-                      <p>
-                        <strong>Guests:</strong>{' '}
-                        {appliedSearchParams.adults}
-                      </p>
-                      <p>
-                        <strong>Total Price:</strong>{' '}
-                        EUR {totalPrice.toFixed(2)}
-                      </p>
-                      <p>
-                        <strong>Total (Inc. Tax):</strong>{' '}
-                        EUR {(totalPrice * 1.15).toFixed(2)}
-                      </p>
-
-                      <div className="hotel-details-separator">
-                        <p>Standard/Deluxe Room</p>
-                      </div>
-
+                    <div id={`${formId}-details-${index}`} className="hotel-details" onClick={event => event.stopPropagation()}>
+                      <p><strong>City:</strong> {cityName.toUpperCase()}</p>
+                      <p><strong>Dates:</strong> {formatDate(appliedSearchParams.checkInDate)} - {formatDate(appliedSearchParams.checkOutDate)}</p>
+                      <p><strong>Guests:</strong> {appliedSearchParams.adults}</p>
+                      <p><strong>Total Price:</strong> EUR {totalPrice.toFixed(2)}</p>
+                      <p><strong>Total (Inc. Tax):</strong> EUR {(totalPrice * 1.15).toFixed(2)}</p>
+                      <div className="hotel-details-separator"><p>Standard/Deluxe Room</p></div>
                       <button
                         className="book-now-btn"
-                        onClick={e => {
-                          e.stopPropagation();
-
-                          const hotelNameEncoded =
-                            encodeURIComponent(hotel.name);
-                          const cityEncoded =
-                            encodeURIComponent(cityName);
-                          const bookingUrl =
-                            `https://www.booking.com/searchresults.html?ss=${hotelNameEncoded}+${cityEncoded}`;
-
-                          window.open(bookingUrl, '_blank');
+                        onClick={event => {
+                          event.stopPropagation();
+                          const bookingUrl = `https://www.booking.com/searchresults.html?ss=${encodeURIComponent(hotel.name)}+${encodeURIComponent(cityName)}`;
+                          window.open(bookingUrl, '_blank', 'noopener,noreferrer');
                         }}
                       >
                         Book on Booking.com
