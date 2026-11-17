@@ -1,181 +1,419 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import './SearchBar.css';
 import globals from '../../../utils/globals';
 import citiesData from './cleaned-cities.json';
-import { v4 as uuidv4 } from 'uuid';
-
-interface CityData {
-  name: string;
-}
+import { getUserId } from '../../../utils/userIdentity';
 
 interface SearchBarProps {
   onSearch: (city: string) => void;
+  historyRevision?: number;
 }
 
-const cities: CityData[] = citiesData as CityData[];
+const cities = citiesData as { name: string }[];
+const popularCities = ['London', 'Paris', 'New York', 'Cape Town', 'Rome'];
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
-  const [placeName, setPlaceName] = useState('');
-  const [recentCities, setRecentCities] = useState<string[]>([]);
-  const [filteredCities, setFilteredCities] = useState<string[]>([]);
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(-1);
-
-  const popularCities = ['London', 'Paris', 'New York', 'Cape Town', 'Rome'];
-
-  const [userId] = useState<string>(() => {
-    let savedUserId = localStorage.getItem('userId');
-    if (!savedUserId) {
-      savedUserId = uuidv4();
-      localStorage.setItem('userId', savedUserId);
-    }
-    return savedUserId;
+const validCity = (value: unknown): value is string =>
+  typeof value === 'string' &&
+  value.length <= 120 &&
+  Boolean(value.trim()) &&
+  !Array.from(value).some(character => {
+    const code = character.charCodeAt(0);
+    return code < 32 || (code >= 127 && code <= 159);
   });
 
-  const removeDuplicates = (arr: string[]): string[] => {
-    return arr.filter((item, index) => arr.indexOf(item) === index);
-  };
+const cityKey = (city: string) => city.trim().toLowerCase();
 
-  useEffect(() => {
-    const fetchRecentCities = async () => {
-      try {
-        const response = await axios.get(globals.api.cacheCities, {
-          params: { userId },
-        });
-        const fetchedCities = Array.isArray(response.data) ? response.data : [];
-        setRecentCities(fetchedCities);
-        setFilteredCities(removeDuplicates(fetchedCities.slice(0, 8)));
-      } catch (err) {
-        console.error('Error fetching recent cities:', err);
+const unique = (values: string[]) => {
+  const seen = new Set<string>();
+
+  return values.map(value => value.trim()).filter(value => {
+    const key = cityKey(value);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+};
+
+const suggestionStyle: React.CSSProperties = {
+  background: 'none',
+  border: 0,
+  padding: 0,
+  color: 'inherit',
+  font: 'inherit',
+  textAlign: 'left',
+  flex: 1,
+  cursor: 'pointer',
+};
+
+const SearchBar: React.FC<SearchBarProps> = ({
+  onSearch,
+  historyRevision = 0,
+}) => {
+  const [userId] = useState(getUserId);
+  const [placeName, setPlaceName] = useState('');
+  const [recentCities, setRecentCities] = useState<string[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const [inputError, setInputError] = useState('');
+  const [historyError, setHistoryError] = useState('');
+  const [removalError, setRemovalError] = useState('');
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [deleting, setDeleting] = useState<string[]>([]);
+
+  const input = useRef<HTMLInputElement>(null);
+  const options = useRef<(HTMLButtonElement | null)[]>([]);
+  const focusPending = useRef(false);
+  const composing = useRef(false);
+  const active = useRef(false);
+  const generation = useRef(0);
+  const historyController = useRef<AbortController | null>(null);
+  const pendingDeletes = useRef(new Map<string, AbortController>());
+  const refreshPending = useRef(false);
+  const suggestionsId = useId();
+
+  const suggestions = useMemo(() => {
+    const query = placeName.trim().toLowerCase();
+
+    if (!query) return recentCities.slice(0, 8);
+
+    const matches = unique(
+      recentCities.filter(city => city.toLowerCase().startsWith(query))
+    );
+    const seen = new Set(matches.map(cityKey));
+
+    for (const city of cities) {
+      if (matches.length >= 8) break;
+
+      if (
+        city.name.toLowerCase().startsWith(query) &&
+        !seen.has(cityKey(city.name))
+      ) {
+        seen.add(cityKey(city.name));
+        matches.push(city.name);
       }
-    };
-    fetchRecentCities();
+    }
+
+    return matches.slice(0, 8);
+  }, [placeName, recentCities]);
+
+  const loadHistory = useCallback(() => {
+    if (pendingDeletes.current.size) {
+      refreshPending.current = true;
+      return;
+    }
+
+    const id = ++generation.current;
+    historyController.current?.abort();
+
+    const controller = new AbortController();
+    historyController.current = controller;
+
+    setHistoryLoading(true);
+    setHistoryError('');
+
+    Promise.resolve().then(async () => {
+      if (!active.current || id !== generation.current) return;
+
+      try {
+        const response = await axios.get<unknown>(globals.api.cacheCities, {
+          params: { userId },
+          signal: controller.signal,
+          timeout: 15000,
+        });
+
+        if (!active.current || id !== generation.current) return;
+
+        if (
+          !Array.isArray(response.data) ||
+          !response.data.every(validCity)
+        ) {
+          throw new Error('Invalid history response');
+        }
+
+        setRecentCities(unique(response.data).slice(0, 10));
+        setActiveIndex(-1);
+      } catch {
+        if (active.current && id === generation.current) {
+          setHistoryError(
+            'Recent searches are temporarily unavailable. You can still search.'
+          );
+        }
+      } finally {
+        if (active.current && id === generation.current) {
+          setHistoryLoading(false);
+        }
+      }
+    });
   }, [userId]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    setPlaceName(input);
-    setActiveIndex(-1); // Reset keyboard index on type
-    
-    if (input.trim()) {
-      const filtered = cities
-        .filter((city: CityData) => city.name.toLowerCase().startsWith(input.toLowerCase()))
-        .map((city: CityData) => city.name);
-      setFilteredCities(removeDuplicates(filtered.slice(0, 8)));
-    } else {
-      setFilteredCities(removeDuplicates(recentCities.slice(0, 8)));
+  useEffect(() => {
+    const deletions = pendingDeletes.current;
+    active.current = true;
+
+    return () => {
+      active.current = false;
+      generation.current += 1;
+      historyController.current?.abort();
+      deletions.forEach(controller => controller.abort());
+    };
+  }, []);
+
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory, historyRevision]);
+
+  useEffect(() => {
+    if (focusPending.current && showSuggestions) {
+      options.current[activeIndex]?.focus();
+      focusPending.current = false;
     }
-  };
+  }, [activeIndex, showSuggestions]);
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'ArrowDown') {
-      e.preventDefault();
-      setActiveIndex(prev => (prev < filteredCities.length - 1 ? prev + 1 : prev));
-    } else if (e.key === 'ArrowUp') {
-      e.preventDefault();
-      setActiveIndex(prev => (prev > 0 ? prev - 1 : -1));
-    } else if (e.key === 'Enter') {
-      if (activeIndex >= 0 && filteredCities[activeIndex]) {
-        e.preventDefault();
-        handleCityClick(filteredCities[activeIndex]);
-      }
-    } else if (e.key === 'Escape') {
-      setShowSuggestions(false);
-      setActiveIndex(-1);
+  const selectCity = (value: string) => {
+    if (!validCity(value)) {
+      setInputError('Enter a city name of up to 120 characters.');
+      return;
     }
-  };
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!placeName.trim()) return;
-    setShowSuggestions(false);
-    onSearch(placeName);
-  };
-
-  const handleCityClick = (city: string) => {
+    const city = value.trim();
     setPlaceName(city);
+    setInputError('');
+    setActiveIndex(-1);
     setShowSuggestions(false);
     onSearch(city);
   };
 
-  const handleRemoveCity = async (city: string) => {
+  const focusSuggestion = (index: number) => {
+    if (!suggestions.length) return;
+
+    setShowSuggestions(true);
+    setActiveIndex(index);
+    focusPending.current = true;
+
+    // The index may already be selected after focus moved to a sibling control.
+    if (options.current[index]) {
+      options.current[index]?.focus();
+      focusPending.current = false;
+    }
+  };
+
+  const closeSuggestions = () => {
+    input.current?.focus();
+    setShowSuggestions(false);
+    setActiveIndex(-1);
+  };
+
+  const removeCity = async (city: string) => {
+    const key = cityKey(city);
+
+    if (pendingDeletes.current.has(key)) return;
+
+    const controller = new AbortController();
+    pendingDeletes.current.set(key, controller);
+    setDeleting(Array.from(pendingDeletes.current.keys()));
+    setRemovalError('');
+
+    generation.current += 1;
+    historyController.current?.abort();
+    setHistoryLoading(false);
+
     try {
       await axios.delete(globals.api.cacheCities, {
         params: { userId, city },
+        signal: controller.signal,
+        timeout: 15000,
       });
-      const citiesResponse = await axios.get(globals.api.cacheCities, {
-        params: { userId },
-      });
-      const updatedCities = Array.isArray(citiesResponse.data) ? citiesResponse.data : [];
-      setRecentCities(updatedCities);
-      
-      // Update suggestions if the search bar is empty
-      if (!placeName.trim()) {
-        setFilteredCities(removeDuplicates(updatedCities.slice(0, 8)));
+
+      if (!active.current) return;
+
+      setRecentCities(previous =>
+        previous.filter(value => cityKey(value) !== key)
+      );
+      setActiveIndex(-1);
+      input.current?.focus();
+    } catch {
+      if (active.current) {
+        setRemovalError(
+          'Removal could not be confirmed. Reload recent searches to check.'
+        );
       }
-    } catch (err) {
-      console.error('Error removing city:', err);
+    } finally {
+      pendingDeletes.current.delete(key);
+
+      if (active.current) {
+        setDeleting(Array.from(pendingDeletes.current.keys()));
+
+        if (!pendingDeletes.current.size && refreshPending.current) {
+          refreshPending.current = false;
+          loadHistory();
+        }
+      }
     }
   };
 
   return (
-    <div className="search-section">
+    <div
+      className="search-section"
+      onBlur={event => {
+        if (
+          !event.currentTarget.contains(
+            event.relatedTarget as Node | null
+          )
+        ) {
+          setShowSuggestions(false);
+          setActiveIndex(-1);
+        }
+      }}
+    >
       <img
         src="https://i.postimg.cc/15rbQdXx/travelad-logo.png"
         alt="Travelad Logo"
         className="logo"
       />
+
       <h1>Search for a Place</h1>
-      <form onSubmit={handleSearch} className="search-bar">
+
+      <form
+        className="search-bar"
+        onSubmit={event => {
+          event.preventDefault();
+          if (!composing.current) selectCity(placeName);
+        }}
+      >
         <input
+          ref={input}
           type="text"
           value={placeName}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown} 
-          onFocus={() => setShowSuggestions(true)}
-          onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
+          maxLength={120}
+          aria-label="City name"
+          aria-controls={showSuggestions ? suggestionsId : undefined}
+          aria-invalid={Boolean(inputError)}
+          autoComplete="off"
+          onChange={event => {
+            setPlaceName(event.target.value);
+            setInputError('');
+            setActiveIndex(-1);
+            setShowSuggestions(true);
+          }}
+          onFocus={() => {
+            setShowSuggestions(true);
+            setActiveIndex(-1);
+          }}
+          onCompositionStart={() => {
+            composing.current = true;
+          }}
+          onCompositionEnd={() => {
+            composing.current = false;
+          }}
+          onKeyDown={event => {
+            if (
+              composing.current ||
+              event.nativeEvent.isComposing ||
+              event.keyCode === 229
+            ) {
+              if (event.key === 'Enter') event.preventDefault();
+              return;
+            }
+
+            if (event.key === 'ArrowDown' && suggestions.length) {
+              event.preventDefault();
+              focusSuggestion(0);
+            } else if (event.key === 'Escape') {
+              event.preventDefault();
+              closeSuggestions();
+            }
+          }}
           placeholder="Enter a city name"
           className="search-input"
         />
+
         <button type="submit" className="search-button">
           Search
         </button>
       </form>
 
-      {/* Popular Cities Buttons */}
+      {inputError && <p role="alert">{inputError}</p>}
+
       <div className="popular-cities-container">
-        {popularCities.map((city) => (
+        {popularCities.map(city => (
           <button
             key={city}
             type="button"
             className="popular-city-btn"
-            onClick={() => handleCityClick(city)}
+            onClick={() => selectCity(city)}
           >
             Explore {city}
           </button>
         ))}
       </div>
 
-      {showSuggestions && filteredCities.length > 0 && (
+      {(historyError || removalError) && (
+        <div role="status">
+          <p>{historyError || removalError}</p>
+          <button
+            type="button"
+            className="popular-city-btn"
+            disabled={historyLoading || deleting.length > 0}
+            onClick={() => {
+              setRemovalError('');
+              loadHistory();
+            }}
+          >
+            Reload recent searches
+          </button>
+        </div>
+      )}
+
+      {showSuggestions && suggestions.length > 0 && (
         <div className="recent-cities">
-          <ul>
-            {filteredCities.map((city, index) => (
-              <li 
-                key={`${city}-${index}`} 
-                onClick={() => handleCityClick(city)}
-                className={index === activeIndex ? 'active' : ''} 
+          <ul id={suggestionsId} aria-label="City suggestions">
+            {suggestions.map((city, index) => (
+              <li
+                key={cityKey(city)}
+                className={index === activeIndex ? 'active' : ''}
               >
-                <span>{city}</span>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleRemoveCity(city);
+                  type="button"
+                  ref={element => {
+                    options.current[index] = element;
                   }}
-                  className="remove-btn"
+                  style={suggestionStyle}
+                  onFocus={() => setActiveIndex(index)}
+                  onClick={() => selectCity(city)}
+                  onKeyDown={event => {
+                    if (event.key === 'ArrowDown') {
+                      event.preventDefault();
+                      focusSuggestion(
+                        Math.min(index + 1, suggestions.length - 1)
+                      );
+                    } else if (event.key === 'ArrowUp') {
+                      event.preventDefault();
+
+                      if (index === 0) input.current?.focus();
+                      else focusSuggestion(index - 1);
+                    } else if (event.key === 'Escape') {
+                      event.preventDefault();
+                      closeSuggestions();
+                    }
+                  }}
                 >
-                  X
+                  {city}
                 </button>
+
+                {recentCities.some(
+                  value => cityKey(value) === cityKey(city)
+                ) && (
+                  <button
+                    type="button"
+                    className="remove-btn"
+                    aria-label={`Remove ${city} from recent searches`}
+                    disabled={deleting.includes(cityKey(city))}
+                    onClick={() => removeCity(city)}
+                  >
+                    X
+                  </button>
+                )}
               </li>
             ))}
           </ul>

@@ -6,20 +6,20 @@
   padding: 30px 20px;
   border-radius: 10px;
   color: white;
-  position: relative; 
+  position: relative;
   text-align: center;
   margin-bottom: 20px;
 }
 
 .logo {
   position: absolute;
-  top: 5%; 
-  left: 1%; 
-  width: 12%; 
-  height: auto; 
+  top: 5%;
+  left: 1%;
+  width: 12%;
+  height: auto;
   max-height: 170px;
   max-width: 300px;
-  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5)); 
+  filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
 }
 
 .search-bar {
@@ -29,7 +29,7 @@
   gap: 10px;
 }
 
-/* --- חזרה ל-12% שאהבת למחשב --- */
+/* Desktop input width. */
 .search-input {
   width: 12%;
   padding: 15px;
@@ -63,7 +63,7 @@
   transform: scale(1.05);
 }
 
-/* --- Popular Cities Chips Styles --- */
+/* Popular city buttons. */
 .popular-cities-container {
   display: flex;
   flex-wrap: wrap;
@@ -97,7 +97,7 @@
   top: 95%;
   left: 50%;
   transform: translateX(-50%);
-  width: 23%; /* חזרה לגודל המקורי למחשב */
+  width: 23%;
   background-color: rgba(255, 255, 255, 0.95);
   border-radius: 5px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -126,10 +126,28 @@
   background-color: #f0f0f0;
 }
 
-/* סימון אקטיבי לניווט במקלדת */
-.recent-cities li.active {
-  background-color: #e0f0ff;
-  outline: 2px solid #007bff;
+/* Highlight the focused suggestion once, at row level. */
+.recent-cities li.active,
+.recent-cities li:focus-within {
+  background-color: #eaf3ff;
+  box-shadow: inset 3px 0 0 #0077cc;
+}
+
+.recent-cities li > button:not(.remove-btn):focus {
+  outline: none;
+}
+
+.recent-cities .remove-btn:focus-visible {
+  outline: 2px solid #b42318;
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+
+@media (forced-colors: active) {
+  .recent-cities li:focus-within {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
 }
 
 .remove-btn {
@@ -156,17 +174,19 @@
   padding: 10px 20px;
   border-radius: 5px;
   font-size: 0.9rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* --- תיקון מיוחד לסמארטפונים בלבד --- */
+/* Mobile adjustments. */
 @media (max-width: 768px) {
   .search-input {
-    width: 40%; /* במובייל הוא יתפוס את רוב הרוחב */
+    width: 40%;
   }
+
   .recent-cities {
-    width: 70%; /* שגם הרשימה תהיה רחבה וקריאה */
+    width: 70%;
   }
+
   .logo {
     width: 25%;
   }

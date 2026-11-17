@@ -11,7 +11,7 @@ import axios from 'axios';
 import './PlaceDetails.css';
 import globals from '../../../utils/globals';
 import { City } from '../../../modal/City';
-import { v4 as uuidv4 } from 'uuid';
+import { getUserId } from '../../../utils/userIdentity';
 import {
   warmBackend,
   waitForBackend,
@@ -30,14 +30,8 @@ const PlaceDetails: React.FC = () => {
   const [mapQuery, setMapQuery] = useState('');
   const cache = useRef(new Map<string, City>());
 
-  const [userId] = useState<string>(() => {
-    const savedUserId = localStorage.getItem('userId');
-    if (savedUserId) return savedUserId;
-
-    const newUserId = uuidv4();
-    localStorage.setItem('userId', newUserId);
-    return newUserId;
-  });
+  const [userId] = useState(getUserId);
+  const [historyRevision, setHistoryRevision] = useState(0);
 
   useEffect(() => {
     // A failed background probe stays silent until the user needs the server.
@@ -117,6 +111,7 @@ const PlaceDetails: React.FC = () => {
 
         cache.current.set(cacheKey, result);
         setPlace(result);
+        setHistoryRevision(previous => previous + 1);
       } catch {
         if (active) {
           setError(
@@ -153,7 +148,10 @@ const PlaceDetails: React.FC = () => {
 
   return (
     <div className="place-details-container">
-      <SearchBar onSearch={handleSearchSubmit} />
+      <SearchBar
+        onSearch={handleSearchSubmit}
+        historyRevision={historyRevision}
+      />
 
       {loading && (
         <div role="status" style={{ marginTop: '20px' }}>
