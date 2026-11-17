@@ -159,3 +159,92 @@ test('checks readiness again after its short cache expires', async () => {
 
   expect(get).toHaveBeenCalledTimes(2);
 });
+
+test.each(['3.0.3', '3.1.0', '3.2.0'])(
+  'accepts OpenAPI %s metadata without requiring optional fields', async version => {
+    get.mockResolvedValue({ status: 200, data: { openapi: version } });
+
+    await readiness.warmBackend();
+
+    expect(get).toHaveBeenCalledTimes(1);
+  }
+);
+
+test('uses the new endpoint only when the legacy endpoint is missing', async () => {
+  get.mockRejectedValueOnce(unavailable(404))
+    .mockResolvedValueOnce({ status: 200, data: { openapi: '3.1.0' } });
+
+  await readiness.warmBackend();
+
+  expect(get.mock.calls.map(([url]) => url)).toEqual([
+    'http://localhost:8080/v2/api-docs',
+    'http://localhost:8080/v3/api-docs',
+  ]);
+});
+
+test('does not loop when neither documentation endpoint exists', async () => {
+  const missing = unavailable(404);
+  get.mockRejectedValue(missing);
+
+  await expect(readiness.warmBackend()).rejects.toBe(missing);
+
+  expect(get).toHaveBeenCalledTimes(2);
+});
+
+test('both endpoint reads share one attempt timeout budget', async () => {
+  get.mockImplementationOnce(() => {
+    jest.setSystemTime(Date.now() + 2500);
+    return Promise.reject(unavailable(404));
+  }).mockResolvedValueOnce({ status: 200, data: { openapi: '3.1.0' } });
+
+  await readiness.warmBackend();
+
+  expect(get.mock.calls[0][1].timeout).toBe(8000);
+  expect(get.mock.calls[1][1].timeout).toBe(5500);
+});
+
+test('retries the new endpoint after a temporary startup failure', async () => {
+  get.mockRejectedValueOnce(unavailable(404))
+    .mockRejectedValueOnce(unavailable(503))
+    .mockResolvedValueOnce({ status: 200, data: { openapi: '3.1.0' } });
+
+  const pending = readiness.warmBackend();
+
+  await flush();
+  jest.advanceTimersByTime(2000);
+  await pending;
+
+  expect(get.mock.calls.map(([url]) => url)).toEqual([
+    'http://localhost:8080/v2/api-docs',
+    'http://localhost:8080/v3/api-docs',
+    'http://localhost:8080/v3/api-docs',
+  ]);
+});
+
+test('can discover the legacy server again after a rollback', async () => {
+  get.mockRejectedValueOnce(unavailable(404))
+    .mockResolvedValueOnce({ status: 200, data: { openapi: '3.1.0' } });
+
+  await readiness.warmBackend();
+
+  jest.advanceTimersByTime(15001);
+  get.mockResolvedValueOnce(ready());
+
+  await readiness.warmBackend();
+
+  expect(get.mock.calls[2][0]).toBe('http://localhost:8080/v2/api-docs');
+});
+
+test.each([{ openapi: '2.0' }, { openapi: '3.invalid' }, { swagger: '2.1' }, []])(
+  'rejects an unsupported documentation response: %j', async data => {
+    get.mockResolvedValueOnce({ status: 200, data }).mockResolvedValueOnce(ready());
+
+    const pending = readiness.warmBackend();
+
+    await flush();
+    jest.advanceTimersByTime(2000);
+    await pending;
+
+    expect(get).toHaveBeenCalledTimes(2);
+  }
+);

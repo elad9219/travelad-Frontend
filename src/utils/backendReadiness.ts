@@ -1,9 +1,9 @@
 import axios from 'axios';
 import globals from './globals';
 
-// Keep the existing public server compatible until the backend migration.
-// This documentation endpoint reads metadata and does not search or write history.
+// Both documentation endpoints are read-only and do not search or write history.
 const readinessUrl = new URL('/v2/api-docs', globals.api.places).toString();
+const openApiUrl = new URL('/v3/api-docs', globals.api.places).toString();
 const MAX_ATTEMPTS = 6;
 const REQUEST_TIMEOUT_MS = 8000;
 const RETRY_DELAY_MS = 2000;
@@ -12,14 +12,42 @@ const READY_TTL_MS = 15000;
 let pending: Promise<void> | undefined;
 let readyUntil = 0;
 
+const isDocumentation = (data: unknown): boolean => {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+  const document = data as { swagger?: unknown; openapi?: unknown };
+  return document.swagger === '2.0' ||
+    (typeof document.openapi === 'string' && /^3\.\d+\.\d+$/.test(document.openapi));
+};
+
 async function probeBackend(): Promise<void> {
+  // Resolve the endpoint again for each warm-up, including after a rollback.
+  let url = readinessUrl;
+
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
     try {
-      const response = await axios.get(readinessUrl, {
-        timeout: REQUEST_TIMEOUT_MS,
+      const deadline = Date.now() + REQUEST_TIMEOUT_MS;
+      const readDocumentation = () => axios.get(url, {
+        timeout: Math.max(1, deadline - Date.now()),
       });
+      let response;
 
-      if (response.status === 200 && response.data?.swagger === '2.0') {
+      try {
+        response = await readDocumentation();
+      } catch (error) {
+        if (url !== readinessUrl || !axios.isAxiosError(error) || error.response?.status !== 404) {
+          throw error;
+        }
+
+        url = openApiUrl;
+
+        if (Date.now() >= deadline) {
+          throw new Error('Readiness attempt timed out');
+        }
+
+        response = await readDocumentation();
+      }
+
+      if (response.status === 200 && isDocumentation(response.data)) {
         readyUntil = Date.now() + READY_TTL_MS;
         return;
       }
