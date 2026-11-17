@@ -285,3 +285,42 @@ test('unmounting aborts the pending request', async () => {
   expect(signal.aborted).toBe(true);
   await act(async () => pending.resolve({ data: [hotel] }));
 });
+
+test.each([
+  { latitude: 51.5, longitude: -0.12 },
+  { latitude: 0, longitude: 30 },
+  { latitude: 30, longitude: 0 },
+])('map actions accept valid coordinates near a zero axis: %j', async coordinates => {
+  get.mockResolvedValue({ data: [{ ...hotel, ...coordinates }] });
+  const onMap = jest.fn();
+  show('London', onMap);
+  fireEvent.click(await screen.findByRole('button', { name: 'Show on Map' }));
+  expect(onMap).toHaveBeenCalledWith(`${coordinates.latitude},${coordinates.longitude}`);
+  expect(screen.queryByRole('button', { name: 'Book on Booking.com' })).not.toBeInTheDocument();
+});
+
+test.each([
+  { latitude: undefined, longitude: undefined },
+  { latitude: 91, longitude: 2 },
+  { latitude: 48, longitude: 181 },
+])('demo hotels without usable coordinates explicitly show the city: %j', async coordinates => {
+  get.mockResolvedValue({ data: [{ ...hotel, hotelId: 'MOCK_1', ...coordinates }] });
+  const onMap = jest.fn();
+  show('Paris', onMap);
+  fireEvent.click(await screen.findByRole('button', { name: 'Show City on Map' }));
+  expect(onMap).toHaveBeenCalledWith('Paris');
+});
+
+test('showing a hotel scrolls to the map container', async () => {
+  const map = document.createElement('div');
+  map.className = 'place-map-container';
+  map.scrollIntoView = jest.fn();
+  document.body.appendChild(map);
+  try {
+    show('Paris');
+    fireEvent.click(await screen.findByRole('button', { name: 'Show on Map' }));
+    expect(map.scrollIntoView).toHaveBeenCalledWith({ behavior: 'smooth', block: 'nearest' });
+  } finally {
+    map.remove();
+  }
+});

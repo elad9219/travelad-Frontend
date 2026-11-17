@@ -64,6 +64,10 @@ const readHotels = (data: unknown): HotelDto[] => {
   return data;
 };
 
+const hasHotelCoordinates = (hotel: HotelDto): boolean =>
+  typeof hotel.latitude === 'number' && Number.isFinite(hotel.latitude) && Math.abs(hotel.latitude) <= 90 &&
+  typeof hotel.longitude === 'number' && Number.isFinite(hotel.longitude) && Math.abs(hotel.longitude) <= 180;
+
 const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, onShowHotelOnMap }) => {
   const [hotels, setHotels] = useState<HotelDto[]>([]);
   const [hotelsLoading, setHotelsLoading] = useState(false);
@@ -171,12 +175,13 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, onShowHotelOn
 
   const handleShowHotelOnMap = (hotel: HotelDto, event: React.MouseEvent) => {
     event.stopPropagation();
-    const isValid = (value?: number) => value != null && Math.abs(value) > 1;
-    const query = isValid(hotel.latitude) && isValid(hotel.longitude)
+    const query = hasHotelCoordinates(hotel)
       ? `${hotel.latitude},${hotel.longitude}`
-      : `${hotel.name}, ${cityName}`;
+      : hotel.hotelId.startsWith('MOCK_') ? cityName : `${hotel.name}, ${cityName}`;
     onShowHotelOnMap(query);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.querySelector('.place-map-container')?.scrollIntoView({
+      behavior: 'smooth', block: 'nearest',
+    });
   };
 
   const nights = Math.max(1, Math.round((
@@ -262,6 +267,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, onShowHotelOn
           {hotels.map((hotel, index) => {
             const totalPrice = hotel.price || 0;
             const isExpanded = expandedHotelIndex === index;
+            const showCity = hotel.hotelId.startsWith('MOCK_') && !hasHotelCoordinates(hotel);
             const rating = hotel.rating ? hotel.rating.toFixed(1) : '8.0';
             const imageUrl = hotel.imageUrl || 'https://images.pexels.com/photos/164595/pexels-photo-164595.jpeg';
             return (
@@ -289,7 +295,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, onShowHotelOn
                   </div>
                   <div className="hotel-card-price-row">
                     <button className="show-on-map-btn" onClick={event => handleShowHotelOnMap(hotel, event)}>
-                      Show on Map
+                      {showCity ? 'Show City on Map' : 'Show on Map'}
                     </button>
                     <div className="hotel-price">
                       {totalPrice > 0 ? `€${totalPrice.toFixed(0)}` : 'N/A'}
