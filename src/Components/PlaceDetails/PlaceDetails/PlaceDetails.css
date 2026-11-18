@@ -18,7 +18,7 @@
 /* Desktop Layout (2 Columns) */
 @media (min-width: 769px) {
   .main-grid {
-    grid-template-columns: 1fr 1fr; 
+    grid-template-columns: 1fr 1fr;
     grid-template-areas:
       "image map"
       "weather flights"
@@ -36,16 +36,22 @@
 /* Mobile Layout Overrides */
 @media (max-width: 768px) {
   .main-grid {
-    display: flex; 
+    display: flex;
     flex-direction: column;
   }
-  
+
   .grid-item {
     width: 100%;
   }
 }
 
 /* --- Component Specific Styles --- */
+
+.place-image-container {
+  border-radius: 10px;
+  background: radial-gradient(ellipse at 76% 14%, #82b8c3 0%, transparent 54%),
+    linear-gradient(145deg, #14304a 8%, #2f697d 62%, #b2d7d4 100%);
+}
 
 .place-image {
   width: 100%;
@@ -55,34 +61,29 @@
   position: relative;
   border-radius: 10px;
   overflow: hidden;
-  background-color: #ddd;
-  /* מפתח הקסם: התמונה הופכת לקונטיינר שמודד את הרוחב של עצמו */
+  /* Keep the address sized relative to the image card. */
   container-type: inline-size;
 }
 
 /* Mobile adjustment for image */
 @media (max-width: 768px) {
     .place-image {
-        aspect-ratio: 16 / 9; 
+        aspect-ratio: 16 / 9;
     }
 }
 
 .place-address {
   position: absolute;
-  /* המרחב מהתחתית ומהצדדים גדל יחד עם התמונה */
   bottom: clamp(10px, 2cqi, 20px);
   left: clamp(10px, 2cqi, 20px);
   right: clamp(10px, 2cqi, 20px);
-  
-  /* הטקסט עכשיו גדל וקטן ביחס מושלם לרוחב התמונה! */
-  /* מינימום 1.2rem, גודל דינמי של 3.5% מרוחב התמונה, ומקסימום 3rem */
-  font-size: clamp(1.2rem, 3.5cqi, 3rem); 
+
+  font-size: clamp(1.2rem, 3.5cqi, 3rem);
   font-weight: bold;
   color: white;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
   background-color: rgba(0, 0, 0, 0.5);
-  
-  /* גם הריפוד השחור של הטקסט גדל בפרופורציה */
+
   padding: clamp(5px, 1cqi, 15px);
   border-radius: 5px;
 }
@@ -91,7 +92,6 @@
   .place-details-container {
     padding: 0.5rem;
   }
-  /* אין צורך יותר לשנות font-size פה, ה-clamp מטפל בזה אוטומטית למובייל! */
 }
 
 .error-message {
