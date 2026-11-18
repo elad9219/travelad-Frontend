@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import SearchBar from '../../Components/SearchBar/SearchBar';
-import MapComponent from '../../Components/MapComponent/MapComponent';
 import WeatherComponent from '../../Components/WeatherComponent/WeatherComponent';
+import MapComponent from '../../Components/MapComponent/MapComponent';
 import HotelComponent from '../../Components/HotelComponent/HotelComponent';
 import AttractionComponent from '../../Components/AttractionComponent/AttractionComponent';
 import FlightsComponent from '../../Components/FlightComponent/FlightComponent';
 import Loader from '../../Components/Loader/Loader';
+import PhotoAttributions from '../../Components/PhotoAttributions/PhotoAttributions';
 import axios from 'axios';
 import './PlaceDetails.css';
 import globals from '../../../utils/globals';
@@ -28,8 +29,8 @@ const PlaceDetails: React.FC = () => {
   const [waitingForBackend, setWaitingForBackend] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [mapQuery, setMapQuery] = useState('');
-  const cache = useRef(new Map<string, City>());
 
+  const cache = useRef(new Map<string, City>());
   const [userId] = useState(getUserId);
   const [historyRevision, setHistoryRevision] = useState(0);
 
@@ -42,6 +43,7 @@ const PlaceDetails: React.FC = () => {
     // React Router already decodes route parameters.
     const city = cityName?.trim() || '';
     const cacheKey = city.toLowerCase();
+
     let active = true;
     const controller = new AbortController();
     let slowTimer: ReturnType<typeof setTimeout> | undefined;
@@ -53,9 +55,12 @@ const PlaceDetails: React.FC = () => {
     setLoading(Boolean(city));
     setWaitingForBackend(Boolean(city));
 
-    if (!city) return () => controller.abort();
+    if (!city) {
+      return () => controller.abort();
+    }
 
     const cached = cache.current.get(cacheKey);
+
     if (cached) {
       setPlace(cached);
       setLoading(false);
@@ -64,17 +69,24 @@ const PlaceDetails: React.FC = () => {
     }
 
     slowTimer = setTimeout(() => {
-      if (active) setSlowSearch(true);
+      if (active) {
+        setSlowSearch(true);
+      }
     }, 3000);
 
     // Defer dispatch so Strict Mode's discarded effect does not send a search.
     // Search also writes history on the server, so never replay it automatically.
     Promise.resolve().then(async () => {
-      if (!active) return;
+      if (!active) {
+        return;
+      }
 
       try {
         await waitForBackend(controller.signal);
-        if (!active) return;
+
+        if (!active) {
+          return;
+        }
 
         setWaitingForBackend(false);
 
@@ -84,9 +96,12 @@ const PlaceDetails: React.FC = () => {
           timeout: 60000,
         });
 
-        if (!active) return;
+        if (!active) {
+          return;
+        }
 
         const data = response.data;
+
         if (
           !data ||
           typeof data.placeId !== 'string' ||
@@ -106,7 +121,10 @@ const PlaceDetails: React.FC = () => {
         // Keep only successful results and bound the in-memory cache.
         if (cache.current.size >= 20) {
           const oldestKey = cache.current.keys().next().value;
-          if (oldestKey !== undefined) cache.current.delete(oldestKey);
+
+          if (oldestKey !== undefined) {
+            cache.current.delete(oldestKey);
+          }
         }
 
         cache.current.set(cacheKey, result);
@@ -137,7 +155,10 @@ const PlaceDetails: React.FC = () => {
 
   const handleSearchSubmit = (value: string) => {
     const city = value.trim();
-    if (!city) return;
+
+    if (!city) {
+      return;
+    }
 
     if (city === cityName?.trim()) {
       setAttempt(previous => previous + 1);
@@ -169,6 +190,7 @@ const PlaceDetails: React.FC = () => {
       {error && (
         <div role="alert" style={{ marginTop: '20px' }}>
           <p className="error-message">{error}</p>
+
           <button
             type="button"
             onClick={() => setAttempt(previous => previous + 1)}
@@ -184,11 +206,17 @@ const PlaceDetails: React.FC = () => {
             <div
               className="place-image"
               style={{
-                backgroundImage: place.icon ? `url(${place.icon})` : undefined,
+                backgroundImage: place.icon
+                  ? `url(${place.icon})`
+                  : undefined,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}
             >
+              {place.icon && (
+                <PhotoAttributions values={place.photoAttributions} />
+              )}
+
               <div className="place-address">
                 {place.address || place.name || 'Unknown address'}
               </div>

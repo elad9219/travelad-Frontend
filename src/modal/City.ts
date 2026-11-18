@@ -6,6 +6,6 @@ export class City {
     latitude?: number;
     longitude?: number;
     icon?: string;
+    photoAttributions?: string[];
     country?: string;
-    }
-    
+}
