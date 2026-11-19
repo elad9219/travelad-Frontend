@@ -23,7 +23,17 @@ const PlaceDetails: React.FC = () => {
   const { cityName } = useParams<{ cityName: string }>();
   const navigate = useNavigate();
 
-  const [place, setPlace] = useState<City | null>(null);
+  const [resolvedPlace, setResolvedPlace] = useState<{
+    city: string;
+    data: City;
+  } | null>(null);
+
+  const requestedCity = cityName?.trim() || '';
+
+  const place = resolvedPlace?.city === requestedCity
+    ? resolvedPlace.data
+    : null;
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [slowSearch, setSlowSearch] = useState(false);
@@ -47,10 +57,9 @@ const PlaceDetails: React.FC = () => {
 
     let active = true;
     const controller = new AbortController();
-
     let slowTimer: ReturnType<typeof setTimeout> | undefined;
 
-    setPlace(null);
+    setResolvedPlace(null);
     setError('');
     setSlowSearch(false);
     setMapQuery(city);
@@ -64,10 +73,12 @@ const PlaceDetails: React.FC = () => {
     const cached = cache.current.get(cacheKey);
 
     if (cached) {
-      setPlace(cached);
+      setResolvedPlace({ city, data: cached });
+
       if (city.includes(',') && cached.placeId) {
         setMapQuery(`place_id:${cached.placeId}`);
       }
+
       setLoading(false);
       setWaitingForBackend(false);
 
@@ -134,10 +145,16 @@ const PlaceDetails: React.FC = () => {
         }
 
         cache.current.set(cacheKey, result);
-        setPlace(result);
-        if (city.includes(',')) {
+
+        setResolvedPlace({
+          city,
+          data: result,
+        });
+
+        if (city.includes(',') && data.placeId) {
           setMapQuery(`place_id:${data.placeId}`);
         }
+
         setHistoryRevision(previous => previous + 1);
       } catch {
         if (active) {
@@ -176,8 +193,6 @@ const PlaceDetails: React.FC = () => {
     }
   };
 
-  const requestedCity = cityName?.trim() || '';
-
   const destination = requestedCity.includes(',')
     ? requestedCity
     : place?.name || requestedCity;
@@ -203,6 +218,7 @@ const PlaceDetails: React.FC = () => {
       {loading && (
         <div role="status" style={{ marginTop: '20px' }}>
           <Loader />
+
           <p>
             {slowSearch && waitingForBackend
               ? 'Waiting for the demo server to become available. This may take up to a minute.'
