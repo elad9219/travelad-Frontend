@@ -1,0 +1,46 @@
+.travelad-home-link {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 12%;
+  max-width: 180px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 10px;
+  text-decoration: none;
+  color: white;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.travelad-home-link .logo {
+  position: static;
+  width: 100%;
+  height: auto;
+}
+
+.travelad-home-link span {
+  background: rgba(20, 36, 52, 0.85);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+
+.travelad-home-link:hover span {
+  background: #0056b3;
+}
+
+.travelad-home-link:focus-visible {
+  outline: 3px solid white;
+  outline-offset: 3px;
+}
+
+@media (max-width: 768px) {
+  .travelad-home-link {
+    position: static;
+    width: 110px;
+    margin: 0 auto 8px;
+  }
+}

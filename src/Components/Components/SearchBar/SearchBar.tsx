@@ -1,17 +1,31 @@
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import axios from 'axios';
 import './SearchBar.css';
 import globals from '../../../utils/globals';
 import { getCitySuggestions, normalizeCitySearch } from './citySuggestions';
 import { getUserId } from '../../../utils/userIdentity';
 import { cityLabel } from '../../../utils/cityPresentation';
+import HomeNavigation from './HomeNavigation';
 
 interface SearchBarProps {
   onSearch: (city: string) => void;
   historyRevision?: number;
 }
 
-const popularCities = ['London', 'Paris', 'New York', 'Cape Town', 'Rome'];
+const popularCities = [
+  'London',
+  'Paris',
+  'New York',
+  'Cape Town',
+  'Rome',
+];
 
 const validCity = (value: unknown): value is string =>
   typeof value === 'string' &&
@@ -29,8 +43,13 @@ const unique = (values: string[]) => {
 
   return values.map(value => value.trim()).filter(value => {
     const key = cityKey(value);
-    if (seen.has(key)) return false;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
     seen.add(key);
+
     return true;
   });
 };
@@ -85,8 +104,27 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const query = normalizeCitySearch(placeName);
 
+  const resetSearch = useCallback(() => {
+    selectedQuery.current = null;
+    focusPending.current = false;
+    composing.current = false;
+
+    setPlaceName('');
+    setShowSuggestions(false);
+    setActiveIndex(-1);
+    setInputError('');
+
+    setCatalog({
+      query: '',
+      names: [],
+      failed: false,
+    });
+  }, []);
+
   useEffect(() => {
-    if (!showSuggestions || !query) return;
+    if (!showSuggestions || !query) {
+      return;
+    }
 
     let active = true;
 
@@ -111,8 +149,13 @@ const SearchBar: React.FC<SearchBarProps> = ({
   }, [query, showSuggestions]);
 
   const suggestions = useMemo(() => {
-    if (!query) return recentCities.slice(0, 8);
-    if (catalog.query !== query) return [];
+    if (!query) {
+      return recentCities.slice(0, 8);
+    }
+
+    if (catalog.query !== query) {
+      return [];
+    }
 
     return unique([
       ...catalog.names.filter(validCity),
@@ -129,25 +172,34 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
 
     const id = ++generation.current;
+
     historyController.current?.abort();
 
     const controller = new AbortController();
+
     historyController.current = controller;
 
     setHistoryLoading(true);
     setHistoryError('');
 
     Promise.resolve().then(async () => {
-      if (!active.current || id !== generation.current) return;
+      if (!active.current || id !== generation.current) {
+        return;
+      }
 
       try {
-        const response = await axios.get<unknown>(globals.api.cacheCities, {
-          params: { userId },
-          signal: controller.signal,
-          timeout: 15000,
-        });
+        const response = await axios.get<unknown>(
+          globals.api.cacheCities,
+          {
+            params: { userId },
+            signal: controller.signal,
+            timeout: 15000,
+          }
+        );
 
-        if (!active.current || id !== generation.current) return;
+        if (!active.current || id !== generation.current) {
+          return;
+        }
 
         if (
           !Array.isArray(response.data) ||
@@ -174,12 +226,15 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   useEffect(() => {
     const deletions = pendingDeletes.current;
+
     active.current = true;
 
     return () => {
       active.current = false;
       generation.current += 1;
+
       historyController.current?.abort();
+
       deletions.forEach(controller => controller.abort());
     };
   }, []);
@@ -204,18 +259,23 @@ const SearchBar: React.FC<SearchBarProps> = ({
     const city = value.trim();
 
     selectedQuery.current = city;
+
     setPlaceName(cityLabel(city, suggestions));
     setInputError('');
     setActiveIndex(-1);
     setShowSuggestions(false);
+
     onSearch(city);
   };
 
   const focusSuggestion = (index: number) => {
-    if (!suggestions.length) return;
+    if (!suggestions.length) {
+      return;
+    }
 
     setShowSuggestions(true);
     setActiveIndex(index);
+
     focusPending.current = true;
 
     // The index may already be selected after focus moved to a sibling control.
@@ -227,6 +287,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 
   const closeSuggestions = () => {
     input.current?.focus();
+
     setShowSuggestions(false);
     setActiveIndex(-1);
   };
@@ -234,15 +295,21 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const removeCity = async (city: string) => {
     const key = cityKey(city);
 
-    if (pendingDeletes.current.has(key)) return;
+    if (pendingDeletes.current.has(key)) {
+      return;
+    }
 
     const controller = new AbortController();
+
     pendingDeletes.current.set(key, controller);
+
     setDeleting(Array.from(pendingDeletes.current.keys()));
     setRemovalError('');
 
     generation.current += 1;
+
     historyController.current?.abort();
+
     setHistoryLoading(false);
 
     try {
@@ -252,13 +319,16 @@ const SearchBar: React.FC<SearchBarProps> = ({
         timeout: 15000,
       });
 
-      if (!active.current) return;
+      if (!active.current) {
+        return;
+      }
 
       setRecentCities(previous =>
         previous.filter(value => cityKey(value) !== key)
       );
 
       setActiveIndex(-1);
+
       input.current?.focus();
     } catch {
       if (active.current) {
@@ -284,17 +354,17 @@ const SearchBar: React.FC<SearchBarProps> = ({
     <div
       className="search-section"
       onBlur={event => {
-        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+        if (
+          !event.currentTarget.contains(
+            event.relatedTarget as Node | null
+          )
+        ) {
           setShowSuggestions(false);
           setActiveIndex(-1);
         }
       }}
     >
-      <img
-        src="https://i.postimg.cc/15rbQdXx/travelad-logo.png"
-        alt="Travelad Logo"
-        className="logo"
-      />
+      <HomeNavigation onHome={resetSearch} />
 
       <h1>Search for a Place</h1>
 
@@ -302,6 +372,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         className="search-bar"
         onSubmit={event => {
           event.preventDefault();
+
           if (!composing.current) {
             selectCity(selectedQuery.current || placeName);
           }
@@ -318,6 +389,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           autoComplete="off"
           onChange={event => {
             selectedQuery.current = null;
+
             setPlaceName(event.target.value);
             setInputError('');
             setActiveIndex(-1);
@@ -339,7 +411,10 @@ const SearchBar: React.FC<SearchBarProps> = ({
               event.nativeEvent.isComposing ||
               event.keyCode === 229
             ) {
-              if (event.key === 'Enter') event.preventDefault();
+              if (event.key === 'Enter') {
+                event.preventDefault();
+              }
+
               return;
             }
 
@@ -378,6 +453,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       {(historyError || removalError) && (
         <div role="status">
           <p>{historyError || removalError}</p>
+
           <button
             type="button"
             className="popular-city-btn"
@@ -392,11 +468,14 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </div>
       )}
 
-      {showSuggestions && query && catalog.query === query && catalog.failed && (
-        <p role="status">
-          City suggestions are temporarily unavailable. You can still search.
-        </p>
-      )}
+      {showSuggestions &&
+        query &&
+        catalog.query === query &&
+        catalog.failed && (
+          <p role="status">
+            City suggestions are temporarily unavailable. You can still search.
+          </p>
+        )}
 
       {showSuggestions && suggestions.length > 0 && (
         <div className="recent-cities">
@@ -417,14 +496,18 @@ const SearchBar: React.FC<SearchBarProps> = ({
                   onKeyDown={event => {
                     if (event.key === 'ArrowDown') {
                       event.preventDefault();
+
                       focusSuggestion(
                         Math.min(index + 1, suggestions.length - 1)
                       );
                     } else if (event.key === 'ArrowUp') {
                       event.preventDefault();
 
-                      if (index === 0) input.current?.focus();
-                      else focusSuggestion(index - 1);
+                      if (index === 0) {
+                        input.current?.focus();
+                      } else {
+                        focusSuggestion(index - 1);
+                      }
                     } else if (event.key === 'Escape') {
                       event.preventDefault();
                       closeSuggestions();
@@ -454,7 +537,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
       )}
 
       <small className="city-data-credit">
-        City data: <a
+        City data:{' '}
+        <a
           href="https://www.geonames.org/"
           target="_blank"
           rel="noreferrer"
