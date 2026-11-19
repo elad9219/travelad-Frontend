@@ -4,6 +4,7 @@ import globals from './globals';
 // Both documentation endpoints are read-only and do not search or write history.
 const readinessUrl = new URL('/v2/api-docs', globals.api.places).toString();
 const openApiUrl = new URL('/v3/api-docs', globals.api.places).toString();
+
 const MAX_ATTEMPTS = 6;
 const REQUEST_TIMEOUT_MS = 8000;
 const RETRY_DELAY_MS = 2000;
@@ -14,9 +15,14 @@ let readyUntil = 0;
 
 const isDocumentation = (data: unknown): boolean => {
   if (!data || typeof data !== 'object' || Array.isArray(data)) return false;
+
   const document = data as { swagger?: unknown; openapi?: unknown };
+
   return document.swagger === '2.0' ||
-    (typeof document.openapi === 'string' && /^3\.\d+\.\d+$/.test(document.openapi));
+    (
+      typeof document.openapi === 'string' &&
+      /^3\.\d+\.\d+$/.test(document.openapi)
+    );
 };
 
 async function probeBackend(): Promise<void> {
@@ -26,15 +32,21 @@ async function probeBackend(): Promise<void> {
   for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt += 1) {
     try {
       const deadline = Date.now() + REQUEST_TIMEOUT_MS;
-      const readDocumentation = () => axios.get(url, {
+
+      const readDocumentation = (endpoint: string) => axios.get(endpoint, {
         timeout: Math.max(1, deadline - Date.now()),
       });
+
       let response;
 
       try {
-        response = await readDocumentation();
+        response = await readDocumentation(url);
       } catch (error) {
-        if (url !== readinessUrl || !axios.isAxiosError(error) || error.response?.status !== 404) {
+        if (
+          url !== readinessUrl ||
+          !axios.isAxiosError(error) ||
+          error.response?.status !== 404
+        ) {
           throw error;
         }
 
@@ -44,7 +56,7 @@ async function probeBackend(): Promise<void> {
           throw new Error('Readiness attempt timed out');
         }
 
-        response = await readDocumentation();
+        response = await readDocumentation(url);
       }
 
       if (response.status === 200 && isDocumentation(response.data)) {
