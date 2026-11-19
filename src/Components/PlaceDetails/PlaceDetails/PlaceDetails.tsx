@@ -13,6 +13,7 @@ import './PlaceDetails.css';
 import globals from '../../../utils/globals';
 import { City } from '../../../modal/City';
 import { getUserId } from '../../../utils/userIdentity';
+import { cityLabel } from '../../../utils/cityPresentation';
 import {
   warmBackend,
   waitForBackend,
@@ -46,6 +47,7 @@ const PlaceDetails: React.FC = () => {
 
     let active = true;
     const controller = new AbortController();
+
     let slowTimer: ReturnType<typeof setTimeout> | undefined;
 
     setPlace(null);
@@ -63,8 +65,12 @@ const PlaceDetails: React.FC = () => {
 
     if (cached) {
       setPlace(cached);
+      if (city.includes(',') && cached.placeId) {
+        setMapQuery(`place_id:${cached.placeId}`);
+      }
       setLoading(false);
       setWaitingForBackend(false);
+
       return () => controller.abort();
     }
 
@@ -129,6 +135,9 @@ const PlaceDetails: React.FC = () => {
 
         cache.current.set(cacheKey, result);
         setPlace(result);
+        if (city.includes(',')) {
+          setMapQuery(`place_id:${data.placeId}`);
+        }
         setHistoryRevision(previous => previous + 1);
       } catch {
         if (active) {
@@ -166,6 +175,23 @@ const PlaceDetails: React.FC = () => {
       navigate(`/${encodeURIComponent(city)}`);
     }
   };
+
+  const requestedCity = cityName?.trim() || '';
+
+  const destination = requestedCity.includes(',')
+    ? requestedCity
+    : place?.name || requestedCity;
+
+  const weatherDestination =
+    requestedCity.includes(',') &&
+    typeof place?.latitude === 'number' &&
+    Number.isFinite(place.latitude) &&
+    Math.abs(place.latitude) <= 90 &&
+    typeof place.longitude === 'number' &&
+    Number.isFinite(place.longitude) &&
+    Math.abs(place.longitude) <= 180
+      ? `${place.latitude},${place.longitude}`
+      : destination;
 
   return (
     <div className="place-details-container">
@@ -228,16 +254,23 @@ const PlaceDetails: React.FC = () => {
           </div>
 
           <div className="grid-item weather-component-container">
-            <WeatherComponent city={place.name || place.address || ''} />
+            <WeatherComponent
+              city={weatherDestination}
+              displayName={
+                requestedCity.includes(',')
+                  ? cityLabel(requestedCity)
+                  : undefined
+              }
+            />
           </div>
 
           <div className="grid-item flights-component-container">
-            <FlightsComponent city={place.name || ''} />
+            <FlightsComponent city={destination} />
           </div>
 
           <div className="grid-item hotels-component-container">
             <HotelComponent
-              cityName={place.name || ''}
+              cityName={destination}
               countryName={place.country || ''}
               onShowHotelOnMap={setMapQuery}
             />
@@ -245,7 +278,7 @@ const PlaceDetails: React.FC = () => {
 
           <div className="grid-item attractions-component-container">
             <AttractionComponent
-              city={place.name || ''}
+              city={destination}
               onShowAttractionOnMap={setMapQuery}
             />
           </div>

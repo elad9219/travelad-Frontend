@@ -2,15 +2,15 @@ import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 
 import axios from 'axios';
 import './SearchBar.css';
 import globals from '../../../utils/globals';
-import citiesData from './cleaned-cities.json';
+import { getCitySuggestions, normalizeCitySearch } from './citySuggestions';
 import { getUserId } from '../../../utils/userIdentity';
+import { cityLabel } from '../../../utils/cityPresentation';
 
 interface SearchBarProps {
   onSearch: (city: string) => void;
   historyRevision?: number;
 }
 
-const cities = citiesData as { name: string }[];
 const popularCities = ['London', 'Paris', 'New York', 'Cape Town', 'Rome'];
 
 const validCity = (value: unknown): value is string =>
@@ -61,10 +61,21 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const [historyLoading, setHistoryLoading] = useState(false);
   const [deleting, setDeleting] = useState<string[]>([]);
 
+  const [catalog, setCatalog] = useState<{
+    query: string;
+    names: string[];
+    failed: boolean;
+  }>({
+    query: '',
+    names: [],
+    failed: false,
+  });
+
   const input = useRef<HTMLInputElement>(null);
   const options = useRef<(HTMLButtonElement | null)[]>([]);
   const focusPending = useRef(false);
   const composing = useRef(false);
+  const selectedQuery = useRef<string | null>(null);
   const active = useRef(false);
   const generation = useRef(0);
   const historyController = useRef<AbortController | null>(null);
@@ -72,30 +83,44 @@ const SearchBar: React.FC<SearchBarProps> = ({
   const refreshPending = useRef(false);
   const suggestionsId = useId();
 
+  const query = normalizeCitySearch(placeName);
+
+  useEffect(() => {
+    if (!showSuggestions || !query) return;
+
+    let active = true;
+
+    const timer = setTimeout(() => {
+      getCitySuggestions(query)
+        .then(names => {
+          if (active) {
+            setCatalog({ query, names, failed: false });
+          }
+        })
+        .catch(() => {
+          if (active) {
+            setCatalog({ query, names: [], failed: true });
+          }
+        });
+    }, 150);
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [query, showSuggestions]);
+
   const suggestions = useMemo(() => {
-    const query = placeName.trim().toLowerCase();
-
     if (!query) return recentCities.slice(0, 8);
+    if (catalog.query !== query) return [];
 
-    const matches = unique(
-      recentCities.filter(city => city.toLowerCase().startsWith(query))
-    );
-    const seen = new Set(matches.map(cityKey));
-
-    for (const city of cities) {
-      if (matches.length >= 8) break;
-
-      if (
-        city.name.toLowerCase().startsWith(query) &&
-        !seen.has(cityKey(city.name))
-      ) {
-        seen.add(cityKey(city.name));
-        matches.push(city.name);
-      }
-    }
-
-    return matches.slice(0, 8);
-  }, [placeName, recentCities]);
+    return unique([
+      ...catalog.names.filter(validCity),
+      ...recentCities.filter(city =>
+        normalizeCitySearch(city).startsWith(query)
+      ),
+    ]).slice(0, 8);
+  }, [query, catalog, recentCities]);
 
   const loadHistory = useCallback(() => {
     if (pendingDeletes.current.size) {
@@ -177,7 +202,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
     }
 
     const city = value.trim();
-    setPlaceName(city);
+
+    selectedQuery.current = city;
+    setPlaceName(cityLabel(city, suggestions));
     setInputError('');
     setActiveIndex(-1);
     setShowSuggestions(false);
@@ -230,6 +257,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       setRecentCities(previous =>
         previous.filter(value => cityKey(value) !== key)
       );
+
       setActiveIndex(-1);
       input.current?.focus();
     } catch {
@@ -256,11 +284,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
     <div
       className="search-section"
       onBlur={event => {
-        if (
-          !event.currentTarget.contains(
-            event.relatedTarget as Node | null
-          )
-        ) {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
           setShowSuggestions(false);
           setActiveIndex(-1);
         }
@@ -278,7 +302,9 @@ const SearchBar: React.FC<SearchBarProps> = ({
         className="search-bar"
         onSubmit={event => {
           event.preventDefault();
-          if (!composing.current) selectCity(placeName);
+          if (!composing.current) {
+            selectCity(selectedQuery.current || placeName);
+          }
         }}
       >
         <input
@@ -291,6 +317,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           aria-invalid={Boolean(inputError)}
           autoComplete="off"
           onChange={event => {
+            selectedQuery.current = null;
             setPlaceName(event.target.value);
             setInputError('');
             setActiveIndex(-1);
@@ -365,6 +392,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
         </div>
       )}
 
+      {showSuggestions && query && catalog.query === query && catalog.failed && (
+        <p role="status">
+          City suggestions are temporarily unavailable. You can still search.
+        </p>
+      )}
+
       {showSuggestions && suggestions.length > 0 && (
         <div className="recent-cities">
           <ul id={suggestionsId} aria-label="City suggestions">
@@ -398,7 +431,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                     }
                   }}
                 >
-                  {city}
+                  {cityLabel(city, suggestions)}
                 </button>
 
                 {recentCities.some(
@@ -419,6 +452,26 @@ const SearchBar: React.FC<SearchBarProps> = ({
           </ul>
         </div>
       )}
+
+      <small className="city-data-credit">
+        City data: <a
+          href="https://www.geonames.org/"
+          target="_blank"
+          rel="noreferrer"
+          style={{ color: 'inherit' }}
+        >
+          GeoNames
+        </a>
+        {' · '}
+        <a
+          href="https://creativecommons.org/licenses/by/4.0/"
+          target="_blank"
+          rel="noreferrer"
+          style={{ color: 'inherit' }}
+        >
+          CC BY 4.0
+        </a>
+      </small>
     </div>
   );
 };

@@ -193,7 +193,7 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, onShowHotelOn
   return (
     <div className="hotels-container">
       <div className="hotels-header">
-        <h2 className="hotels-title">🏨 Hotels in {toTitleCase(cityName)}</h2>
+        <h2 className="hotels-title">🏨 Hotels in {toTitleCase(cityName.split(',')[0].trim())}</h2>
         <button
           className="advanced-search-toggle"
           aria-expanded={showAdvancedSearch}
@@ -289,7 +289,14 @@ const HotelComponent: React.FC<HotelComponentProps> = ({ cityName, onShowHotelOn
                         style={{ background: 'none', border: 0, padding: 0, color: 'inherit', font: 'inherit', textAlign: 'inherit', cursor: 'pointer' }}
                         onClick={event => { event.stopPropagation(); toggleDetails(index); }}
                       >
-                        {toTitleCase(hotel.name)}
+                        {toTitleCase(
+                          hotel.hotelId.startsWith('MOCK_')
+                            ? hotel.name.replace(
+                                cityName,
+                                cityName.split(',')[0].trim()
+                              )
+                            : hotel.name
+                        )}
                       </button>
                     </h3>
                   </div>

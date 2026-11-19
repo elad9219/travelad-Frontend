@@ -51,9 +51,9 @@ const AttractionComponent: React.FC<AttractionComponentProps> = ({ city, onShowA
   const items = current ? result.items : [];
 
   return (
-    <section className="attractions-container" aria-label={`Attractions in ${city}`} aria-busy={loading}>
+    <section className="attractions-container" aria-label={`Attractions in ${city.split(',')[0].trim()}`} aria-busy={loading}>
       <header className="attractions-header">
-        <h2 className="attractions-title">🎡 Attractions in {city}</h2>
+        <h2 className="attractions-title">🎡 Attractions in {city.split(',')[0].trim()}</h2>
         <p className="attractions-source">Places: <a href="https://www.geoapify.com/" target="_blank" rel="noopener noreferrer">Geoapify</a> / <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>. Images: Wikimedia Commons.</p>
       </header>
       {current && result.error && (

@@ -6,6 +6,7 @@ import globals from '../../../utils/globals';
 
 interface WeatherProps {
   city: string;
+  displayName?: string;
 }
 
 type WeatherReadings = Required<Pick<Weather,
@@ -90,7 +91,7 @@ const readWeather = (data: unknown): WeatherReadings => {
   };
 };
 
-const WeatherComponent: React.FC<WeatherProps> = ({ city }) => {
+const WeatherComponent: React.FC<WeatherProps> = ({ city, displayName }) => {
   const [weather, setWeather] = useState<WeatherReadings | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -193,7 +194,7 @@ const WeatherComponent: React.FC<WeatherProps> = ({ city }) => {
             )}
 
             <div className="weather-details">
-              <h3>{weather.city}, {weather.country}</h3>
+              <h3>{displayName || `${weather.city}, ${weather.country}`}</h3>
               <p>
                 <span className="temperature">
                   {weather.temperatureC}°C

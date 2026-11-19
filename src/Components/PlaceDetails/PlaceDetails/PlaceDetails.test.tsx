@@ -1,23 +1,9 @@
 import React from 'react';
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from '@testing-library/react';
-import {
-  Link as MockLink,
-  MemoryRouter,
-  Route,
-  Routes,
-} from 'react-router-dom';
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { Link as MockLink, MemoryRouter, Route, Routes } from 'react-router-dom';
 import axios from 'axios';
 import PlaceDetails from './PlaceDetails';
-import {
-  warmBackend,
-  waitForBackend,
-} from '../../../utils/backendReadiness';
+import { warmBackend, waitForBackend } from '../../../utils/backendReadiness';
 
 jest.mock('../../../utils/backendReadiness', () => ({
   warmBackend: jest.fn(),
@@ -46,12 +32,21 @@ jest.mock(
   () => ({ city }: any) => <div data-testid="weather">{city}</div>
 );
 
-jest.mock('../../Components/HotelComponent/HotelComponent', () => () => null);
+jest.mock(
+  '../../Components/HotelComponent/HotelComponent',
+  () => ({ cityName }: any) => <div data-testid="hotels">{cityName}</div>
+);
+
 jest.mock(
   '../../Components/AttractionComponent/AttractionComponent',
-  () => () => null
+  () => ({ city }: any) => <div data-testid="attractions">{city}</div>
 );
-jest.mock('../../Components/FlightComponent/FlightComponent', () => () => null);
+
+jest.mock(
+  '../../Components/FlightComponent/FlightComponent',
+  () => ({ city }: any) => <div data-testid="flights">{city}</div>
+);
+
 jest.mock('../../Components/Loader/Loader', () => () => <span>Loading</span>);
 
 const get = axios.get as jest.Mock;
@@ -84,9 +79,7 @@ function show(path = '/Tokyo', strict = false) {
     </MemoryRouter>
   );
 
-  return render(
-    strict ? <React.StrictMode>{view}</React.StrictMode> : view
-  );
+  return render(strict ? <React.StrictMode>{view}</React.StrictMode> : view);
 }
 
 beforeEach(() => {
@@ -100,6 +93,27 @@ afterEach(() => {
   jest.useRealTimers();
 });
 
+test('qualified direct routes keep the chosen city in all cards', async () => {
+  const query = 'Paris, Texas, United States';
+
+  get.mockResolvedValue({
+    data: {
+      ...place('Paris'),
+      latitude: 33.66,
+      longitude: -95.55,
+    },
+  });
+
+  show('/' + encodeURIComponent(query));
+
+  expect(await screen.findByTestId('flights')).toHaveTextContent(query);
+  expect(screen.getByTestId('hotels')).toHaveTextContent(query);
+  expect(screen.getByTestId('attractions')).toHaveTextContent(query);
+  expect(screen.getByTestId('map')).toHaveTextContent('place_id:id_Paris');
+  expect(screen.getByTestId('weather')).toHaveTextContent('33.66,-95.55');
+  expect(get.mock.calls[0][1].params.city).toBe(query);
+});
+
 test('loads a direct route once in Strict Mode without a duplicate history write', async () => {
   get.mockResolvedValue({ data: place('Tokyo') });
 
@@ -107,6 +121,7 @@ test('loads a direct route once in Strict Mode without a duplicate history write
 
   expect(await screen.findByTestId('weather')).toHaveTextContent('Tokyo');
   expect(get).toHaveBeenCalledTimes(1);
+
   expect(get.mock.calls[0][1]).toEqual(
     expect.objectContaining({
       params: {
@@ -117,6 +132,7 @@ test('loads a direct route once in Strict Mode without a duplicate history write
       timeout: 60000,
     })
   );
+
   expect(axios.post).not.toHaveBeenCalled();
 });
 
@@ -134,6 +150,7 @@ test('aborts a previous city and ignores its late success', async () => {
   fireEvent.click(screen.getByRole('button', { name: 'Paris' }));
 
   await waitFor(() => expect(get).toHaveBeenCalledTimes(2));
+
   expect(signal.aborted).toBe(true);
   expect(get.mock.calls[1][1].params.city).toBe('Paris');
 
@@ -153,7 +170,9 @@ test('a late failure cannot clear a newer search loading state', async () => {
   show();
 
   await waitFor(() => expect(get).toHaveBeenCalledTimes(1));
+
   fireEvent.click(screen.getByRole('button', { name: 'Paris' }));
+
   await waitFor(() => expect(get).toHaveBeenCalledTimes(2));
 
   await act(async () => tokyo.reject(new Error('Old failure')));
@@ -169,8 +188,7 @@ test('a late failure cannot clear a newer search loading state', async () => {
 test('a failed request is not replayed automatically and can be retried manually', async () => {
   jest.useFakeTimers();
 
-  get
-    .mockRejectedValueOnce(new Error('Network unavailable'))
+  get.mockRejectedValueOnce(new Error('Network unavailable'))
     .mockResolvedValueOnce({ data: place('Tokyo') });
 
   show();
@@ -197,8 +215,7 @@ test.each([
   { name: 'Tokyo' },
   null,
 ])('does not cache unavailable or malformed data: %j', async data => {
-  get
-    .mockResolvedValueOnce({ data })
+  get.mockResolvedValueOnce({ data })
     .mockResolvedValueOnce({ data: place('Tokyo') });
 
   show();
@@ -328,6 +345,7 @@ test('readiness failure permits manual retry without having sent a search', asyn
   (waitForBackend as jest.Mock).mockRejectedValueOnce(
     new Error('Unavailable')
   );
+
   get.mockResolvedValue({ data: place('Tokyo') });
 
   show();
@@ -382,6 +400,7 @@ test('shows server waiting only during an active search awaiting readiness', asy
   expect(screen.getByRole('status')).toHaveTextContent(
     'This search is taking longer'
   );
+
   expect(screen.getByRole('status')).not.toHaveTextContent(
     'Waiting for the demo server'
   );

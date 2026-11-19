@@ -191,3 +191,10 @@
     width: 25%;
   }
 }
+
+.city-data-credit {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 16px;
+}

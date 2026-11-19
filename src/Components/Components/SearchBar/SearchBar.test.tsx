@@ -3,19 +3,22 @@ import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import axios from 'axios';
 import SearchBar from './SearchBar';
+import { getCitySuggestions } from './citySuggestions';
 
 jest.mock('axios', () => ({ get: jest.fn(), delete: jest.fn() }));
+
 jest.mock('../../../utils/userIdentity', () => ({
   getUserId: () => 'browser-id',
 }));
-jest.mock('./cleaned-cities.json', () => [
-  { name: 'Paris' },
-  { name: 'Parma' },
-  { name: 'Tokyo' },
-]);
+
+jest.mock('./citySuggestions', () => ({
+  normalizeCitySearch: (value: string) => value.trim().toLowerCase(),
+  getCitySuggestions: jest.fn(),
+}));
 
 const get = axios.get as jest.Mock;
 const remove = axios.delete as jest.Mock;
+const suggestions = getCitySuggestions as jest.Mock;
 
 function deferred() {
   let resolve!: (value: any) => void;
@@ -32,6 +35,14 @@ function deferred() {
 beforeEach(() => {
   get.mockReset().mockResolvedValue({ data: ['London', 'Paris'] });
   remove.mockReset().mockResolvedValue({ data: null });
+
+  suggestions.mockReset().mockImplementation((query: string) =>
+    Promise.resolve(
+      ['Paris', 'Parma', 'Tokyo'].filter(
+        name => name.toLowerCase().startsWith(query)
+      )
+    )
+  );
 });
 
 afterEach(() => jest.useRealTimers());
@@ -70,11 +81,13 @@ test('a late history response does not overwrite suggestions for typed text', as
   await act(async () => history.resolve({ data: ['London'] }));
 
   expect(
-    screen.getByRole('button', { name: 'Paris', exact: true })
+    await screen.findByRole('button', { name: 'Paris', exact: true })
   ).toBeInTheDocument();
+
   expect(
     screen.getByRole('button', { name: 'Parma', exact: true })
   ).toBeInTheDocument();
+
   expect(
     screen.queryByRole('button', { name: 'London', exact: true })
   ).not.toBeInTheDocument();
@@ -88,6 +101,9 @@ test('keyboard navigation selects a city and Escape returns focus to the input',
 
   const input = focusInput();
   fireEvent.change(input, { target: { value: 'Par' } });
+
+  await screen.findByRole('button', { name: 'Paris', exact: true });
+
   fireEvent.keyDown(input, { key: 'ArrowDown' });
 
   const paris = screen.getByRole('button', { name: 'Paris', exact: true });
@@ -160,6 +176,7 @@ test('history failures do not block searching and allow a manual reload', async 
     .mockResolvedValueOnce({ data: ['Rome'] });
 
   const search = jest.fn();
+
   render(<SearchBar onSearch={search} />);
 
   await screen.findByText(/Recent searches are temporarily unavailable/);
@@ -167,9 +184,9 @@ test('history failures do not block searching and allow a manual reload', async 
   fireEvent.click(screen.getByRole('button', { name: 'Explore Paris' }));
   expect(search).toHaveBeenCalledWith('Paris');
 
-  fireEvent.click(
-    screen.getByRole('button', { name: 'Reload recent searches' })
-  );
+  fireEvent.click(screen.getByRole('button', {
+    name: 'Reload recent searches',
+  }));
 
   await waitFor(() => expect(
     screen.queryByText(/Recent searches are temporarily unavailable/)
@@ -221,6 +238,7 @@ test('acknowledged deletion updates history without searching or replaying DELET
   expect(
     screen.queryByRole('button', { name: 'London', exact: true })
   ).not.toBeInTheDocument();
+
   expect(
     screen.getByRole('button', { name: 'Paris', exact: true })
   ).toBeInTheDocument();
@@ -247,6 +265,7 @@ test('failed deletion retains history and never automatically repeats the mutati
   expect(
     screen.getByText(/Removal could not be confirmed/)
   ).toBeInTheDocument();
+
   expect(
     screen.getByRole('button', { name: 'London', exact: true })
   ).toBeInTheDocument();
@@ -269,6 +288,7 @@ test('out-of-order deletion responses preserve other acknowledged deletions', as
   fireEvent.click(await screen.findByRole('button', {
     name: 'Remove London from recent searches',
   }));
+
   fireEvent.click(screen.getByRole('button', {
     name: 'Remove Paris from recent searches',
   }));
@@ -387,7 +407,68 @@ test('history refresh during deletion waits for acknowledgement before reading',
 
   expect(get).toHaveBeenCalledTimes(2);
   expect(remove).toHaveBeenCalledTimes(1);
+
   expect(
     screen.queryByRole('button', { name: 'London', exact: true })
   ).not.toBeInTheDocument();
+});
+
+test('passes the full selected city identity without guessing from the name', async () => {
+  suggestions.mockResolvedValue([
+    'Paris, Ile-de-France, France',
+    'Paris, Texas, United States',
+  ]);
+
+  const search = jest.fn();
+  render(<SearchBar onSearch={search} />);
+
+  fireEvent.change(focusInput(), { target: { value: 'Paris' } });
+
+  fireEvent.click(await screen.findByRole('button', {
+    name: 'Paris, United States',
+  }));
+
+  expect(search).toHaveBeenCalledWith('Paris, Texas, United States');
+});
+
+test('ignores a late city index result after the user types a different query', async () => {
+  const paris = deferred();
+
+  suggestions.mockReturnValueOnce(paris.promise)
+    .mockResolvedValueOnce(['London, England, United Kingdom']);
+
+  render(<SearchBar onSearch={jest.fn()} />);
+
+  const input = focusInput();
+  fireEvent.change(input, { target: { value: 'Par' } });
+
+  await waitFor(() => expect(suggestions).toHaveBeenCalledWith('par'));
+
+  fireEvent.change(input, { target: { value: 'Lon' } });
+
+  await screen.findByRole('button', {
+    name: 'London, United Kingdom',
+  });
+
+  await act(async () => paris.resolve(['Paris, Ile-de-France, France']));
+
+  expect(screen.queryByRole('button', {
+    name: 'Paris, France',
+  })).not.toBeInTheDocument();
+});
+
+test('a failed city index still permits a free-text search', async () => {
+  suggestions.mockRejectedValue(new Error('Offline'));
+
+  const search = jest.fn();
+  render(<SearchBar onSearch={search} />);
+
+  const input = focusInput();
+  fireEvent.change(input, { target: { value: 'Paris' } });
+
+  await screen.findByText(/City suggestions are temporarily unavailable/);
+
+  fireEvent.submit(input.closest('form')!);
+
+  expect(search).toHaveBeenCalledWith('Paris');
 });
