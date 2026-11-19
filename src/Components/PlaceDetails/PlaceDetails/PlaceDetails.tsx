@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { useNavigate, useParams } from 'react-router-dom';
 import SearchBar from '../../Components/SearchBar/SearchBar';
 import WeatherComponent from '../../Components/WeatherComponent/WeatherComponent';
@@ -14,6 +15,7 @@ import globals from '../../../utils/globals';
 import { City } from '../../../modal/City';
 import { getUserId } from '../../../utils/userIdentity';
 import { cityLabel } from '../../../utils/cityPresentation';
+import ExpandablePanel, { ExpandablePanelName } from './ExpandablePanel';
 import {
   warmBackend,
   waitForBackend,
@@ -29,10 +31,8 @@ const PlaceDetails: React.FC = () => {
   } | null>(null);
 
   const requestedCity = cityName?.trim() || '';
-
-  const place = resolvedPlace?.city === requestedCity
-    ? resolvedPlace.data
-    : null;
+  const place =
+    resolvedPlace?.city === requestedCity ? resolvedPlace.data : null;
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -40,6 +40,9 @@ const PlaceDetails: React.FC = () => {
   const [waitingForBackend, setWaitingForBackend] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [mapQuery, setMapQuery] = useState('');
+
+  const [expandedPanel, setExpandedPanel] =
+    useState<ExpandablePanelName | null>(null);
 
   const cache = useRef(new Map<string, City>());
   const [userId] = useState(getUserId);
@@ -60,6 +63,7 @@ const PlaceDetails: React.FC = () => {
     let slowTimer: ReturnType<typeof setTimeout> | undefined;
 
     setResolvedPlace(null);
+    setExpandedPanel(null);
     setError('');
     setSlowSearch(false);
     setMapQuery(city);
@@ -145,13 +149,9 @@ const PlaceDetails: React.FC = () => {
         }
 
         cache.current.set(cacheKey, result);
+        setResolvedPlace({ city, data: result });
 
-        setResolvedPlace({
-          city,
-          data: result,
-        });
-
-        if (city.includes(',') && data.placeId) {
+        if (city.includes(',')) {
           setMapQuery(`place_id:${data.placeId}`);
         }
 
@@ -197,6 +197,22 @@ const PlaceDetails: React.FC = () => {
     ? requestedCity
     : place?.name || requestedCity;
 
+  const togglePanel = (name: ExpandablePanelName) => {
+    setExpandedPanel(previous => previous === name ? null : name);
+  };
+
+  const handleShowOnMap = (query: string) => {
+    if (expandedPanel) {
+      // The child scrolls to the map immediately after this callback.
+      flushSync(() => {
+        setMapQuery(query);
+        setExpandedPanel(null);
+      });
+    } else {
+      setMapQuery(query);
+    }
+  };
+
   const weatherDestination =
     requestedCity.includes(',') &&
     typeof place?.latitude === 'number' &&
@@ -218,7 +234,6 @@ const PlaceDetails: React.FC = () => {
       {loading && (
         <div role="status" style={{ marginTop: '20px' }}>
           <Loader />
-
           <p>
             {slowSearch && waitingForBackend
               ? 'Waiting for the demo server to become available. This may take up to a minute.'
@@ -280,24 +295,36 @@ const PlaceDetails: React.FC = () => {
             />
           </div>
 
-          <div className="grid-item flights-component-container">
+          <ExpandablePanel
+            name="flights"
+            expanded={expandedPanel === 'flights'}
+            onToggle={() => togglePanel('flights')}
+          >
             <FlightsComponent city={destination} />
-          </div>
+          </ExpandablePanel>
 
-          <div className="grid-item hotels-component-container">
+          <ExpandablePanel
+            name="hotels"
+            expanded={expandedPanel === 'hotels'}
+            onToggle={() => togglePanel('hotels')}
+          >
             <HotelComponent
               cityName={destination}
               countryName={place.country || ''}
-              onShowHotelOnMap={setMapQuery}
+              onShowHotelOnMap={handleShowOnMap}
             />
-          </div>
+          </ExpandablePanel>
 
-          <div className="grid-item attractions-component-container">
+          <ExpandablePanel
+            name="attractions"
+            expanded={expandedPanel === 'attractions'}
+            onToggle={() => togglePanel('attractions')}
+          >
             <AttractionComponent
               city={destination}
-              onShowAttractionOnMap={setMapQuery}
+              onShowAttractionOnMap={handleShowOnMap}
             />
-          </div>
+          </ExpandablePanel>
         </div>
       )}
     </div>
