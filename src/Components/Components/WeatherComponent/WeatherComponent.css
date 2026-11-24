@@ -33,12 +33,12 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(10, 20, 34, 0.48);
   border-radius: 10px;
   z-index: 0;
 }
 
-/* Weather themes use fixed backgrounds and matching fallback colors. */
+/* Local, generated illustrations; the weather readings are still live. */
 
 .weather-container.weather-theme-default {
   background-color: #526c80;
@@ -46,60 +46,88 @@
 
 .weather-container.weather-theme-sunny {
   background-color: #347bae;
-  background-image: url('https://images.pexels.com/photos/3768/sky-sunny-clouds-cloudy.jpg?auto=compress&cs=tinysrgb&w=1260');
+  background-image: url('./assets/sunny-day.webp');
 }
 
 .weather-container.weather-theme-partly-cloudy {
   background-color: #628bab;
-  background-image: url('https://images.pexels.com/photos/19670/pexels-photo.jpg?auto=compress&cs=tinysrgb&w=1260');
+  background-image: url('./assets/partly-cloudy-day.webp');
 }
 
 .weather-container.weather-theme-cloudy {
   background-color: #536474;
-  background-image: url('https://images.pexels.com/photos/414634/pexels-photo-414634.jpeg?auto=compress&cs=tinysrgb&w=1260');
+  background-image: url('./assets/cloudy-day.webp');
 }
 
 .weather-container.weather-theme-rain {
   background-color: #456477;
-  background-image: url('https://images.pexels.com/photos/1028600/pexels-photo-1028600.jpeg?auto=compress&cs=tinysrgb&w=1260');
+  background-image: url('./assets/rain-day.webp');
 }
 
 .weather-container.weather-theme-snow {
   background-color: #758b9e;
-  background-image: url('https://images.pexels.com/photos/773953/pexels-photo-773953.jpeg?auto=compress&cs=tinysrgb&w=1260');
+  background-image: url('./assets/snow-day.webp');
 }
 
 .weather-container.weather-theme-storm {
   background-color: #333c52;
-  background-image: url('https://images.pexels.com/photos/4871395/pexels-photo-4871395.jpeg?auto=compress&cs=tinysrgb&w=1260');
+  background-image: url('./assets/storm-day.webp');
 }
 
 .weather-container.weather-theme-fog {
   background-color: #637784;
-  background-image: url('https://images.pexels.com/photos/978844/pexels-photo-978844.jpeg?auto=compress&cs=tinysrgb&w=1260');
+  background-image: url('./assets/fog-day.webp');
 }
 
 .weather-container.weather-theme-haze {
   background-color: #817365;
-  background-image:
-    linear-gradient(
-      rgba(146, 117, 75, 0.35),
-      rgba(146, 117, 75, 0.35)
-    ),
-    url('https://images.pexels.com/photos/2529973/pexels-photo-2529973.jpeg?auto=compress&cs=tinysrgb&w=1260');
+  background-image: url('./assets/haze-day.webp');
 }
 
+/* Dedicated nighttime backgrounds. */
+
 .weather-container.weather-theme-sunny.weather-period-night {
+  background-image: url('./assets/sunny-night.webp');
+}
+
+.weather-container.weather-theme-partly-cloudy.weather-period-night {
+  background-image: url('./assets/partly-cloudy-night.webp');
+}
+
+.weather-container.weather-theme-cloudy.weather-period-night {
+  background-image: url('./assets/cloudy-night.webp');
+}
+
+.weather-container.weather-theme-rain.weather-period-night {
+  background-image: url('./assets/rain-night.webp');
+}
+
+.weather-container.weather-theme-snow.weather-period-night {
+  background-image: url('./assets/snow-night.webp');
+}
+
+.weather-container.weather-theme-storm.weather-period-night {
+  background-image: url('./assets/storm-night.webp');
+}
+
+.weather-container.weather-theme-fog.weather-period-night {
+  background-image: url('./assets/fog-night.webp');
+}
+
+.weather-container.weather-theme-haze.weather-period-night {
+  background-image: url('./assets/haze-night.webp');
+}
+
+.weather-container.weather-period-night {
   background-color: #182b4a;
-  background-image: url('https://images.pexels.com/photos/281260/pexels-photo-281260.jpeg?auto=compress&cs=tinysrgb&w=1260');
 }
 
 .weather-container.weather-period-night::after {
-  background: rgba(7, 19, 42, 0.72);
+  background: rgba(7, 19, 42, 0.2);
 }
 
-.weather-container.weather-theme-sunny.weather-period-night::after {
-  background: rgba(7, 19, 42, 0.42);
+.weather-container.weather-period-unknown:not(.weather-theme-default) {
+  background-image: none;
 }
 
 .weather-info {
