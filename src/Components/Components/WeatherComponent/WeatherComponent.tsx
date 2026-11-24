@@ -3,6 +3,7 @@ import axios from 'axios';
 import { Weather } from '../../../modal/Weather';
 import './WeatherComponent.css';
 import globals from '../../../utils/globals';
+import { weatherAppearance } from './weatherAppearance';
 
 interface WeatherProps {
   city: string;
@@ -163,11 +164,15 @@ const WeatherComponent: React.FC<WeatherProps> = ({ city, displayName }) => {
   }, [city, fetchWeather]);
 
   const weatherClass = weather
-    ? weather.condition.trim().toLowerCase().replace(/\s+/g, '-')
-    : 'default';
+    ? weatherAppearance(weather.condition, weather.conditionIcon)
+    : 'weather-theme-default weather-period-unknown';
 
   return (
-    <div className={`weather-container ${weatherClass}`}>
+    <div
+      role="region"
+      aria-label="Weather"
+      className={`weather-container ${weatherClass}`}
+    >
       <div className="weather-info">
         {loading ? (
           <p role="status">Loading weather...</p>
