@@ -138,20 +138,27 @@ interface FlightSearch {
   adults: number;
 }
 
-const defaultAdvancedParams = (): AdvancedSearchParams => ({
-  origin: 'Tel Aviv',
-  destination: '',
-  departDate: '',
-  returnDate: '',
-  adults: '1',
-  flightType: 'roundTrip',
-});
-
 const localDate = (date = new Date()): string =>
   `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
     2,
     '0'
   )}-${String(date.getDate()).padStart(2, '0')}`;
+
+const defaultAdvancedParams = (city: string): AdvancedSearchParams => {
+  const departure = new Date();
+  departure.setDate(departure.getDate() + 10);
+  const returning = new Date(departure);
+  returning.setDate(returning.getDate() + 5);
+
+  return {
+    origin: 'Tel Aviv',
+    destination: city.trim(),
+    departDate: localDate(departure),
+    returnDate: localDate(returning),
+    adults: '1',
+    flightType: 'roundTrip',
+  };
+};
 
 const validDate = (value: string): boolean => {
   if (!/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value)) return false;
@@ -246,7 +253,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
   const [advancedParams, setAdvancedParams] =
-    useState<AdvancedSearchParams>(defaultAdvancedParams);
+    useState<AdvancedSearchParams>(() => defaultAdvancedParams(city));
 
   const [advancedMode, setAdvancedMode] = useState(false);
   const [adultCount, setAdultCount] = useState(1);
@@ -348,17 +355,12 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   }, []);
 
   useEffect(() => {
-    setAdvancedParams(defaultAdvancedParams());
+    const defaults = defaultAdvancedParams(city);
+    setAdvancedParams(defaults);
     setInvalidFields([]);
     setShowAdvancedSearch(false);
 
     if (city.trim()) {
-      const departure = new Date();
-      departure.setDate(departure.getDate() + 10);
-
-      const returning = new Date();
-      returning.setDate(returning.getDate() + 15);
-
       loadFlights({
         url: globals.api.flights,
         advanced: false,
@@ -366,9 +368,9 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
         params: {
           city: city.trim(),
           origin: 'TLV',
-          departureDate: localDate(departure),
-          returnDate: localDate(returning),
-          adults: '1',
+          departureDate: defaults.departDate,
+          returnDate: defaults.returnDate,
+          adults: defaults.adults,
         },
       });
     } else {
@@ -811,7 +813,10 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
       </div>
 
       {showAdvancedSearch && (
-        <div className="advanced-search-form">
+        <form className="advanced-search-form" noValidate onSubmit={event => {
+          event.preventDefault();
+          handleAdvancedSearch();
+        }}>
           <div
             className={`search-field ${
               invalidFields.includes('origin') ? 'invalid' : ''
@@ -926,11 +931,11 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
 
           <button
             className="advanced-search-btn"
-            onClick={handleAdvancedSearch}
+            type="submit"
           >
             Search
           </button>
-        </div>
+        </form>
       )}
 
       {invalidFields.length > 0 && showAdvancedSearch && (
