@@ -1,4 +1,12 @@
-// Flattened and cleaned up to match the backend structure perfectly
+export interface HotelPhotoAttribution {
+    title: string;
+    author: string;
+    license: string;
+    licenseUrl: string;
+    sourceUrl: string;
+    modifications: string;
+}
+
 export interface HotelDto {
     hotelId: string;
     name: string;
@@ -7,11 +15,12 @@ export interface HotelDto {
     latitude?: number;
     longitude?: number;
     price?: number;
-    imageUrl?: string; // השדה החדש לתמונה הדינמית
-    rating?: number;   // הדירוג שמגיע מהבקאנד
+    imageUrl?: string;
+    rating?: number;
+    photoAttribution?: HotelPhotoAttribution;
 }
 
-// Kept for future use if we want to display specific room details
+// Kept for future use if we want to display specific room details.
 export interface RoomDto {
     bedType?: string;
     beds?: number;

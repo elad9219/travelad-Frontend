@@ -1,0 +1,69 @@
+.hotel-photo-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #e6eef5, #c7d9e8);
+  color: #304c64;
+  font-size: 0.8rem;
+}
+
+.hotel-photo-placeholder span:first-child {
+  font-size: 2.4rem;
+}
+
+.hotel-photo-unavailable {
+  background: #eef2f6;
+}
+
+.hotel-demo-note {
+  text-align: center;
+  color: #455567;
+  font-size: 0.8rem;
+  margin: 0 0 10px;
+  line-height: 1.4;
+}
+
+.hotel-photo-credit {
+  font-size: 0.68rem;
+  line-height: 1.4;
+  color: #49596b;
+  background: #f5f8fb;
+  padding: 5px 10px;
+  overflow-wrap: anywhere;
+  cursor: default;
+}
+
+.hotel-photo-credit a {
+  color: #225783;
+  text-decoration: underline;
+}
+
+.hotel-photo-credit summary {
+  cursor: pointer;
+  color: #225783;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.hotel-photo-credit[open] summary {
+  margin-bottom: 6px;
+}
+
+.hotel-photo-source-title {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.hotel-demo-price-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: normal;
+  color: #455567;
+}
