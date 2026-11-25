@@ -394,9 +394,7 @@ test('direct filtering and price sorting handle one-way and round-trip offers', 
     screen.getByRole('button', { name: 'Direct Flights Only' })
   );
 
-  fireEvent.click(
-    screen.getByRole('radio', { name: 'Show Lowest Price' })
-  );
+  fireEvent.change(screen.getByRole('combobox', { name: 'Sort by' }), { target: { value: 'price' } });
 
   const offers = screen.getAllByRole('button', {
     name: /Flight \d+ details/,
@@ -405,6 +403,34 @@ test('direct filtering and price sorting handle one-way and round-trip offers', 
   expect(offers).toHaveLength(2);
   expect(offers[0]).toHaveTextContent('€200.00');
   expect(offers[1]).toHaveTextContent('€300.00');
+  fireEvent.click(offers[0]);
+  expect(offers[0]).toHaveAttribute('aria-expanded', 'true');
+  fireEvent.change(screen.getByRole('combobox', { name: 'Sort by' }), { target: { value: 'default' } });
+  expect(screen.getByRole('button', { name: 'Flight 1 details' })).toHaveTextContent('€300.00');
+  expect(screen.getByRole('button', { name: 'Flight 1 details' })).toHaveAttribute('aria-expanded', 'false');
+  fireEvent.click(screen.getByRole('button', { name: 'Flight 1 details' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Direct Flights Only' }));
+  expect(screen.getByRole('button', { name: 'Flight 1 details' })).toHaveAttribute('aria-expanded', 'false');
+  expect(search).toHaveBeenCalledTimes(1);
+});
+
+test('flight sorting supports value, duration and departure without another request', async () => {
+  const offer = (price: number, duration: string, departureDate: string) => ({
+    price, outboundDuration: duration, segments: [{ ...segment(), departureDate }]
+  });
+  search.mockResolvedValue({ data: [
+    offer(100, 'PT10H', '2099-06-01T10:00:00'),
+    offer(150, 'PT4H', '2099-06-01T09:00:00'),
+    offer(400, 'PT3H', '2099-06-01T07:00:00'),
+  ] });
+  render(<FlightsComponent city="Paris" />);
+  await screen.findByText('€100.00');
+  const sort = screen.getByRole('combobox', { name: 'Sort by' });
+  for (const [value, expected] of [['value', '€150.00'], ['duration', '€400.00'], ['departure', '€400.00'], ['default', '€100.00']]) {
+    fireEvent.change(sort, { target: { value } });
+    expect(screen.getByRole('button', { name: 'Flight 1 details' })).toHaveTextContent(expected);
+  }
+  expect(search).toHaveBeenCalledTimes(1);
 });
 
 test('failure does not trigger automatic replay', async () => {

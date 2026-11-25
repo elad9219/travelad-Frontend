@@ -110,6 +110,30 @@ const getTotalDuration = (flight: Flight): number => {
   return getLegDuration(flight.segments || [], flight.outboundDuration);
 };
 
+type FlightSort = 'default' | 'value' | 'price' | 'duration' | 'departure';
+
+const priceRank = (flight: Flight) => flight.price ?? Infinity;
+const departureRank = (flight: Flight) =>
+  Date.parse((flight.outboundSegments || flight.segments || [])[0]?.departureDate || '') || Infinity;
+
+const rankFlights = (flights: Flight[], sort: FlightSort): Flight[] => {
+  if (sort === 'default') return flights;
+  const prices = flights.map(priceRank).filter(Number.isFinite);
+  const durations = flights.map(getTotalDuration).filter(value => value > 0);
+  const minPrice = Math.min(...prices);
+  const minDuration = Math.min(...durations);
+  const valueScore = (flight: Flight) => {
+    const price = priceRank(flight);
+    const duration = getTotalDuration(flight);
+    if (!Number.isFinite(price) || duration <= 0) return Infinity;
+    return 0.5 * (price / Math.max(1, minPrice)) + 0.5 * (duration / minDuration);
+  };
+  const rank = sort === 'price' ? priceRank :
+    sort === 'duration' ? (flight: Flight) => getTotalDuration(flight) || Infinity :
+    sort === 'departure' ? departureRank : valueScore;
+  return [...flights].sort((a, b) => rank(a) - rank(b) || 0);
+};
+
 const renderCarrierLogo = (
   carrierCode: string,
   logoUrl?: string
@@ -259,7 +283,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   const [adultCount, setAdultCount] = useState(1);
   const [iataMapping, setIataMapping] = useState<IataMapping>({});
   const [directFlightsOnly, setDirectFlightsOnly] = useState(false);
-  const [sortBy, setSortBy] = useState<'price' | 'duration' | ''>('');
+  const [sortBy, setSortBy] = useState<FlightSort>('default');
   const [invalidFields, setInvalidFields] = useState<string[]>([]);
 
   const formId = useId();
@@ -721,17 +745,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
       })
     : safeFlights;
 
-  const sortedFlights =
-    sortBy === 'price'
-      ? [...filteredFlights].sort(
-          (first, second) => (first.price || 0) - (second.price || 0)
-        )
-      : sortBy === 'duration'
-        ? [...filteredFlights].sort(
-            (first, second) =>
-              getTotalDuration(first) - getTotalDuration(second)
-          )
-        : filteredFlights;
+  const sortedFlights = rankFlights(filteredFlights, sortBy);
 
   const renderErrorMessage = () => {
     if (error) {
@@ -768,12 +782,30 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
         <h2 className="flights-title">✈ Flights</h2>
 
         <div className="header-controls">
+          {!loading && !error && <span className="flight-results-count">{sortedFlights.length} {sortedFlights.length === 1 ? 'flight' : 'flights'}</span>}
+          <label className="flight-sort-control">
+            Sort by
+            <select value={sortBy} onChange={event => {
+              setSortBy(event.target.value as FlightSort);
+              setExpandedIndex(null);
+            }}>
+              <option value="default">Default</option>
+              <option value="value">Best value</option>
+              <option value="price">Lowest price</option>
+              <option value="duration">Fastest flights</option>
+              <option value="departure">Earliest departure</option>
+            </select>
+          </label>
           <button
+            type="button"
             className={`direct-flights-btn ${
               directFlightsOnly ? 'checked' : ''
             }`}
             aria-pressed={directFlightsOnly}
-            onClick={() => setDirectFlightsOnly(previous => !previous)}
+            onClick={() => {
+              setDirectFlightsOnly(previous => !previous);
+              setExpandedIndex(null);
+            }}
           >
             Direct Flights Only
           </button>
@@ -787,33 +819,11 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           </button>
         </div>
 
-        <div className="sort-controls">
-          <label>
-            <input
-              type="radio"
-              name="sort"
-              value="price"
-              checked={sortBy === 'price'}
-              onChange={() => setSortBy('price')}
-            />
-            Show Lowest Price
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="sort"
-              value="duration"
-              checked={sortBy === 'duration'}
-              onChange={() => setSortBy('duration')}
-            />
-            Show Fastest Flights
-          </label>
-        </div>
+        <p className="flight-demo-note">Illustrative flights. Schedules and prices are simulated; no live availability.</p>
       </div>
 
       {showAdvancedSearch && (
-        <form className="advanced-search-form" noValidate onSubmit={event => {
+        <form className={`advanced-search-form ${advancedParams.flightType === 'oneWay' ? 'flight-form-one-way' : ''}`} noValidate onSubmit={event => {
           event.preventDefault();
           handleAdvancedSearch();
         }}>
