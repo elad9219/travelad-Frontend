@@ -847,5 +847,2345 @@
     "license": "CC BY-SA 3.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "position": "center"
+  },
+  {
+    "key": "haifa",
+    "cities": [
+      "haifa"
+    ],
+    "countries": [
+      "israel"
+    ],
+    "alt": "Haifa and its Baháʼí Gardens overlooking the Mediterranean",
+    "author": ". Ray in Manila",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Hanging_Gardens_of_Haifa,_Israel_(50099173503)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "jerusalem",
+    "cities": [
+      "jerusalem"
+    ],
+    "countries": [
+      "israel"
+    ],
+    "alt": "Jerusalem Old City and the Dome of the Rock from the Mount of Olives",
+    "author": "askii",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dome_of_the_Rock_seen_from_the_Mount_of_Olives_(12395649153)_(cropped).jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "eilat",
+    "cities": [
+      "eilat"
+    ],
+    "countries": [
+      "israel"
+    ],
+    "alt": "Eilat hotel waterfront illuminated at night",
+    "author": "Yigal Dekel",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Eilat_night_hotels_2016.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "salzburg",
+    "cities": [
+      "salzburg"
+    ],
+    "countries": [
+      "austria"
+    ],
+    "alt": "Salzburg old town against the mountains",
+    "author": "Jorge Franganillo",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Salzburg_(48489551981).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "porto",
+    "cities": [
+      "porto",
+      "oporto"
+    ],
+    "countries": [
+      "portugal"
+    ],
+    "alt": "Dom Luís I Bridge over the Douro River in Porto",
+    "author": "Diego Delso",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Puente_Don_Luis_I,_Oporto,_Portugal,_2012-05-09,_DD_13.JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "seville",
+    "cities": [
+      "seville",
+      "sevilla"
+    ],
+    "countries": [
+      "spain"
+    ],
+    "alt": "Seville Cathedral under a blue sky",
+    "author": "Ingo Mehling",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sevilla_Cathedral_-_Southeast.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "malaga",
+    "cities": [
+      "malaga"
+    ],
+    "countries": [
+      "spain"
+    ],
+    "alt": "Málaga's harbor and city from Gibralfaro",
+    "author": "Kiban",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Da_Gibralfaro_(cropped)2.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "marseille",
+    "cities": [
+      "marseille",
+      "marseilles"
+    ],
+    "countries": [
+      "france"
+    ],
+    "alt": "Notre-Dame de la Garde overlooking Marseille",
+    "author": "Benh LIEU SONG",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Notre_Dame_de_la_Garde.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "manchester",
+    "cities": [
+      "manchester"
+    ],
+    "countries": [
+      "united kingdom",
+      "uk",
+      "great britain",
+      "england",
+      "scotland"
+    ],
+    "alt": "Manchester's historic buildings and modern towers",
+    "author": "David Dixon",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tower_Blocks_over_Knott_Mill,_geograph_6866152_by_David_Dixon.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "liverpool",
+    "cities": [
+      "liverpool"
+    ],
+    "countries": [
+      "united kingdom",
+      "uk",
+      "great britain",
+      "england",
+      "scotland"
+    ],
+    "alt": "Liverpool's Pier Head waterfront buildings",
+    "author": "Peter Tarleton",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pier_Head,_Liverpool_-_geograph.org.uk_-_3059094.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "tallinn",
+    "cities": [
+      "tallinn"
+    ],
+    "countries": [
+      "estonia"
+    ],
+    "alt": "Tallinn Town Hall Square at dusk",
+    "author": "Jorge Franganillo",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Raekoja_plats_at_night.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "riga",
+    "cities": [
+      "riga"
+    ],
+    "countries": [
+      "latvia"
+    ],
+    "alt": "Riga old town rooftops",
+    "author": "Jorge Franganillo from Barcelona, Spain",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Riga_(33844464828).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "vilnius",
+    "cities": [
+      "vilnius"
+    ],
+    "countries": [
+      "lithuania"
+    ],
+    "alt": "Vilnius old town at sunset",
+    "author": "BigHead",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vilnius_old_town_by_Augustas_Didzgalvis.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "bucharest",
+    "cities": [
+      "bucharest",
+      "bucuresti"
+    ],
+    "countries": [
+      "romania"
+    ],
+    "alt": "Aerial view of central Bucharest",
+    "author": "Madalin Pentelie",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bucharest_University_Square_(cropped).jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "sofia",
+    "cities": [
+      "sofia"
+    ],
+    "countries": [
+      "bulgaria"
+    ],
+    "alt": "Sofia skyline and Vitosha Mountain",
+    "author": "Deensel",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Panoramic_view_over_central_Sofia_and_the_Vitosha_Mountain_2017-10-08.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "dubrovnik",
+    "cities": [
+      "dubrovnik"
+    ],
+    "countries": [
+      "croatia"
+    ],
+    "alt": "Dubrovnik old town and Adriatic coastline",
+    "author": "Zysko serhii",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_walls_of_the_fortress_and_View_of_the_old_city._panorama.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "ljubljana",
+    "cities": [
+      "ljubljana"
+    ],
+    "countries": [
+      "slovenia"
+    ],
+    "alt": "Ljubljana old town rooftops",
+    "author": "Andrew Milligan Sumo",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ljubljana_Old_Town,_Slovenia_(Old_Camera)_(33286165680).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "tbilisi",
+    "cities": [
+      "tbilisi",
+      "tiflis"
+    ],
+    "countries": [
+      "georgia"
+    ],
+    "alt": "Tbilisi cityscape viewed from above",
+    "author": "Alexey Komarov",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:View_of_Tbilisi_from_Tabori_Church_2023-10-08-2.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "baku",
+    "cities": [
+      "baku"
+    ],
+    "countries": [
+      "azerbaijan"
+    ],
+    "alt": "Baku skyline illuminated at night",
+    "author": "Presidential Press and Information Office",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Baku_city_at_night.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "limassol",
+    "cities": [
+      "limassol",
+      "lemesos"
+    ],
+    "countries": [
+      "cyprus"
+    ],
+    "alt": "Limassol waterfront skyline",
+    "author": "Στέφανος Νικολάου",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skyscrapers_in_Limassol.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "paphos",
+    "cities": [
+      "paphos",
+      "pafos"
+    ],
+    "countries": [
+      "cyprus"
+    ],
+    "alt": "Paphos harbor",
+    "author": "Dmitry Panov",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Paphos_Marine,_Cyprus_-_panoramio.jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "position": "center"
+  },
+  {
+    "key": "valletta",
+    "cities": [
+      "valletta"
+    ],
+    "countries": [
+      "malta"
+    ],
+    "alt": "Valletta's fortified waterfront",
+    "author": "Mandyy88",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:St_Sebastian_Curtain_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "taipei",
+    "cities": [
+      "taipei",
+      "taipei city"
+    ],
+    "countries": [
+      "taiwan",
+      "republic of china",
+      "taiwan (roc)"
+    ],
+    "alt": "Taipei skyline with Taipei 101",
+    "author": "毛貓大少爺",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Taipei_Skyline_2022.06.29.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "kuala-lumpur",
+    "cities": [
+      "kuala lumpur"
+    ],
+    "countries": [
+      "malaysia"
+    ],
+    "alt": "Bukit Bintang streets in Kuala Lumpur",
+    "author": "Renek78",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bukit_Bintang_junction_in_2024_2.jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "hanoi",
+    "cities": [
+      "hanoi"
+    ],
+    "countries": [
+      "vietnam",
+      "viet nam"
+    ],
+    "alt": "Hanoi skyline at sunset",
+    "author": "Quangnlnhe182394",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hanoi_skyline_with_Ba_Vi_Mountain.jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "ho-chi-minh-city",
+    "cities": [
+      "ho chi minh city",
+      "saigon",
+      "ho chi minh"
+    ],
+    "countries": [
+      "vietnam",
+      "viet nam"
+    ],
+    "alt": "Ho Chi Minh City Hall",
+    "author": "Steffen Schmitz ( more photos )",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Ho_Chi_Minh_City,_City_Hall,_2020-01_CN-03.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "kyoto",
+    "cities": [
+      "kyoto"
+    ],
+    "countries": [
+      "japan"
+    ],
+    "alt": "Kiyomizu-dera temple in Kyoto",
+    "author": "Martin Falbisoner",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kiyomizu-dera,_Kyoto,_November_2016_-02.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "osaka",
+    "cities": [
+      "osaka"
+    ],
+    "countries": [
+      "japan"
+    ],
+    "alt": "Osaka Castle and surrounding skyline",
+    "author": "663highland",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Osaka_Castle_03bs3200.jpg",
+    "license": "CC BY 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+    "position": "center"
+  },
+  {
+    "key": "mumbai",
+    "cities": [
+      "mumbai",
+      "bombay"
+    ],
+    "countries": [
+      "india"
+    ],
+    "alt": "Bandra-Worli Sea Link in Mumbai",
+    "author": "Rutiknatekar",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mumbai_Bandra-Worli_Sea_Link.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "new-delhi",
+    "cities": [
+      "new delhi"
+    ],
+    "countries": [
+      "india"
+    ],
+    "alt": "Rashtrapati Bhavan in New Delhi",
+    "author": "Ronakshah1990",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Forecourt,_Rashtrapati_Bhavan_-_1.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "jaipur",
+    "cities": [
+      "jaipur"
+    ],
+    "countries": [
+      "india"
+    ],
+    "alt": "Hawa Mahal palace in Jaipur",
+    "author": "Chainwit.",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:East_facade_Hawa_Mahal_Jaipur_from_ground_level_(July_2022)_-_img_01.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "colombo",
+    "cities": [
+      "colombo"
+    ],
+    "countries": [
+      "sri lanka"
+    ],
+    "alt": "Colombo skyline at night",
+    "author": "Gihanud2001",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Colombo_city_skyline_at_night.png",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "kathmandu",
+    "cities": [
+      "kathmandu"
+    ],
+    "countries": [
+      "nepal"
+    ],
+    "alt": "Historic temples in Kathmandu Durbar Square",
+    "author": "Gerd Eichmann",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kathmandu-Durbar_Square-06-Mahavishnu-Kuh-Vishnu-Pratapamalla-Jagannath-2007-gje.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "manila",
+    "cities": [
+      "manila"
+    ],
+    "countries": [
+      "philippines"
+    ],
+    "alt": "Manila cityscape and gardens",
+    "author": "Bahnfrend",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cityscape_of_Manila,_2025_(01).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "chiang-mai",
+    "cities": [
+      "chiang mai"
+    ],
+    "countries": [
+      "thailand"
+    ],
+    "alt": "Illuminated temple in Chiang Mai",
+    "author": "Nawit science",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:0020-%E0%B8%A7%E0%B8%B1%E0%B8%94%E0%B8%9E%E0%B8%A3%E0%B8%B0%E0%B8%AA%E0%B8%B4%E0%B8%87%E0%B8%AB%E0%B9%8C%E0%B8%A7%E0%B8%A3%E0%B8%A1%E0%B8%AB%E0%B8%B2%E0%B8%A7%E0%B8%B4%E0%B8%AB%E0%B8%B2%E0%B8%A3.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "beijing",
+    "cities": [
+      "beijing",
+      "peking"
+    ],
+    "countries": [
+      "china",
+      "people's republic of china",
+      "prc"
+    ],
+    "alt": "Beijing central business district skyline",
+    "author": "N509FZ",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skyline_of_Beijing_CBD_with_B-5906_approaching_(20211016171955)_(1).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "shanghai",
+    "cities": [
+      "shanghai"
+    ],
+    "countries": [
+      "china",
+      "people's republic of china",
+      "prc"
+    ],
+    "alt": "Shanghai Pudong skyline along the Huangpu River",
+    "author": "xiquinhosilva",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Huangpu_Park_20124-Shanghai_(32208802494).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "chengdu",
+    "cities": [
+      "chengdu"
+    ],
+    "countries": [
+      "china",
+      "people's republic of china",
+      "prc"
+    ],
+    "alt": "Chengdu skyline and snow-capped mountains",
+    "author": "FISU",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%E9%9B%AA%E5%B1%B1%E4%B8%8B%E7%9A%84%E6%88%90%E9%83%BD%E5%B8%82%E5%A4%A9%E9%99%85%E7%BA%BF_Chengdu_skyline_with_snow_capped_mountains.jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "position": "center"
+  },
+  {
+    "key": "muscat",
+    "cities": [
+      "muscat"
+    ],
+    "countries": [
+      "oman"
+    ],
+    "alt": "Al Alam Palace in Muscat",
+    "author": "Tristan",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Al_Alam_Palace.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "doha",
+    "cities": [
+      "doha"
+    ],
+    "countries": [
+      "qatar"
+    ],
+    "alt": "The Pearl marina in Doha",
+    "author": "Alex Sergeev (www.asergeev.com)",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_Pearl_Marina_in_Nov_2013.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "position": "center"
+  },
+  {
+    "key": "abu-dhabi",
+    "cities": [
+      "abu dhabi"
+    ],
+    "countries": [
+      "united arab emirates",
+      "uae"
+    ],
+    "alt": "Abu Dhabi skyline across the water",
+    "author": "Wadiia",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Abu_dhabi_skylines_2014.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "cairo",
+    "cities": [
+      "cairo"
+    ],
+    "countries": [
+      "egypt"
+    ],
+    "alt": "Cairo skyline and Nile River at night",
+    "author": "Wael El Sisi",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cairo_From_Tower_(cropped).jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "marrakesh",
+    "cities": [
+      "marrakesh",
+      "marrakech"
+    ],
+    "countries": [
+      "morocco"
+    ],
+    "alt": "Koutoubia Mosque in Marrakesh",
+    "author": "YoTuT from United States",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marrakech,_Morocco_(5421595453)_(5).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "casablanca",
+    "cities": [
+      "casablanca"
+    ],
+    "countries": [
+      "morocco"
+    ],
+    "alt": "Casablanca skyline at sunset",
+    "author": "Chah.salah",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Casa_finance_city_6_(cropped).jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "johannesburg",
+    "cities": [
+      "johannesburg"
+    ],
+    "countries": [
+      "south africa"
+    ],
+    "alt": "Johannesburg skyline viewed from above",
+    "author": "Mark Hillary",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Johannesburg_skyline_2017.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "miami",
+    "cities": [
+      "miami"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "Miami skyline across Biscayne Bay",
+    "author": "Wilfredor",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Miami,_Florida,_Skyline_4.jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "seattle",
+    "cities": [
+      "seattle"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "Seattle skyline and Space Needle at dusk",
+    "author": "Jeffery Hayes",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Seattle_Center_as_night_falls.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "montreal",
+    "cities": [
+      "montreal"
+    ],
+    "countries": [
+      "canada"
+    ],
+    "alt": "Montreal skyline viewed from Mount Royal",
+    "author": "Quintin Soloviev",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Montreal,_Quebec_skyline.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "quebec-city",
+    "cities": [
+      "quebec city",
+      "quebec",
+      "ville de quebec"
+    ],
+    "countries": [
+      "canada"
+    ],
+    "alt": "Québec City skyline from across the river",
+    "author": "Hayden Soloviev",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Quebec_City_in_September_2026.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "cancun",
+    "cities": [
+      "cancun"
+    ],
+    "countries": [
+      "mexico"
+    ],
+    "alt": "Cancún coastline and turquoise sea",
+    "author": "dronepicr",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cancun_Strand_Luftbild_(22143397586).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "havana",
+    "cities": [
+      "havana",
+      "la habana"
+    ],
+    "countries": [
+      "cuba"
+    ],
+    "alt": "Havana's waterfront and Malecón",
+    "author": "RenaatPeeters",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:DJI_0197_crp_wiki.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "lima",
+    "cities": [
+      "lima"
+    ],
+    "countries": [
+      "peru"
+    ],
+    "alt": "Lima Cathedral and historic buildings",
+    "author": "David Felipe Ruiz Hoyos",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bas%C3%ADlica_Catedral_Metropolitana_de_Lima_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "cusco",
+    "cities": [
+      "cusco",
+      "cuzco"
+    ],
+    "countries": [
+      "peru"
+    ],
+    "alt": "Historic street in Cusco",
+    "author": "tomscoffin",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Vista_Calle_Suecia.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "bogota",
+    "cities": [
+      "bogota"
+    ],
+    "countries": [
+      "colombia"
+    ],
+    "alt": "Historic street in Bogotá",
+    "author": "Pedro Szekely from Los Angeles, USA",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bogota,_Colombia_(36668708290).jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "quito",
+    "cities": [
+      "quito"
+    ],
+    "countries": [
+      "ecuador"
+    ],
+    "alt": "Quito cityscape and surrounding mountains",
+    "author": "Asamblea Nacional del Ecuador",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:FACHADA_ASAMBLEA_NACIONAL._QUITO,_20_DE_FEBRERO_2020._01.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "brisbane",
+    "cities": [
+      "brisbane"
+    ],
+    "countries": [
+      "australia"
+    ],
+    "alt": "Brisbane skyline across the river",
+    "author": "Chris Olszewski",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Brisbane_CBD_seen_from_Kangaroo_Point,_2024,_01_(2).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "perth",
+    "cities": [
+      "perth"
+    ],
+    "countries": [
+      "australia"
+    ],
+    "alt": "Perth skyline from Kings Park",
+    "author": "File:Perth CBD skyline from State War Memorial Lookout, 2023, 04.jpg : Kgbo derivative work: Georgfotoart",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Perth_CBD_skyline_from_State_War_Memorial_Lookout,_2023,_04_b.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "bratislava",
+    "cities": [
+      "bratislava"
+    ],
+    "countries": [
+      "slovakia",
+      "slovak republic"
+    ],
+    "alt": "View of Bratislava, Slovakia",
+    "author": "Arne Müseler",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Slovakia_bratislava.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "gdansk",
+    "cities": [
+      "gdansk",
+      "danzig"
+    ],
+    "countries": [
+      "poland"
+    ],
+    "alt": "View of Gdańsk, Poland",
+    "author": "Diego Delso",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Calle_Dlugie_Pobrzeze,_Gdansk,_Polonia,_2013-05-20,_DD_06.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "poznan",
+    "cities": [
+      "poznan"
+    ],
+    "countries": [
+      "poland"
+    ],
+    "alt": "View of Poznań, Poland",
+    "author": "Aneta Pawska",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Stary_Rynek_w_Poznaniu,_widok_z_drona_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "hamburg",
+    "cities": [
+      "hamburg"
+    ],
+    "countries": [
+      "germany"
+    ],
+    "alt": "View of Hamburg, Germany",
+    "author": "Dietmar Rabich",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hamburg,_Landungsbr%C3%BCcken_--_2016_--_3131-7.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "cologne",
+    "cities": [
+      "cologne",
+      "koln"
+    ],
+    "countries": [
+      "germany"
+    ],
+    "alt": "View of Cologne, Germany",
+    "author": "Martin Falbisoner",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kranh%C3%A4user_Cologne,_April_2018_-01.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "dresden",
+    "cities": [
+      "dresden"
+    ],
+    "countries": [
+      "germany"
+    ],
+    "alt": "View of Dresden, Germany",
+    "author": "User:Kolossos",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:DD-Schloss-gp.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "stuttgart",
+    "cities": [
+      "stuttgart"
+    ],
+    "countries": [
+      "germany"
+    ],
+    "alt": "View of Stuttgart, Germany",
+    "author": "Julian Herzog ( Website )",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Neues_Schloss_Schlossplatzspringbrunnen_Schlossplatz_Stuttgart_2015_01.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "heidelberg",
+    "cities": [
+      "heidelberg"
+    ],
+    "countries": [
+      "germany"
+    ],
+    "alt": "View of Heidelberg, Germany",
+    "author": "Jörg Braukmann",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:K%C3%B6nigstuhl,_Heidelberg,_U-17.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "ghent",
+    "cities": [
+      "ghent",
+      "gent"
+    ],
+    "countries": [
+      "belgium"
+    ],
+    "alt": "View of Ghent, Belgium",
+    "author": "Michielverbeek",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gent,_de_Graslei_vanaf_de_Korenlei_met_oeg24758tm61%2B25159_IMG_0447_2021-08-13_18.37.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "bruges",
+    "cities": [
+      "bruges",
+      "brugge"
+    ],
+    "countries": [
+      "belgium"
+    ],
+    "alt": "View of Bruges, Belgium",
+    "author": "Zairon",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Br%C3%BCgge_Blick_vom_Belfried_4.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "rotterdam",
+    "cities": [
+      "rotterdam"
+    ],
+    "countries": [
+      "netherlands",
+      "the netherlands"
+    ],
+    "alt": "View of Rotterdam, Netherlands",
+    "author": "Rob Oo",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:A_view_of_Rotterdam,_taken_from_the_roof_of_the_Maassilo,_Rotterdam,_The_Netherlands.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "the-hague",
+    "cities": [
+      "the hague",
+      "den haag",
+      "'s-gravenhage"
+    ],
+    "countries": [
+      "netherlands",
+      "the netherlands"
+    ],
+    "alt": "View of The Hague, Netherlands",
+    "author": "Zairon",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Den_Haag_Skyline_1.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "innsbruck",
+    "cities": [
+      "innsbruck"
+    ],
+    "countries": [
+      "austria"
+    ],
+    "alt": "View of Innsbruck, Austria",
+    "author": "Simon Legner ( User:simon04 )",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:B%C3%BCrgerstra%C3%9Fe_26%2B24_(BT0A2830).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "graz",
+    "cities": [
+      "graz"
+    ],
+    "countries": [
+      "austria"
+    ],
+    "alt": "View of Graz, Austria",
+    "author": "Nick Savchenko from Kiev, Ukraine",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Graz_(35932179023).jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "bern",
+    "cities": [
+      "bern",
+      "berne"
+    ],
+    "countries": [
+      "switzerland"
+    ],
+    "alt": "View of Bern, Switzerland",
+    "author": "Flooffy",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bundeshaus_Bern_2009,_Flooffy.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "bologna",
+    "cities": [
+      "bologna"
+    ],
+    "countries": [
+      "italy"
+    ],
+    "alt": "View of Bologna, Italy",
+    "author": "Fabio Ciminelli",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Torri_di_Bologna,_Bologna.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "turin",
+    "cities": [
+      "turin",
+      "torino"
+    ],
+    "countries": [
+      "italy"
+    ],
+    "alt": "View of Turin, Italy",
+    "author": "Zairon",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Torino_Piazza_Castello_11.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "verona",
+    "cities": [
+      "verona"
+    ],
+    "countries": [
+      "italy"
+    ],
+    "alt": "View of Verona, Italy",
+    "author": "Hoppend",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Verona_cityscape_sunny.jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "catania",
+    "cities": [
+      "catania"
+    ],
+    "countries": [
+      "italy"
+    ],
+    "alt": "View of Catania, Italy",
+    "author": "Dariolp83",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Catania_vista_dall%27alto_e_il_vulcano_Etna_a_sovrastarla.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "thessaloniki",
+    "cities": [
+      "thessaloniki",
+      "salonika"
+    ],
+    "countries": [
+      "greece"
+    ],
+    "alt": "View of Thessaloniki, Greece",
+    "author": "Berthold Werner",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tessaloniki_BW_2017-10-05_18-22-47.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "chania",
+    "cities": [
+      "chania",
+      "hania"
+    ],
+    "countries": [
+      "greece"
+    ],
+    "alt": "View of Chania, Greece",
+    "author": "dronepicr",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Aerial_view_of_the_Old_Venetian_Harbour_in_Chania,_Greece.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "funchal",
+    "cities": [
+      "funchal"
+    ],
+    "countries": [
+      "portugal"
+    ],
+    "alt": "View of Funchal, Portugal",
+    "author": "Dr. Thomas Liptak",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Funchal,_Jardins_da_Quinta_Vigia_(lookout).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "granada",
+    "cities": [
+      "granada"
+    ],
+    "countries": [
+      "spain"
+    ],
+    "alt": "View of Granada, Spain",
+    "author": "Brett Hodnett",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Granada_(25987961022).jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "bergen",
+    "cities": [
+      "bergen"
+    ],
+    "countries": [
+      "norway"
+    ],
+    "alt": "View of Bergen, Norway",
+    "author": "TomasEE",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bergen_panorama_at_night_-_panoramio_(1).jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "position": "center"
+  },
+  {
+    "key": "troms",
+    "cities": [
+      "tromso",
+      "tromsø"
+    ],
+    "countries": [
+      "norway"
+    ],
+    "alt": "View of Tromsø, Norway",
+    "author": "The Municipality of Tromsø from Tromsø, Norway",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Troms%C3%B8_sentrum_(5835702754).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "gothenburg",
+    "cities": [
+      "gothenburg",
+      "goteborg"
+    ],
+    "countries": [
+      "sweden"
+    ],
+    "alt": "View of Gothenburg, Sweden",
+    "author": "Bengt Nyman from Vaxholm, Sweden",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:G%C3%B6teborg_2503_stitch_(28573994096).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "malmo",
+    "cities": [
+      "malmo"
+    ],
+    "countries": [
+      "sweden"
+    ],
+    "alt": "View of Malmö, Sweden",
+    "author": "This image was produced by me, David Castor ( user:dcastor ). The pictures I submit to the Wikipedia Project are released to the public domain. This gives you the right to use them in any way you like, without any kind of notification. This said, I would still appreciate to be mentioned as the originator whenever you think it complies well with your use of the picture. A message to me about how it has been used would also be welcome. You are obviously not required to respond to these wishes of mine, just in a friendly manner encouraged to. (All my photos are placed in Category:Images by David Castor or a subcategory thereof.)",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Malm%C3%B6%E2%80%93flygbild_06_september_2014.jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "aarhus",
+    "cities": [
+      "aarhus",
+      "arhus"
+    ],
+    "countries": [
+      "denmark"
+    ],
+    "alt": "View of Aarhus, Denmark",
+    "author": "SmartDrones Aarhus",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Drone_photo_of_Dokk1_in_Aarhus,_Denmark.jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "turku",
+    "cities": [
+      "turku"
+    ],
+    "countries": [
+      "finland"
+    ],
+    "alt": "View of Turku, Finland",
+    "author": "Markus Koljonen ( Dilaudid ) with thanks to Jontts and Turku Cathedral",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:View_from_Turku_Cathedral_tower.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "belfast",
+    "cities": [
+      "belfast"
+    ],
+    "countries": [
+      "united kingdom",
+      "uk",
+      "great britain",
+      "england",
+      "scotland",
+      "wales",
+      "northern ireland"
+    ],
+    "alt": "View of Belfast, United Kingdom",
+    "author": "Davidw1406",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Belfast_Skyline_City_Quays.png",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "oxford",
+    "cities": [
+      "oxford"
+    ],
+    "countries": [
+      "united kingdom",
+      "uk",
+      "great britain",
+      "england",
+      "scotland",
+      "wales",
+      "northern ireland"
+    ],
+    "alt": "View of Oxford, United Kingdom",
+    "author": "Tony Hisgett from Birmingham, UK",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Museum_of_Oxford_(5652685943).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "cambridge",
+    "cities": [
+      "cambridge"
+    ],
+    "countries": [
+      "united kingdom",
+      "uk",
+      "great britain",
+      "england",
+      "scotland",
+      "wales",
+      "northern ireland"
+    ],
+    "alt": "View of Cambridge, United Kingdom",
+    "author": "Jean-Christophe BENOIST",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cambridge_-_Kings_College_vue_des_backs.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "bristol",
+    "cities": [
+      "bristol"
+    ],
+    "countries": [
+      "united kingdom",
+      "uk",
+      "great britain",
+      "england",
+      "scotland",
+      "wales",
+      "northern ireland"
+    ],
+    "alt": "View of Bristol, United Kingdom",
+    "author": "Chris Lathom-Sharp",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Clifton_Suspension_Bridge_and_the_Observatory_in_Bristol,_England.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "calgary",
+    "cities": [
+      "calgary"
+    ],
+    "countries": [
+      "canada"
+    ],
+    "alt": "View of Calgary, Canada",
+    "author": "AceYYC",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Downtown_Calgary_2020-4.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "ottawa",
+    "cities": [
+      "ottawa"
+    ],
+    "countries": [
+      "canada"
+    ],
+    "alt": "View of Ottawa, Canada",
+    "author": "No machine-readable author provided. Arctic.gnome assumed (based on copyright claims).",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Parliament-Ottawa.jpg",
+    "license": "CC BY 2.5",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.5",
+    "position": "center"
+  },
+  {
+    "key": "victoria-british-columbia",
+    "cities": [
+      "victoria"
+    ],
+    "countries": [
+      "canada"
+    ],
+    "alt": "View of Victoria, Canada",
+    "author": "MARELBU",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Victoria_BC,_Canada_(Johnson_Street)_-_panoramio.jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "position": "center"
+  },
+  {
+    "key": "philadelphia",
+    "cities": [
+      "philadelphia"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "View of Philadelphia, United States",
+    "author": "颐园居",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Philadelphia_skyline_20240528_(cropped_2-1).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "houston",
+    "cities": [
+      "houston"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "View of Houston, United States",
+    "author": "Katie Haugland Brown",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Texas_medical_center.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "dallas",
+    "cities": [
+      "dallas"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "View of Dallas, United States",
+    "author": "IcedCowboyCoffee",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dallas_Texas_skyline_from_Reunion_Tower_September_2025_(cropped).png",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "denver",
+    "cities": [
+      "denver"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "View of Denver, United States",
+    "author": "Quintin Soloviev",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Denver,_Colorado_skyline_(cropped_3x5).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "atlanta",
+    "cities": [
+      "atlanta"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "View of Atlanta, United States",
+    "author": "AtlChampion",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:A2ATL20250614-0721_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "honolulu",
+    "cities": [
+      "honolulu"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "View of Honolulu, United States",
+    "author": "Farragutful",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2022_Views_from_Diamond_Head_02.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "medellin",
+    "cities": [
+      "medellin"
+    ],
+    "countries": [
+      "colombia"
+    ],
+    "alt": "View of Medellín, Colombia",
+    "author": "Juan Gómez",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Centro_de_Medell%C3%ADn_en_dron_04.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "panama-city",
+    "cities": [
+      "panama city",
+      "ciudad de panama"
+    ],
+    "countries": [
+      "panama"
+    ],
+    "alt": "View of Panama City, Panama",
+    "author": "Dronepicr",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Panama_Papers_(148830809).jpeg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "position": "center"
+  },
+  {
+    "key": "antigua-guatemala",
+    "cities": [
+      "antigua guatemala"
+    ],
+    "countries": [
+      "guatemala"
+    ],
+    "alt": "View of Antigua Guatemala, Guatemala",
+    "author": "Juan Francisco",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Antigua_-_Arco.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "guadalajara",
+    "cities": [
+      "guadalajara"
+    ],
+    "countries": [
+      "mexico"
+    ],
+    "alt": "View of Guadalajara, Mexico",
+    "author": "Isacdaavid",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Panor%C3%A1mica_Guadalajara_desde_edificio_Bansi_hacia_norte_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "salvador-bahia",
+    "cities": [
+      "salvador"
+    ],
+    "countries": [
+      "brazil"
+    ],
+    "alt": "View of Salvador, Brazil",
+    "author": "Fotos Gov/Ba",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Salvador_BA_(cropped)_2.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "brasilia",
+    "cities": [
+      "brasilia"
+    ],
+    "countries": [
+      "brazil"
+    ],
+    "alt": "View of Brasília, Brazil",
+    "author": "Arturdiasr",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Planalto_Central_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "adelaide",
+    "cities": [
+      "adelaide"
+    ],
+    "countries": [
+      "australia"
+    ],
+    "alt": "View of Adelaide, Australia",
+    "author": "File:Adelaide skyline, December 2022.jpg : Ardash Muradian from Australia derivative work: Georgfotoart",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Adelaide_skyline,_December_2022_b.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "gold-coast-queensland",
+    "cities": [
+      "gold coast"
+    ],
+    "countries": [
+      "australia"
+    ],
+    "alt": "View of Gold Coast, Australia",
+    "author": "Jordan Gellie jordan_gellie",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Gold_Coast_skyline_(Unsplash).jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "christchurch",
+    "cities": [
+      "christchurch"
+    ],
+    "countries": [
+      "new zealand"
+    ],
+    "alt": "View of Christchurch, New Zealand",
+    "author": "Bernard Spragg. NZ from Christchurch, New Zealand",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:The_%22Brill%22_Tram_178.New_Regent_St_Christchurch._(11510530335).jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "queenstown-new-zealand",
+    "cities": [
+      "queenstown"
+    ],
+    "countries": [
+      "new zealand"
+    ],
+    "alt": "View of Queenstown, New Zealand",
+    "author": "Bernard Spragg. NZ from Christchurch, New Zealand",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Queenstown_1_(8168013172).jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "hobart",
+    "cities": [
+      "hobart"
+    ],
+    "countries": [
+      "australia"
+    ],
+    "alt": "View of Hobart, Australia",
+    "author": "File:Franklin Wharf 2015.jpg : Michael fromholtz derivative work: Georgfotoart",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Franklin_Wharf_2015_b_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "hiroshima",
+    "cities": [
+      "hiroshima"
+    ],
+    "countries": [
+      "japan"
+    ],
+    "alt": "View of Hiroshima, Japan",
+    "author": "DXR",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Atomic_Bomb_Dome_and_Motoyaso_River,_Hiroshima,_Northwest_view_20190417_1.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "nara-japan",
+    "cities": [
+      "nara"
+    ],
+    "countries": [
+      "japan"
+    ],
+    "alt": "View of Nara, Japan",
+    "author": "Wiiii",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:T%C5%8Ddai-ji_Kon-d%C5%8D.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "fukuoka",
+    "cities": [
+      "fukuoka"
+    ],
+    "countries": [
+      "japan"
+    ],
+    "alt": "View of Fukuoka, Japan",
+    "author": "Nryate",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Fukuoka_Skyline_of_Seaside_Momochi.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "george-town-penang",
+    "cities": [
+      "george town",
+      "georgetown"
+    ],
+    "countries": [
+      "malaysia"
+    ],
+    "alt": "View of George Town, Malaysia",
+    "author": "HundenvonPenang",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skyline_of_George_Town,_Penang_at_night_Nov2024-29-17.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "da-nang",
+    "cities": [
+      "da nang"
+    ],
+    "countries": [
+      "vietnam",
+      "viet nam"
+    ],
+    "alt": "View of Da Nang, Vietnam",
+    "author": "Somerset999",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dragon_Bridge,_Da_Nang_during_day_-_20230819_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "phuket-city",
+    "cities": [
+      "phuket city",
+      "phuket town"
+    ],
+    "countries": [
+      "thailand"
+    ],
+    "alt": "View of Phuket City, Thailand",
+    "author": "Myinternationalwikipedia",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Phuket_City.jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "pattaya",
+    "cities": [
+      "pattaya"
+    ],
+    "countries": [
+      "thailand"
+    ],
+    "alt": "View of Pattaya, Thailand",
+    "author": "Sergey S. Dukachev",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Pattaya_beach_from_view_point.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "shenzhen",
+    "cities": [
+      "shenzhen"
+    ],
+    "countries": [
+      "china",
+      "people's republic of china",
+      "prc"
+    ],
+    "alt": "View of Shenzhen, China",
+    "author": "Charlie fong",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Commercial_area_of_futian_to_east2020.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "guangzhou",
+    "cities": [
+      "guangzhou"
+    ],
+    "countries": [
+      "china",
+      "people's republic of china",
+      "prc"
+    ],
+    "alt": "View of Guangzhou, China",
+    "author": "Tim Wu",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Canton_Tower_20241027.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "xian",
+    "cities": [
+      "xi'an",
+      "xian",
+      "xi’an"
+    ],
+    "countries": [
+      "china",
+      "people's republic of china",
+      "prc"
+    ],
+    "alt": "View of Xi’an, China",
+    "author": "xiquinhosilva",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:City_wall_of_Xi%27an_51550-Xian_(27959363326).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "hangzhou",
+    "cities": [
+      "hangzhou"
+    ],
+    "countries": [
+      "china",
+      "people's republic of china",
+      "prc"
+    ],
+    "alt": "View of Hangzhou, China",
+    "author": "EditQ",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%E6%9D%AD%E5%B7%9E%E9%92%B1%E6%B1%9F%E6%96%B0%E5%9F%8E_4_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "agra",
+    "cities": [
+      "agra"
+    ],
+    "countries": [
+      "india"
+    ],
+    "alt": "View of Agra, India",
+    "author": "Yann ( talk )",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Taj_Mahal,_Agra,_India.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "bangalore",
+    "cities": [
+      "bangalore",
+      "bengaluru"
+    ],
+    "countries": [
+      "india"
+    ],
+    "alt": "View of Bangalore, India",
+    "author": "Prateek Karandikar",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:UB_City,_Bangalore.JPG",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "kochi",
+    "cities": [
+      "kochi",
+      "cochin"
+    ],
+    "countries": [
+      "india"
+    ],
+    "alt": "View of Kochi, India",
+    "author": "Fsquares (The Ibrahims)",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Kochi_Skyline.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "alexandria",
+    "cities": [
+      "alexandria"
+    ],
+    "countries": [
+      "egypt"
+    ],
+    "alt": "View of Alexandria, Egypt",
+    "author": "TheEgyptian",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:San_Stefano_Grand_Plaza.JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "essaouira",
+    "cities": [
+      "essaouira"
+    ],
+    "countries": [
+      "morocco"
+    ],
+    "alt": "View of Essaouira, Morocco",
+    "author": "Holger Uwe Schmitt",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%22Ein_bemerkenswertes_historisches_Denkmal%22._16.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "fez-morocco",
+    "cities": [
+      "fez",
+      "fes"
+    ],
+    "countries": [
+      "morocco"
+    ],
+    "alt": "View of Fez, Morocco",
+    "author": "This Photo was taken by Timothy A. Gonsalves . Feel free to use my photos, but please mention me as the author. I would much appreciate if you send me an email tagooty@yahoo.com or write on my talk page , for my information. Please contact me before commercial use. Please do not upload an edited image here without consulting me. I would like to make corrections only at my own source to ensure that the changes improve the image and are preserved. Otherwise you may upload an edited image with a new name. Please use one of the templates derivative or extract .",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bab_Bou_Jeloud_Frame_Minaret_Fes_Nov25_A7CR_09127-8_HDR3.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "dakar",
+    "cities": [
+      "dakar"
+    ],
+    "countries": [
+      "senegal"
+    ],
+    "alt": "View of Dakar, Senegal",
+    "author": "mostroneddo",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dakar-Ind%C3%A9pendance.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "kigali",
+    "cities": [
+      "kigali"
+    ],
+    "countries": [
+      "rwanda"
+    ],
+    "alt": "View of Kigali, Rwanda",
+    "author": "Emmanuelkwizera",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:High_Angle_View_Of_Kigali_City_Street_on_November_29,_2018._Emmanuel_Kwizera.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "stone-town",
+    "cities": [
+      "stone town"
+    ],
+    "countries": [
+      "tanzania",
+      "united republic of tanzania"
+    ],
+    "alt": "View of Stone Town, Tanzania",
+    "author": "No machine-readable author provided. Mbz1 assumed (based on copyright claims).",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zanzibar_sultan_palace.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0/",
+    "position": "center"
+  },
+  {
+    "key": "addis-ababa",
+    "cities": [
+      "addis ababa"
+    ],
+    "countries": [
+      "ethiopia"
+    ],
+    "alt": "View of Addis Ababa, Ethiopia",
+    "author": "Abshewaga",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Addis_in_night.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "valencia",
+    "cities": [
+      "valencia"
+    ],
+    "countries": [
+      "spain"
+    ],
+    "alt": "View of Valencia, Spain",
+    "author": "Boris Dzhingarov",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Malvarrosa_Beach,_Valencia,_Spain_(29812271043).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "lyon",
+    "cities": [
+      "lyon"
+    ],
+    "countries": [
+      "france"
+    ],
+    "alt": "View of Lyon, France",
+    "author": "Aldg692VX",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lyon-part-dieu-2023.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "bordeaux",
+    "cities": [
+      "bordeaux"
+    ],
+    "countries": [
+      "france"
+    ],
+    "alt": "View of Bordeaux, France",
+    "author": "Phillip Maiwald ( Nikopol )",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bordeaux_place_de_la_bourse_with_tram.JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "glasgow",
+    "cities": [
+      "glasgow"
+    ],
+    "countries": [
+      "united kingdom",
+      "uk",
+      "great britain",
+      "england",
+      "scotland",
+      "wales",
+      "northern ireland"
+    ],
+    "alt": "View of Glasgow, United Kingdom",
+    "author": "瑞丽江的河水",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Glasgow_-_aerial_-_2025-04-17_14.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "belgrade",
+    "cities": [
+      "belgrade"
+    ],
+    "countries": [
+      "serbia"
+    ],
+    "alt": "View of Belgrade, Serbia",
+    "author": "ZlatanJovanovic",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Panorama_Belgrad.jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "position": "center"
+  },
+  {
+    "key": "zagreb",
+    "cities": [
+      "zagreb"
+    ],
+    "countries": [
+      "croatia"
+    ],
+    "alt": "View of Zagreb, Croatia",
+    "author": "Nick Savchenko from Kiev, Ukraine",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zagreb_(29255640143).jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "yerevan",
+    "cities": [
+      "yerevan",
+      "erevan"
+    ],
+    "countries": [
+      "armenia"
+    ],
+    "alt": "View of Yerevan, Armenia",
+    "author": "Սէրուժ Ուրիշեան (Serouj Ourishian)",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Mount_Ararat_and_the_Yerevan_skyline_(June_2018).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "jakarta",
+    "cities": [
+      "jakarta"
+    ],
+    "countries": [
+      "indonesia"
+    ],
+    "alt": "View of Jakarta, Indonesia",
+    "author": "Medelam",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Bundaran_Hotel_Indonesia_(2025)_(cropped).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "durban",
+    "cities": [
+      "durban"
+    ],
+    "countries": [
+      "south africa"
+    ],
+    "alt": "View of Durban, South Africa",
+    "author": "Dennis Sylvester Hurd",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Durban_from_the_Balcony_(Dennis_Sylvester_Hurd)_1.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "san-diego",
+    "cities": [
+      "san diego"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "View of San Diego, United States",
+    "author": "Dirk Hansen",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:La_Jolla_Shores_view_(cropped).jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "orlando-florida",
+    "cities": [
+      "orlando"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "View of Orlando, United States",
+    "author": "Quintin Soloviev",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Orlando,_Florida_(cropped).jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "new-orleans",
+    "cities": [
+      "new orleans"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "View of New Orleans, United States",
+    "author": "George Bannister",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:New_Orleans_from_the_Air_September_2019_-_Central_Business_District_Skyline_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "cartagena-colombia",
+    "cities": [
+      "cartagena"
+    ],
+    "countries": [
+      "colombia"
+    ],
+    "alt": "View of Cartagena, Colombia",
+    "author": "Sgonzalezb",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Museo_Naval_del_Caribe.JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "santiago",
+    "cities": [
+      "santiago",
+      "santiago de chile"
+    ],
+    "countries": [
+      "chile"
+    ],
+    "alt": "View of Santiago, Chile",
+    "author": "Miguel hernandez",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palacio_de_La_Moneda_-_miguelreflex.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "montevideo",
+    "cities": [
+      "montevideo"
+    ],
+    "countries": [
+      "uruguay"
+    ],
+    "alt": "View of Montevideo, Uruguay",
+    "author": "Eduardo Ruggieri",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:PALACIO_LEGISLATIVO_01.JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "wellington",
+    "cities": [
+      "wellington"
+    ],
+    "countries": [
+      "new zealand"
+    ],
+    "alt": "View of Wellington, New Zealand",
+    "author": "russellstreet",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Seddon_Statue_in_Parliament_Grounds.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
   }
 ]
