@@ -297,6 +297,7 @@ const PlaceDetails: React.FC = () => {
 
           <ExpandablePanel
             name="flights"
+            title="Flights"
             expanded={expandedPanel === 'flights'}
             onToggle={() => togglePanel('flights')}
           >
@@ -305,6 +306,7 @@ const PlaceDetails: React.FC = () => {
 
           <ExpandablePanel
             name="hotels"
+            title={`Hotels in ${destination.split(',')[0].trim()}`}
             expanded={expandedPanel === 'hotels'}
             onToggle={() => togglePanel('hotels')}
           >
@@ -317,6 +319,7 @@ const PlaceDetails: React.FC = () => {
 
           <ExpandablePanel
             name="attractions"
+            title={`Attractions in ${destination.split(',')[0].trim()}`}
             expanded={expandedPanel === 'attractions'}
             onToggle={() => togglePanel('attractions')}
           >
