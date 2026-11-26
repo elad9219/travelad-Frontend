@@ -1,8 +1,15 @@
 [
   {
     "key": "london",
-    "cities": ["london"],
-    "countries": ["united kingdom", "uk", "great britain", "england"],
+    "cities": [
+      "london"
+    ],
+    "countries": [
+      "united kingdom",
+      "uk",
+      "great britain",
+      "england"
+    ],
     "alt": "Palace of Westminster and Big Ben across the River Thames",
     "author": "Domob",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palace_of_Westminster_and_Elizabeth_Tower_20250522.jpg",
@@ -12,8 +19,12 @@
   },
   {
     "key": "paris",
-    "cities": ["paris"],
-    "countries": ["france"],
+    "cities": [
+      "paris"
+    ],
+    "countries": [
+      "france"
+    ],
     "alt": "Eiffel Tower above the Paris skyline",
     "author": "Jose Huwaidi",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Paris_skyline.jpg",
@@ -23,8 +34,16 @@
   },
   {
     "key": "new-york",
-    "cities": ["new york", "new york city"],
-    "countries": ["united states", "united states of america", "usa", "us"],
+    "cities": [
+      "new york",
+      "new york city"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
     "alt": "Brooklyn Bridge and the Manhattan skyline at sunset",
     "author": "SebastianBlumeArt",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Brooklyn_Bridge_at_sunset_from_Brooklyn_Bridge_Park,_New_York_City.jpg",
@@ -34,8 +53,12 @@
   },
   {
     "key": "cape-town",
-    "cities": ["cape town"],
-    "countries": ["south africa"],
+    "cities": [
+      "cape town"
+    ],
+    "countries": [
+      "south africa"
+    ],
     "alt": "Cape Town waterfront and Table Mountain",
     "author": "Matthiasmullie",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cape_Town_Table_Mountain.jpg",
@@ -45,8 +68,12 @@
   },
   {
     "key": "reykjavik",
-    "cities": ["reykjavik"],
-    "countries": ["iceland"],
+    "cities": [
+      "reykjavik"
+    ],
+    "countries": [
+      "iceland"
+    ],
     "alt": "Colorful rooftops in Reykjavik",
     "author": "Bjørn Giesenbauer",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reykjavik_rooftops.jpg",
@@ -56,8 +83,12 @@
   },
   {
     "key": "tokyo",
-    "cities": ["tokyo"],
-    "countries": ["japan"],
+    "cities": [
+      "tokyo"
+    ],
+    "countries": [
+      "japan"
+    ],
     "alt": "Tokyo Tower and surrounding skyline",
     "author": "Wilhelm Joys Andersen from Oslo, Norway",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tokyo_Tower_and_surrounding_area.jpg",
@@ -67,13 +98,754 @@
   },
   {
     "key": "rome",
-    "cities": ["rome", "roma"],
-    "countries": ["italy"],
+    "cities": [
+      "rome",
+      "roma"
+    ],
+    "countries": [
+      "italy"
+    ],
     "alt": "The Colosseum in Rome",
     "author": "Nicholas Hartmann",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rome_Colosseum_exterior_panorama.jpg",
     "license": "CC BY-SA 4.0",
     "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "barcelona",
+    "cities": [
+      "barcelona"
+    ],
+    "countries": [
+      "spain"
+    ],
+    "alt": "Barcelona skyline and harbor at sunset",
+    "author": "M McBey",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Evening_light_over_Barcelona.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "berlin",
+    "cities": [
+      "berlin"
+    ],
+    "countries": [
+      "germany"
+    ],
+    "alt": "Berlin skyline and Museum Island",
+    "author": "File:Museumsinsel Berlin Juli 2021 1 (cropped).jpg : Kasa Fue derivative work: Georgfotoart",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Museumsinsel_Berlin_Juli_2021_1_(cropped)_b.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "amsterdam",
+    "cities": [
+      "amsterdam"
+    ],
+    "countries": [
+      "netherlands",
+      "the netherlands"
+    ],
+    "alt": "Aerial view of the Amsterdam canals",
+    "author": "Andrés Barrios",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Imagen_de_los_canales_conc%C3%A9ntricos_en_%C3%81msterdam.png",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "vienna",
+    "cities": [
+      "vienna",
+      "wien"
+    ],
+    "countries": [
+      "austria"
+    ],
+    "alt": "Schönbrunn Palace and gardens at dusk",
+    "author": "Superbass",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Schoenbrunn_philharmoniker_2012.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "prague",
+    "cities": [
+      "prague",
+      "praha"
+    ],
+    "countries": [
+      "czechia",
+      "czech republic"
+    ],
+    "alt": "Charles Bridge and Prague skyline",
+    "author": "Moyan Brenn from Italy",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Prague_(6365119737).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "budapest",
+    "cities": [
+      "budapest"
+    ],
+    "countries": [
+      "hungary"
+    ],
+    "alt": "Danube River and Budapest skyline",
+    "author": "Visions of Domino",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:View_from_Gell%C3%A9rt_Hill_to_the_Danube,_Hungary_-_Budapest_(28493220635).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "lisbon",
+    "cities": [
+      "lisbon",
+      "lisboa"
+    ],
+    "countries": [
+      "portugal"
+    ],
+    "alt": "Lisbon rooftops at sunset",
+    "author": "Deensel",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Lisbon_(36831596786)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "athens",
+    "cities": [
+      "athens"
+    ],
+    "countries": [
+      "greece"
+    ],
+    "alt": "Acropolis of Athens at daybreak",
+    "author": "Andrew Parlette",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Athens_Acropolis_at_Daybreak.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "hong-kong",
+    "cities": [
+      "hong kong"
+    ],
+    "countries": [
+      "hong kong",
+      "hong kong sar",
+      "hong kong sar china",
+      "china"
+    ],
+    "alt": "Hong Kong skyline at night",
+    "author": "Diliff",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Hong_Kong_Skyline_Restitch_-_Dec_2007.jpg",
+    "license": "CC BY 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/3.0",
+    "position": "center"
+  },
+  {
+    "key": "bangkok",
+    "cities": [
+      "bangkok",
+      "krung thep maha nakhon"
+    ],
+    "countries": [
+      "thailand"
+    ],
+    "alt": "Bangkok skyline",
+    "author": "Ninara from Helsinki, Finland",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:4Y1A1159_Bangkok_(33536795515).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "seoul",
+    "cities": [
+      "seoul"
+    ],
+    "countries": [
+      "south korea",
+      "republic of korea",
+      "korea, republic of",
+      "korea"
+    ],
+    "alt": "Traditional palace in Seoul",
+    "author": "Eunmi Park",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:%EC%A4%91%ED%99%94%EC%A0%84%EC%9D%98_%EB%82%AE.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "sydney",
+    "cities": [
+      "sydney"
+    ],
+    "countries": [
+      "australia"
+    ],
+    "alt": "Sydney Opera House and Harbour Bridge at dusk",
+    "author": "Benh LIEU SONG ( Flickr )",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sydney_Opera_House_and_Harbour_Bridge_Dusk_(2)_2019-06-21.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "melbourne",
+    "cities": [
+      "melbourne"
+    ],
+    "countries": [
+      "australia"
+    ],
+    "alt": "Melbourne skyline and gardens",
+    "author": "Melbpal",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Melbourne_skyline_sor.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "san-francisco",
+    "cities": [
+      "san francisco"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "Aerial view of Alcatraz Island in San Francisco Bay",
+    "author": "Craig Howell from San Carlos, CA, USA",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Zeppelin-ride-020100925-195_(5029394846).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "toronto",
+    "cities": [
+      "toronto"
+    ],
+    "countries": [
+      "canada"
+    ],
+    "alt": "Toronto skyline across the water",
+    "author": "Dillan Payne",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Toronto_Skyline_from_Snake_Island,_September_11_2026_(01).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "rio-de-janeiro",
+    "cities": [
+      "rio de janeiro"
+    ],
+    "countries": [
+      "brazil"
+    ],
+    "alt": "Christ the Redeemer overlooking Rio de Janeiro",
+    "author": "Rafael Rabello de Barros",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cidade_Maravilhosa.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "buenos-aires",
+    "cities": [
+      "buenos aires"
+    ],
+    "countries": [
+      "argentina"
+    ],
+    "alt": "Puerto Madero in Buenos Aires",
+    "author": "Deensel",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Puerto_Madero,_Buenos_Aires_(40689219792)_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "tel-aviv",
+    "cities": [
+      "tel aviv",
+      "tel aviv-yafo",
+      "tel aviv yafo"
+    ],
+    "countries": [
+      "israel"
+    ],
+    "alt": "Tel Aviv skyline",
+    "author": "Ynhockey",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sarona_CBD_01_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "dublin",
+    "cities": [
+      "dublin"
+    ],
+    "countries": [
+      "ireland"
+    ],
+    "alt": "Aerial view of Dublin and the River Liffey",
+    "author": "瑞丽江的河水",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Dublin_-_aerial_-_2025-07-07_01.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "brussels",
+    "cities": [
+      "brussels"
+    ],
+    "countries": [
+      "belgium"
+    ],
+    "alt": "Grand Place in Brussels",
+    "author": "Francisco Conde Sánchez",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Grand_Place_Bruselas_2.jpg",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "edinburgh",
+    "cities": [
+      "edinburgh"
+    ],
+    "countries": [
+      "united kingdom",
+      "uk",
+      "great britain",
+      "scotland"
+    ],
+    "alt": "Edinburgh skyline from Calton Hill",
+    "author": "Andrew Colin",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skyline_of_Edinburgh.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "stockholm",
+    "cities": [
+      "stockholm"
+    ],
+    "countries": [
+      "sweden"
+    ],
+    "alt": "Stockholm waterfront and old town",
+    "author": "OleNeitzel",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Munkbroleden_with_Kornhamstorg_at_Gamla_Stan,_Stockholm,_Sweden_01.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "oslo",
+    "cities": [
+      "oslo"
+    ],
+    "countries": [
+      "norway"
+    ],
+    "alt": "National Theatre in Oslo at dusk",
+    "author": "Orjanarvola",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Nationaltheatret_evening.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "copenhagen",
+    "cities": [
+      "copenhagen",
+      "kobenhavn",
+      "københavn"
+    ],
+    "countries": [
+      "denmark"
+    ],
+    "alt": "Christiansborg Palace in Copenhagen",
+    "author": "Moahim",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:2018_-_Christiansborg_from_the_Marble_Bridge.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "helsinki",
+    "cities": [
+      "helsinki"
+    ],
+    "countries": [
+      "finland"
+    ],
+    "alt": "Suomenlinna sea fortress in Helsinki",
+    "author": "Michal Pise, Michal.Pise",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Suomenlinna_(cropped).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "warsaw",
+    "cities": [
+      "warsaw",
+      "warszawa"
+    ],
+    "countries": [
+      "poland"
+    ],
+    "alt": "Warsaw skyline",
+    "author": "Emptywords",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Aleja_Niepdleglosci_Warsaw_2022_aerial_(cropped).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "krakow",
+    "cities": [
+      "krakow",
+      "cracow"
+    ],
+    "countries": [
+      "poland"
+    ],
+    "alt": "Kraków Main Market Square",
+    "author": "Andrzej Otrębski",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Krakow_Rynek_Glowny_panorama_2.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "munich",
+    "cities": [
+      "munich",
+      "munchen"
+    ],
+    "countries": [
+      "germany"
+    ],
+    "alt": "Munich old town and Frauenkirche",
+    "author": "Martin Falbisoner",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Frauenkirche_and_Neues_Rathaus_Munich_March_2013.JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+    "position": "center"
+  },
+  {
+    "key": "frankfurt",
+    "cities": [
+      "frankfurt",
+      "frankfurt am main"
+    ],
+    "countries": [
+      "germany"
+    ],
+    "alt": "Frankfurt skyline",
+    "author": "Dr. Thomas Liptak",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Frankfurt_am_Main,_Central_business_district_(2024).jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "venice",
+    "cities": [
+      "venice",
+      "venezia"
+    ],
+    "countries": [
+      "italy"
+    ],
+    "alt": "Aerial view of Venice and its lagoon",
+    "author": "kallerna",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Venezia_aerial_view.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "florence",
+    "cities": [
+      "florence",
+      "firenze"
+    ],
+    "countries": [
+      "italy"
+    ],
+    "alt": "Florence skyline from Piazzale Michelangelo",
+    "author": "Giorgio Galeotti",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Firenze_-_Piazzale_Michelangelo,_Firenze,_Italy_-_April_6,_2015_02.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "naples",
+    "cities": [
+      "naples",
+      "napoli"
+    ],
+    "countries": [
+      "italy"
+    ],
+    "alt": "Naples and Mount Vesuvius",
+    "author": "Richard Nevell",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Napoli_-_Maschio_Angioino_-_202209302342_3.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "nice",
+    "cities": [
+      "nice"
+    ],
+    "countries": [
+      "france"
+    ],
+    "alt": "Promenade des Anglais in Nice",
+    "author": "Alexander Migl",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Promenade_des_Anglais_Nice_IMG_1255.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "vancouver",
+    "cities": [
+      "vancouver"
+    ],
+    "countries": [
+      "canada"
+    ],
+    "alt": "Vancouver skyline and waterfront",
+    "author": "Quintin Soloviev",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Skyline_of_Vancouver,_Canada.jpg",
+    "license": "CC BY 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/4.0",
+    "position": "center"
+  },
+  {
+    "key": "chicago",
+    "cities": [
+      "chicago"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "Chicago River and skyscrapers",
+    "author": "File:Chicago River ferry.jpg : John Picken derivative work: Georgfotoart",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Chicago_River_ferry_b.jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "las-vegas",
+    "cities": [
+      "las vegas"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "Las Vegas skyline before sunrise",
+    "author": "Eric Kilby",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Center_Strip_Before_Sunrise.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "boston",
+    "cities": [
+      "boston"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "Massachusetts State House in Boston",
+    "author": "Ajay Suresh from New York, NY, USA",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Boston_-Massachusetts_State_House_(48718911666).jpg",
+    "license": "CC BY 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+    "position": "center"
+  },
+  {
+    "key": "auckland",
+    "cities": [
+      "auckland"
+    ],
+    "countries": [
+      "new zealand"
+    ],
+    "alt": "Auckland skyline across the harbor",
+    "author": "elpinto007",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Auckland_skyline_-_May_2024_(2).jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "sao-paulo",
+    "cities": [
+      "sao paulo"
+    ],
+    "countries": [
+      "brazil"
+    ],
+    "alt": "São Paulo skyline",
+    "author": "Agent010",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Marginal_Pinheiros_e_Jockey_Club.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "madrid",
+    "cities": [
+      "madrid"
+    ],
+    "countries": [
+      "spain"
+    ],
+    "alt": "Madrid skyline from above",
+    "author": "Zarateman",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Madrid_-_Sky_Bar_360%C2%BA_(Hotel_Riu_Plaza_Espa%C3%B1a),_vistas_19.jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "istanbul",
+    "cities": [
+      "istanbul"
+    ],
+    "countries": [
+      "turkey",
+      "turkiye"
+    ],
+    "alt": "Historic Istanbul skyline",
+    "author": "Hunanuk",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Historical_peninsula_and_modern_skyline_of_Istanbul.jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "mexico-city",
+    "cities": [
+      "mexico city",
+      "ciudad de mexico"
+    ],
+    "countries": [
+      "mexico"
+    ],
+    "alt": "Mexico City skyline from above",
+    "author": "Gobierno CDMX",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Sobrevuelos_CDMX_HJ2A4913_(25514321687)_(cropped).jpg",
+    "license": "CC0",
+    "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "position": "center"
+  },
+  {
+    "key": "singapore",
+    "cities": [
+      "singapore"
+    ],
+    "countries": [
+      "singapore",
+      "republic of singapore"
+    ],
+    "alt": "Marina Bay skyline in Singapore",
+    "author": "Kwansss",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Singapore_Skyline.png",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "los-angeles",
+    "cities": [
+      "los angeles"
+    ],
+    "countries": [
+      "united states",
+      "united states of america",
+      "usa",
+      "us"
+    ],
+    "alt": "Downtown Los Angeles at night",
+    "author": "Camiloarenivar",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Downtown_Los_Angeles_at_Night.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "dubai",
+    "cities": [
+      "dubai"
+    ],
+    "countries": [
+      "united arab emirates",
+      "uae"
+    ],
+    "alt": "Dubai Creek waterfront",
+    "author": "Vedaant Jamaiyar",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Old_Dubai_Creek.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "larnaca",
+    "cities": [
+      "larnaca",
+      "larnaka"
+    ],
+    "countries": [
+      "cyprus"
+    ],
+    "alt": "Palm-lined waterfront promenade in Larnaca",
+    "author": "Valantis Antoniades",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palm_trees_promenade_(foinikoudes).JPG",
+    "license": "CC BY-SA 3.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
     "position": "center"
   }
 ]
