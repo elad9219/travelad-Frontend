@@ -10,21 +10,25 @@ import {
 } from '../../../modal/Flight';
 import globals from '../../../utils/globals';
 
-const formatDateTime = (
-  dateTime: string
-): { date: string; time: string } => {
-  const dateObj = new Date(dateTime);
-  const formattedDate = `${dateObj
-    .getDate()
-    .toString()
-    .padStart(2, '0')}-${(dateObj.getMonth() + 1)
-    .toString()
-    .padStart(2, '0')}-${dateObj.getFullYear()}`;
+// The API supplies airport-local wall-clock times, not browser-local instants.
+const parseFlightTimestamp = (value: string) => {
+  const match = value.match(
+    /^(\d{4}-\d{2}-\d{2})T([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d)(?:\.\d+)?)?(?:Z|[+-](?:[01]\d|2[0-3]):[0-5]\d)?$/
+  );
 
-  const formattedTime = dateObj.toTimeString().slice(0, 5);
+  if (!match || !validDate(match[1])) return null;
 
-  return { date: formattedDate, time: formattedTime };
+  const time = `${match[2]}:${match[3]}`;
+
+  return {
+    date: match[1].split('-').reverse().join('-'),
+    time,
+    rank: Date.parse(`${match[1]}T${time}:${match[4] || '00'}Z`),
+  };
 };
+
+const formatDateTime = (value: string) =>
+  parseFlightTimestamp(value) ?? { date: 'N/A', time: 'N/A' };
 
 const formatDuration = (duration?: string): string => {
   if (!duration) return 'N/A';
@@ -47,6 +51,7 @@ const calculateTotalDuration = (segments: FlightSegment[]): string => {
     if (match) {
       const hours = match[1] ? parseInt(match[1].replace('H', '')) : 0;
       const minutes = match[2] ? parseInt(match[2].replace('M', '')) : 0;
+
       totalMinutes += hours * 60 + minutes;
     }
   });
@@ -76,6 +81,7 @@ const calculateLegDurationInMinutes = (leg: FlightSegment[]): number => {
     if (match) {
       const hours = match[1] ? parseInt(match[1].replace('H', '')) : 0;
       const minutes = match[2] ? parseInt(match[2].replace('M', '')) : 0;
+
       totalMinutes += hours * 60 + minutes;
     }
   });
@@ -113,24 +119,37 @@ const getTotalDuration = (flight: Flight): number => {
 type FlightSort = 'default' | 'value' | 'price' | 'duration' | 'departure';
 
 const priceRank = (flight: Flight) => flight.price ?? Infinity;
+
 const departureRank = (flight: Flight) =>
-  Date.parse((flight.outboundSegments || flight.segments || [])[0]?.departureDate || '') || Infinity;
+  parseFlightTimestamp(
+    (flight.outboundSegments || flight.segments || [])[0]?.departureDate || ''
+  )?.rank ?? Infinity;
 
 const rankFlights = (flights: Flight[], sort: FlightSort): Flight[] => {
   if (sort === 'default') return flights;
+
   const prices = flights.map(priceRank).filter(Number.isFinite);
   const durations = flights.map(getTotalDuration).filter(value => value > 0);
   const minPrice = Math.min(...prices);
   const minDuration = Math.min(...durations);
+
   const valueScore = (flight: Flight) => {
     const price = priceRank(flight);
     const duration = getTotalDuration(flight);
+
     if (!Number.isFinite(price) || duration <= 0) return Infinity;
-    return 0.5 * (price / Math.max(1, minPrice)) + 0.5 * (duration / minDuration);
+
+    return (
+      0.5 * (price / Math.max(1, minPrice)) +
+      0.5 * (duration / minDuration)
+    );
   };
-  const rank = sort === 'price' ? priceRank :
+
+  const rank =
+    sort === 'price' ? priceRank :
     sort === 'duration' ? (flight: Flight) => getTotalDuration(flight) || Infinity :
     sort === 'departure' ? departureRank : valueScore;
+
   return [...flights].sort((a, b) => rank(a) - rank(b) || 0);
 };
 
@@ -171,6 +190,7 @@ const localDate = (date = new Date()): string =>
 const defaultAdvancedParams = (city: string): AdvancedSearchParams => {
   const departure = new Date();
   departure.setDate(departure.getDate() + 10);
+
   const returning = new Date(departure);
   returning.setDate(returning.getDate() + 5);
 
@@ -220,9 +240,9 @@ const validLeg = (value: unknown): value is FlightSegment[] =>
           typeof segment[field] === 'string'
       ) &&
       typeof segment.departureDate === 'string' &&
-      Number.isFinite(Date.parse(segment.departureDate)) &&
+      parseFlightTimestamp(segment.departureDate) !== null &&
       typeof segment.arrivalDate === 'string' &&
-      Number.isFinite(Date.parse(segment.arrivalDate))
+      parseFlightTimestamp(segment.arrivalDate) !== null
   );
 
 const readFlights = (data: unknown): Flight[] => {
@@ -276,6 +296,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
   const [error, setError] = useState('');
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+
   const [advancedParams, setAdvancedParams] =
     useState<AdvancedSearchParams>(() => defaultAdvancedParams(city));
 
@@ -352,16 +373,18 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
 
         if (!active) return;
 
-        const mapping: IataMapping = {};
+        const mapping: IataMapping = Object.create(null);
 
         if (Array.isArray(response.data)) {
           response.data.forEach(entry => {
             if (
               typeof entry?.['AIRPORT CODE'] === 'string' &&
-              typeof entry?.['FULL NAME'] === 'string'
+              /^[A-Z]{3}$/i.test(entry['AIRPORT CODE']) &&
+              typeof entry?.['FULL NAME'] === 'string' &&
+              entry['FULL NAME'].trim()
             ) {
               mapping[entry['AIRPORT CODE'].toUpperCase()] =
-                entry['FULL NAME'];
+                entry['FULL NAME'].trim();
             }
           });
         }
@@ -433,6 +456,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
 
     if (value === '' || /^[1-9]$/.test(value)) {
       setAdvancedParams(previous => ({ ...previous, adults: value }));
+
       setInvalidFields(previous =>
         previous.filter(field => field !== 'adults')
       );
@@ -530,6 +554,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
     const origin = renderIataCode(leg[0].origin);
     const dest = renderIataCode(leg[leg.length - 1].destination);
     const stops = leg.length - 1;
+
     const duration = dur
       ? formatDuration(dur)
       : calculateTotalDuration(leg);
@@ -585,6 +610,8 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
       {leg.map((seg, idx) => {
         const dep = formatDateTime(seg.departureDate);
         const arr = formatDateTime(seg.arrivalDate);
+        const from = iataMapping[seg.origin.toUpperCase()];
+        const to = iataMapping[seg.destination.toUpperCase()];
 
         return (
           <div key={idx} className="segment-detail">
@@ -600,6 +627,18 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
                 {formatDuration(seg.duration)}
               </p>
             </div>
+
+            {from && from !== seg.origin && (
+              <p>
+                <strong>Departure airport:</strong> {from}
+              </p>
+            )}
+
+            {to && to !== seg.destination && (
+              <p>
+                <strong>Arrival airport:</strong> {to}
+              </p>
+            )}
 
             <p>
               <strong>Departure:</strong> {dep.time} {dep.date}{' '}
@@ -692,6 +731,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
                   flight.outboundSegments!,
                   flight.outboundDuration
                 )}
+
                 {renderSummaryRow(
                   flight.returnSegments!,
                   flight.returnDuration
@@ -782,13 +822,22 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
         <h2 className="flights-title">✈ Flights</h2>
 
         <div className="header-controls">
-          {!loading && !error && <span className="flight-results-count">{sortedFlights.length} {sortedFlights.length === 1 ? 'flight' : 'flights'}</span>}
+          {!loading && !error && (
+            <span className="flight-results-count">
+              {sortedFlights.length}{' '}
+              {sortedFlights.length === 1 ? 'flight' : 'flights'}
+            </span>
+          )}
+
           <label className="flight-sort-control">
             Sort by
-            <select value={sortBy} onChange={event => {
-              setSortBy(event.target.value as FlightSort);
-              setExpandedIndex(null);
-            }}>
+            <select
+              value={sortBy}
+              onChange={event => {
+                setSortBy(event.target.value as FlightSort);
+                setExpandedIndex(null);
+              }}
+            >
               <option value="default">Default</option>
               <option value="value">Best value</option>
               <option value="price">Lowest price</option>
@@ -796,6 +845,7 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
               <option value="departure">Earliest departure</option>
             </select>
           </label>
+
           <button
             type="button"
             className={`direct-flights-btn ${
@@ -819,14 +869,20 @@ const FlightsComponent: React.FC<{ city: string }> = ({ city }) => {
           </button>
         </div>
 
-        <p className="flight-demo-note">Illustrative flights. Schedules and prices are simulated; no live availability.</p>
+        <p className="flight-demo-note">Illustrative flights. Schedules and prices are simulated; no live availability. All times are local to the respective airport.</p>
       </div>
 
       {showAdvancedSearch && (
-        <form className={`advanced-search-form ${advancedParams.flightType === 'oneWay' ? 'flight-form-one-way' : ''}`} noValidate onSubmit={event => {
-          event.preventDefault();
-          handleAdvancedSearch();
-        }}>
+        <form
+          className={`advanced-search-form ${
+            advancedParams.flightType === 'oneWay' ? 'flight-form-one-way' : ''
+          }`}
+          noValidate
+          onSubmit={event => {
+            event.preventDefault();
+            handleAdvancedSearch();
+          }}
+        >
           <div
             className={`search-field ${
               invalidFields.includes('origin') ? 'invalid' : ''
