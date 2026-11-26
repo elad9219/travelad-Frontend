@@ -1,0 +1,82 @@
+.place-image.city-photo {
+  isolation: isolate;
+  border-radius: 14px;
+  background: linear-gradient(140deg, #416b8a, #18384f);
+}
+
+.city-photo-image,
+.city-photo-shade {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.city-photo-image {
+  object-fit: cover;
+  display: block;
+}
+
+.city-photo-shade {
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgb(10 25 40 / 88%),
+    rgb(10 25 40 / 38%) 23%,
+    transparent 58%
+  );
+}
+
+.city-photo .place-address {
+  background: none;
+  border-radius: 0;
+  padding: 0;
+  bottom: clamp(12px, 3cqi, 24px);
+  font-size: clamp(1.2rem, 3.5cqi, 2.6rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.025em;
+  overflow-wrap: anywhere;
+  text-shadow: 0 2px 6px rgb(0 0 0 / 65%);
+}
+
+.city-photo-credit {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  max-width: calc(100% - 20px);
+  max-height: 45%;
+  overflow: auto;
+  box-sizing: border-box;
+  border-radius: 7px;
+  background: rgb(255 255 255 / 96%);
+  color: #24364b;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.city-photo-credit summary {
+  cursor: pointer;
+  padding: 7px 10px;
+  font-weight: 600;
+}
+
+.city-photo-credit div {
+  padding: 0 10px 8px;
+  overflow-wrap: anywhere;
+}
+
+.city-photo-credit a {
+  color: #005a9c;
+}
+
+.city-photo-credit small {
+  display: block;
+  margin-top: 4px;
+}
+
+.city-photo-credit :is(summary, a):focus-visible {
+  outline: 2px solid #0064c8;
+  outline-offset: -2px;
+}

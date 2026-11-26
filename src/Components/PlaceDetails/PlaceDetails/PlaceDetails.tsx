@@ -8,7 +8,7 @@ import HotelComponent from '../../Components/HotelComponent/HotelComponent';
 import AttractionComponent from '../../Components/AttractionComponent/AttractionComponent';
 import FlightsComponent from '../../Components/FlightComponent/FlightComponent';
 import Loader from '../../Components/Loader/Loader';
-import PhotoAttributions from '../../Components/PhotoAttributions/PhotoAttributions';
+import CityPhoto from './CityPhoto';
 import axios from 'axios';
 import './PlaceDetails.css';
 import globals from '../../../utils/globals';
@@ -260,24 +260,10 @@ const PlaceDetails: React.FC = () => {
       {!loading && place && (
         <div className="main-grid">
           <div className="grid-item place-image-container">
-            <div
-              className="place-image"
-              style={{
-                backgroundImage: place.icon
-                  ? `url(${place.icon})`
-                  : undefined,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-              }}
-            >
-              {place.icon && (
-                <PhotoAttributions values={place.photoAttributions} />
-              )}
-
-              <div className="place-address">
-                {place.address || place.name || 'Unknown address'}
-              </div>
-            </div>
+            <CityPhoto
+              key={`${requestedCity}-${place.placeId}`}
+              place={place}
+            />
           </div>
 
           <div className="grid-item place-map-container">

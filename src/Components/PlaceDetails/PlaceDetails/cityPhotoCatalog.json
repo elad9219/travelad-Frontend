@@ -1,0 +1,79 @@
+[
+  {
+    "key": "london",
+    "cities": ["london"],
+    "countries": ["united kingdom", "uk", "great britain", "england"],
+    "alt": "Palace of Westminster and Big Ben across the River Thames",
+    "author": "Domob",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Palace_of_Westminster_and_Elizabeth_Tower_20250522.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  },
+  {
+    "key": "paris",
+    "cities": ["paris"],
+    "countries": ["france"],
+    "alt": "Eiffel Tower above the Paris skyline",
+    "author": "Jose Huwaidi",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Paris_skyline.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center 25%"
+  },
+  {
+    "key": "new-york",
+    "cities": ["new york", "new york city"],
+    "countries": ["united states", "united states of america", "usa", "us"],
+    "alt": "Brooklyn Bridge and the Manhattan skyline at sunset",
+    "author": "SebastianBlumeArt",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Brooklyn_Bridge_at_sunset_from_Brooklyn_Bridge_Park,_New_York_City.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center 55%"
+  },
+  {
+    "key": "cape-town",
+    "cities": ["cape town"],
+    "countries": ["south africa"],
+    "alt": "Cape Town waterfront and Table Mountain",
+    "author": "Matthiasmullie",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Cape_Town_Table_Mountain.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center 43%"
+  },
+  {
+    "key": "reykjavik",
+    "cities": ["reykjavik"],
+    "countries": ["iceland"],
+    "alt": "Colorful rooftops in Reykjavik",
+    "author": "Bjørn Giesenbauer",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Reykjavik_rooftops.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center"
+  },
+  {
+    "key": "tokyo",
+    "cities": ["tokyo"],
+    "countries": ["japan"],
+    "alt": "Tokyo Tower and surrounding skyline",
+    "author": "Wilhelm Joys Andersen from Oslo, Norway",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Tokyo_Tower_and_surrounding_area.jpg",
+    "license": "CC BY-SA 2.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/2.0",
+    "position": "center 10%"
+  },
+  {
+    "key": "rome",
+    "cities": ["rome", "roma"],
+    "countries": ["italy"],
+    "alt": "The Colosseum in Rome",
+    "author": "Nicholas Hartmann",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File:Rome_Colosseum_exterior_panorama.jpg",
+    "license": "CC BY-SA 4.0",
+    "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+    "position": "center"
+  }
+]
